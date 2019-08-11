@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Authors on PsychTek - Aaron Willcox</title>
+    <link>/authors/</link>
+    <description>Recent content in Authors on PsychTek - Aaron Willcox</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sun, 07 Apr 2019 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="/authors/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title></title>
+      <link>/authors/admin/</link>
+      <pubDate>Sun, 07 Apr 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/authors/admin/</guid>
+      <description>Recently returning from studying abroad learning neuroscience at Maastricht University in the Netherlands. This has enable him to learn: Logistic regression, Principle Component Analysis &amp;amp; methods of cognitive neuroscience. He was also involved in a research practical involving a behavioural study on pattern separation. Whilst abroad, he is also attending SatRday events and attended the Society for Improving Psychological Science conference in Rottodam.
+Interests include wrangling data to explore any patterns of interest, produce a model and conceptualise experiments, collect data and provide meaningful interpretation.</description>
+    </item>
+    
+    <item>
+      <title>Robert Ford</title>
+      <link>/authors/robert-ford/</link>
+      <pubDate>Tue, 01 Sep 2015 00:00:00 +0000</pubDate>
+      
+      <guid>/authors/robert-ford/</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

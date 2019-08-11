@@ -1,0 +1,25 @@
+---
+title: Test Page
+author: Aaron Willcox
+date: '2019-05-31'
+slug: test-page
+categories:
+  - R
+tags:
+  - R Markdown
+subtitle: ''
+summary: ''
+authors: []
+lastmod: '2019-05-31T23:52:24+02:00'
+featured: no
+image:
+  caption: ''
+  focal_point: ''
+  preview_only: no
+projects: []
+---
+
+
+This will serve as a test page to see if required markdown functions work. 
+
+Latex Maths $\mu + \omega + Y^2 = b * x$ 

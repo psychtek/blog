@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Workshop on PsychTek - Aaron Willcox</title>
+    <link>/tags/workshop/</link>
+    <description>Recent content in Workshop on PsychTek - Aaron Willcox</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sat, 01 Jun 2019 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="/tags/workshop/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>OSL Workshop Solomons Paradox</title>
+      <link>/post/osl-workshop-solomons-paradox/</link>
+      <pubDate>Sat, 01 Jun 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/post/osl-workshop-solomons-paradox/</guid>
+      <description>Does reasoning about personal problems improve with psychological distance?STUDY DESCRIPTIONSolomon’s paradox describes the tendency for people to reason more wisely about other people’sproblems compared to their own. One potential explanation for this paradox is that people tend to viewother people’s problems from a more psychologically distant perspective, whereas they view their ownproblems from a psychologically immersed perspective . For example, imagine two friends, Beth and Zoe,are discussing Zoe’s relationship problems.</description>
+    </item>
+    
+  </channel>
+</rss>
