@@ -1,0 +1,320 @@
+---
+title: 'Emotional Impact of Memory Part One '
+author: Aaron Willcox
+date: '2019-07-16'
+slug: emotional-impact-of-memory-part-one
+categories:
+  - R
+tags:
+  - research
+subtitle: ''
+summary: ''
+authors: []
+lastmod: '2019-07-16T15:18:35+10:00'
+featured: no
+image:
+  caption: ''
+  focal_point: ''
+  preview_only: no
+projects: []
+---
+
+
+### Research Protocol
+
+```{r Library, message=FALSE, warning=FALSE}
+library(tidyverse)
+library(stringr)
+library(knitr)
+library(plotly)
+library(gridExtra)
+library(inspectdf)
+library(DT)
+```
+
+The following was the code used to prepare images from the IAPS database for a experiment on pattern separation. The participants were seated in front of a PC and went through three tasks: Encoding, retreival and validation. We were provided with a folder of approved images and a text file with unapproved images. 
+
+### Raw text to selected IAPS images
+
+A raw text file was provided with the IAPS database image details I then used a script to then compare the images in the memory task folder and made a raw dataframe with all the IAPS data. There are 200 images overall. Old, new and fake conditions were added based on coding from the images folder. 
+
+```{r Aggregate Data, message=FALSE, warning=FALSE}
+
+iaps_dataframe_images <- read_csv("data/iaps_raw.csv") #List of all IAPS images
+RP_images <- read_csv("data/new_old_images.csv") #list of images used in our research protocol
+RP_images <- as.matrix(RP_images) # convert to matrix
+
+
+ENC_orig_RET_New <- na.omit(str_match(RP_images, "^[[:digit:]]+\\.*[[:digit:]]*$")) # _ENC_ORIGINAL_50 whats left over RET_UNSEEN_NEW
+RET_PS_a <- na.omit(str_match(RP_images, "[[:digit:]]{4}a$")) # _RET_PS_a 50
+ENC_ORIGINAL_b <- na.omit(str_match(RP_images, "[[:digit:]]{4}b$")) # _ENC_ORIGINAL_b 50
+# RET_UNSEEN_NEW
+
+all_images_list <- cbind(c(ENC_orig_RET_New, RET_PS_a, ENC_ORIGINAL_b))
+
+# match IAPS numbers to ones we have selected for RP
+group39_df <- filter(iaps_dataframe_images, nr %in% str_extract(all_images_list, "\\d{4}"))
+ 
+```
+
+
+### Negative and Neutral Images
+
+The following functions compare the iaps_dataframe_images using the nr column numbers to the
+vectors made previously above. 
+
+```{r Create Separate dfs, message=FALSE, warning=FALSE, include=FALSE}
+
+group_ENC_RET <- filter(iaps_dataframe_images, nr %in% str_extract(ENC_orig_RET_New, "\\d{4}"))
+
+group_ENC_RET$Condition = ifelse(group_ENC_RET$nr > 1, "ENC_RET_ORIG_UNSEEN", "Other")
+
+# Match numbers from the IAPS DF to the to the vector idetified with images used in the encoding task
+# that will have photoshopped counterparts. 
+group_ENC_ORIGINAL_b <- filter(iaps_dataframe_images, nr %in% str_extract(ENC_ORIGINAL_b, "\\d{4}"))
+
+group_ENC_ORIGINAL_b$Condition <- ifelse(group_ENC_ORIGINAL_b$nr > 1, "ENC_ORIGINAL_b", "other")
+
+# Match images only used in the retrieval task that are the photoshopped versions
+group_RET_PS_a <- filter(iaps_dataframe_images, nr %in% str_extract(RET_PS_a, "\\d{4}"))
+
+group_RET_PS_a$Condition <- ifelse(group_RET_PS_a$nr > 1, "RET_PS_a", "other")
+
+
+# Join the seperate dataframes together 
+x <- full_join(group_ENC_RET, group_ENC_ORIGINAL_b)
+
+y <- full_join(x, group_RET_PS_a)
+
+group39_df <- y
+
+datatable(group39_df, class = 'cell-border stripe'
+         , caption = 'Research Protocol Database Images'
+         , extensions = 'Buttons', options = list(
+   dom = 'Bfrtip',
+   buttons = c('copy', 'csv', 'excel', 'pdf', 'print')
+ ))
+
+```
+
+
+
+Highly negative and neutral images were coded by looking at the means and then 
+coding highly aroused _negative_ images that have a mean greater than 4.5. All neutral low 
+_neutral images_ were coded with valence means less than 4.0. 
+
+A dataframe of all the images being used in the experiment are then stored into the group39_df. 
+ENC_RET_ORIG_UNSEEN needs to be seperated with 50 images to be used in the retrieval task. 
+
+```{r message=FALSE, warning=FALSE}
+group39_df_mutate <- group39_df %>% #Create Negative and Neutral cases
+  select_all() %>% 
+  mutate(
+    Emotion = case_when(
+      aromn > 4.5  ~ "Negative", 
+      valmn > 4.0 ~ "Neutral"))
+
+group39_df <- group39_df_mutate
+
+# Core master list of all images 
+
+core_images_df <- filter(group39_df, Condition != "RET_PS_a")
+# 
+```
+
+
+We have three tasks: Encoding, Retreival and Validation. The images that were marked a or b are the ones
+that have been photoshopped to look like their counterparts. However, we need to take the 100 images that are
+not marked and split them so that half are used in the encoding and the ones not used, introduced into the
+retrieval task and marked as new/unseen. 
+
+The group39_df also has all the negative and neutral emotion conditions attached to eaech image so we can now filter accordingly. 
+
+```{r message=FALSE, warning=FALSE}
+encoding_list <- filter(group39_df, Condition == "ENC_RET_ORIG_UNSEEN") %>% arrange(Emotion) 
+# filter the raw list by first 100
+
+
+nrowgen<-function(x,y) #Function to sort a list by every second row
+{
+  n<-nrow(x)
+  b<-seq(1,n,y)
+  r<-length(b)
+  c=data.frame()
+  {
+    for(i in 1:r)
+    {
+      abc<-x[b[i],]
+      c<-rbind(c,abc)
+      
+    }
+    return(c)
+  }
+}
+
+
+
+# RET TASK 50 images
+RET_UNSEEN_NEW <- nrowgen(encoding_list, 2) 
+# select every second row - original DF arranged by emotion
+
+
+# ENC TASK 50 images
+ENC_ONLY_ORIG <- anti_join(encoding_list, RET_UNSEEN_NEW)
+# match those columns that arent in the unseen list
+
+
+# 50 Fake photoshopped images for the ret task 
+RET_FAKE_a <- filter(group39_df, Condition == "RET_PS_a")
+
+ENC_ORIG_b <- filter(group39_df, Condition == "ENC_ORIGINAL_b")
+
+
+# Validation task
+VAL_TASK <- filter(group39_df, Condition == "RET_PS_a") %>% arrange(nr)
+
+RET_SEEN <- ENC_ONLY_ORIG
+
+
+# Change the condition name
+RET_SEEN$Condition[RET_SEEN$Condition == "ENC_RET_ORIG_UNSEEN"] <- "RET_SEEN"
+
+RET_FAKE_a$Condition[RET_FAKE_a$Condition == "RET_PS_a"] <- "RET_FAKE_a"
+
+RET_UNSEEN_NEW$Condition[RET_UNSEEN_NEW$Condition == "ENC_RET_ORIG_UNSEEN"] <- "RET_UNSEEN_NEW"
+
+ENC_ONLY_ORIG$Condition[ENC_ONLY_ORIG$Condition == "ENC_RET_ORIG_UNSEEN"] <- "ENC_ONLY"
+
+```
+
+
+We now have vectors with all the information needed. Below are the dataframes for eaech task and then joined together
+to create the main spreadsheet for use in the lab. 
+
+```{r message=FALSE, warning=FALSE}
+
+# Full join of tables
+
+abc <- full_join(ENC_ONLY_ORIG, ENC_ORIG_b)
+
+def <- full_join(RET_UNSEEN_NEW, RET_FAKE_a)
+
+xyz <- full_join(abc, def)
+
+Task_Spreadsheet <- full_join(xyz, RET_SEEN)
+
+datatable(Task_Spreadsheet, class = 'cell-border stripe'
+, caption = 'All IAPS database images used for the experiment')
+
+
+```
+
+
+### Visual Distribution of Data
+
+
+
+```{r message=FALSE, warning=FALSE}
+
+
+
+inspect_cat(Task_Spreadsheet, show_plot = TRUE)
+
+
+```
+
+
+### Checks for image condition counts
+
+```{r Dataframes, message=FALSE, warning=FALSE}
+
+kable(Task_Spreadsheet %>% 
+  select(valmn, aromn, dom1mn, Emotion) %>% 
+  group_by(Emotion) %>% 
+  count(Emotion))
+
+#Check number of images for each type  
+kable(Task_Spreadsheet %>% 
+  select(valmn, aromn, dom1mn, Condition) %>% 
+  group_by(Condition) %>% 
+  count(Condition))
+
+```
+
+
+### Descriptives of pooled Means and SDs by Negative and Neutral Images.
+
+```{r }
+#Means and SDs
+kable(core_images_df %>% 
+  select(valmn, valsd, aromn, arosd, dom1mn, dom1sd, Emotion) %>% 
+  group_by(Emotion) %>% 
+  summarise(ValMean = mean(valmn)
+            , Valsd = sd(valsd)
+            , ArousMean = mean(aromn)
+            , ArouSD = sd(arosd)
+            , DomMean = mean(na.omit(dom1mn)
+            , DomSD = sd(dom1sd)))) 
+```
+
+### Scatterplot of all Images with mean scores 
+
+```{r plots, message=FALSE, warning=FALSE}
+
+
+p <- subplot(
+    plot_ly(core_images_df, x = ~ Content, y = ~ aromn, type = "scatter") %>% 
+        add_trace(y = ~ aromn) %>%
+        layout(yaxis = list(title = "Arousal")),
+  plot_ly(core_images_df, x = ~Content, y = ~ valmn, type = "scatter") %>% 
+    add_trace(y = ~valmn) %>% 
+    layout(yaxis = list(title = "Valence")),
+  plot_ly(core_images_df, x = ~Content, y = ~ dom1mn, type = "scatter") %>% 
+    add_trace(y = ~dom1mn) %>%
+    layout(yaxis = list(title = "Dominance")),
+  titleY = TRUE, shareX = TRUE, nrows = 3
+) %>% hide_legend()
+
+p
+
+
+
+
+```
+
+* Currently not rendering in Hugo 
+
+### Unvalidated Data 
+
+Following are the image codes that for the pictures that are edited to look like thier fake counterparts that need approval from ethics. 
+
+```{r message=FALSE, warning=FALSE}
+
+
+unapproved_IAPS_raw <- as.matrix(c(2036,3030,3069,3130,3530,6021,6838,7187,8485,
+                                   2038,3059,3071,3131,5390,6212,7031,7491,9252,
+                                   2320,3062,3080,3150,5500,6370,7035,7493,9425,
+                                   2580,3063,3100,3268,5711,6510,7038,7500,9433,
+                                   3010,3064,3103,3212,5725,6520,7039,7547,9904,
+                                   3016,3068,3110,3500,5750,6550,7055,7700))
+
+
+unapproved_images_df <- data.frame(unapproved_IAPS_raw) # convert to data frame
+
+kable(count(unapproved_images_df)) # check the number of images
+
+#Filter a new list with only new unapproved images
+non_validated_iaps_all <- filter(group39_df, nr %in% unapproved_IAPS_raw)
+
+
+# filter for only negative images
+non_validated_iaps <- filter(group39_df
+                             , nr %in% unapproved_IAPS_raw
+                             , Condition != "RET_PS_a"
+                             , Emotion == "Negative") %>% 
+  arrange(nr)
+
+datatable(non_validated_iaps, class = 'cell-border stripe', caption = 'Unapproved Negative IAPS')
+
+```
+

@@ -1,0 +1,452 @@
+---
+title: OSL Workshop Solomons Paradox
+author: Aaron Willcox
+date: '2019-06-01'
+slug: osl-workshop-solomons-paradox
+categories:
+  - R
+tags:
+  - Academic
+  - R Markdown
+  - Workshop
+subtitle: ''
+summary: ''
+authors: []
+lastmod: '2019-06-01T20:20:58+02:00'
+featured: yes
+image:
+  caption: ''
+  focal_point: ''
+  preview_only: no
+projects: []
+---
+
+
+
+<div id="does-reasoning-about-personal-problems-improve-with-psychological-distance" class="section level2">
+<h2>Does reasoning about personal problems improve with psychological distance?</h2>
+<div id="study-description" class="section level4">
+<h4>STUDY DESCRIPTION</h4>
+<p>Solomon’s paradox describes the tendency for people to reason more wisely about other people’s
+problems compared to their own. One potential explanation for this paradox is that people tend to view
+other people’s problems from a more psychologically distant perspective, whereas they view their own
+problems from a psychologically <em>immersed perspective</em> . For example, imagine two friends, Beth and Zoe,
+are discussing Zoe’s relationship problems. Beth’s distance allows her to see that Zoe’s relationship is
+doomed, so she can offer her friend sage advice for how to proceed with her relationship. Zoe’s
+immersion in her own relationship may lead her to have a hard time reasoning wisely, because she may be
+worried that she will need to find a new apartment if she breaks up with her boyfriend.</p>
+<p>What if, however, Zoe was able to take a more psychologically <em>distanced perspective</em> when contemplating
+her relationship problems? Would she exhibit a <em>higher level of wisdom</em>, similar to what Beth was able to
+show? To test this possibility, Grossmann and Kross (2014) asked romantically-involved participants to
+<em>think about a situation</em> in which their partner cheated on them ( <strong>self condition</strong> ) or a friend’s partner
+cheated on their friend ( <strong>other condition</strong> ). Participants were also instructed to take a first-person
+perspective ( <strong>immersed condition</strong> ) by using pronouns such as I and me, or a third-person perspective
+( <strong><em>distanced condition</em></strong> ) by using pronouns such as he and her.</p>
+<p>Participants were <strong>120</strong> university students who were involved in monogamous, heterosexual romantic
+relationships, and participants were randomly assigned to condition. After contemplating the infidelity
+scenario described above with the assigned perspective, participants responded to various questions
+designed to assess <strong>wise reasoning</strong>.</p>
+<p>Grossmann, I., &amp; Kross, E. (2014). Exploring Solomon’s paradox: Self-distancing eliminates self-other asymmetry in wise reasoning about close relationships in younger and older adults. Psychological Science, 25, 1571-1580.</p>
+<blockquote>
+<p>Given the context of this study, a dimension that could have been explored more was that of how wisdom differs
+to that of intelligence. In that inteliigence is more applied and wisdom is the ability to learn from an experience.</p>
+</blockquote>
+</div>
+<div id="anaysis" class="section level4">
+<h4>ANAYSIS</h4>
+<ol style="list-style-type: decimal">
+<li>Open the data file (called Grossmann and Kross 2014 Study 2). Explore the data file. Note, you
+will not analyze all of these variables. Try to find the variables that are relevant to the study
+description above.</li>
+</ol>
+<pre class="r"><code>library(car)
+library(dplyr)
+library(psych)
+library(ggplot2)
+library(knitr)
+library(pander)
+
+Psych_dist_df &lt;- read.csv(&quot;data/Grossman and Kross 2014 Study 2.csv&quot;)</code></pre>
+<ol start="2" style="list-style-type: decimal">
+<li>Conduct a one-way ANOVA to determine if there is a significant difference between the
+conditions on wisdom.</li>
+</ol>
+<p>Conditions:
+DV: Wise Reasoning</p>
+<pre class="r"><code># Use the names() function to print out the list of variable names
+#names(Psych_dist_df)
+# We are interested in the conditions and wisdom variables
+# so we can use dplyr to select these and print a table to look at
+# Can see some NA cases
+#complete.cases(Psych_dist_df)
+
+df &lt;- Psych_dist_df[complete.cases(Psych_dist_df), ] # remove cases with NA and subset to new dataframe
+df &lt;- select(df, CONDITION, WISDOM) # filter out other variables and only use ones of interest</code></pre>
+</div>
+<div id="descriptives" class="section level4">
+<h4>Descriptives</h4>
+<pre class="r"><code>Descriptives &lt;- select(df, CONDITION, WISDOM) %&gt;% 
+  group_by(CONDITION) %&gt;% 
+  summarise(count = n()
+            ,mean = mean(WISDOM)
+            ,sd = sd(WISDOM))
+
+# viewing the dataframe shows that the CONDITION is currently treated as an INT so we will 
+# convert this to a factor with label names for clarity
+df$CONDITION &lt;- factor(df$CONDITION, labels = c(&quot;Self_immersed&quot;, &quot;Self_dist&quot;, &quot;other_immersed&quot;, &quot;other_dist&quot;) ) # convert the CONDITION int to a factor
+
+
+ggplot(data = df) +
+  aes(x = CONDITION, y = WISDOM) +
+  geom_boxplot(fill = &quot;#26828e&quot;) +
+  labs(title = &quot;Solomon’s paradox&quot;,
+    x = &quot;Condition&quot;,
+    y = &quot;Wisdom&quot;,
+    subtitle = &quot;Subtitle&quot;) +
+  theme_bw()</code></pre>
+<p><img src="/post/2019-06-01-osl-workshop-solomons-paradox_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+<pre class="r"><code>kable(Descriptives) %&gt;% kableExtra::kable_styling()</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="right">CONDITION</th>
+<th align="right">count</th>
+<th align="right">mean</th>
+<th align="right">sd</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">1</td>
+<td align="right">31</td>
+<td align="right">-0.5593042</td>
+<td align="right">1.1660305</td>
+</tr>
+<tr class="even">
+<td align="right">2</td>
+<td align="right">26</td>
+<td align="right">0.1220847</td>
+<td align="right">0.9418065</td>
+</tr>
+<tr class="odd">
+<td align="right">3</td>
+<td align="right">33</td>
+<td align="right">0.1948435</td>
+<td align="right">0.7711439</td>
+</tr>
+<tr class="even">
+<td align="right">4</td>
+<td align="right">25</td>
+<td align="right">0.3344884</td>
+<td align="right">0.8129734</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="visual-analysis" class="section level4">
+<h4>Visual Analysis</h4>
+</div>
+<div id="run-anova" class="section level4">
+<h4>Run ANOVA</h4>
+<pre class="r"><code>anova_model &lt;- lm(WISDOM ~ CONDITION, data = df) #run an anova or lm</code></pre>
+</div>
+<div id="run-the-model-through-a-anova-function" class="section level4">
+<h4>Run the model through a Anova function</h4>
+<pre class="r"><code>pander(Anova(anova_model, type=&quot;III&quot;)) # Ue the car package to run the anova</code></pre>
+<table style="width:75%;">
+<caption>Anova Table (Type III tests)</caption>
+<colgroup>
+<col width="25%" />
+<col width="12%" />
+<col width="8%" />
+<col width="13%" />
+<col width="15%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="center"> </th>
+<th align="center">Sum Sq</th>
+<th align="center">Df</th>
+<th align="center">F value</th>
+<th align="center">Pr(&gt;F)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="center"><strong>(Intercept)</strong></td>
+<td align="center">9.697</td>
+<td align="center">1</td>
+<td align="center">11</td>
+<td align="center">0.001232</td>
+</tr>
+<tr class="even">
+<td align="center"><strong>CONDITION</strong></td>
+<td align="center">14.13</td>
+<td align="center">3</td>
+<td align="center">5.343</td>
+<td align="center">0.001783</td>
+</tr>
+<tr class="odd">
+<td align="center"><strong>Residuals</strong></td>
+<td align="center">97.86</td>
+<td align="center">111</td>
+<td align="center">NA</td>
+<td align="center">NA</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="levenes-test" class="section level4">
+<h4>Levene’s Test</h4>
+<pre class="r"><code>pander(leveneTest(anova_model)) # tests of homogeniety</code></pre>
+<table style="width:53%;">
+<caption>Levene’s Test for Homogeneity of Variance (center = median)</caption>
+<colgroup>
+<col width="16%" />
+<col width="8%" />
+<col width="13%" />
+<col width="13%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="center"> </th>
+<th align="center">Df</th>
+<th align="center">F value</th>
+<th align="center">Pr(&gt;F)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="center"><strong>group</strong></td>
+<td align="center">3</td>
+<td align="center">3.581</td>
+<td align="center">0.01619</td>
+</tr>
+<tr class="even">
+<td align="center"></td>
+<td align="center">111</td>
+<td align="center">NA</td>
+<td align="center">NA</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="using-the-lm-function-from-earlier-printing-the-summary-results-in-contrasts." class="section level4">
+<h4>Using the lm() function from earlier, printing the summary results in contrasts.</h4>
+<pre class="r"><code>pander(summary(anova_model)) # summary.lm gives us each level of the condition</code></pre>
+<table>
+<colgroup>
+<col width="39%" />
+<col width="14%" />
+<col width="17%" />
+<col width="13%" />
+<col width="15%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="center"> </th>
+<th align="center">Estimate</th>
+<th align="center">Std. Error</th>
+<th align="center">t value</th>
+<th align="center">Pr(&gt;|t|)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="center"><strong>(Intercept)</strong></td>
+<td align="center">-0.5593</td>
+<td align="center">0.1686</td>
+<td align="center">-3.317</td>
+<td align="center">0.001232</td>
+</tr>
+<tr class="even">
+<td align="center"><strong>CONDITIONSelf_dist</strong></td>
+<td align="center">0.6814</td>
+<td align="center">0.2497</td>
+<td align="center">2.729</td>
+<td align="center">0.00739</td>
+</tr>
+<tr class="odd">
+<td align="center"><strong>CONDITIONother_immersed</strong></td>
+<td align="center">0.7541</td>
+<td align="center">0.2348</td>
+<td align="center">3.211</td>
+<td align="center">0.001729</td>
+</tr>
+<tr class="even">
+<td align="center"><strong>CONDITIONother_dist</strong></td>
+<td align="center">0.8938</td>
+<td align="center">0.2524</td>
+<td align="center">3.541</td>
+<td align="center">0.0005833</td>
+</tr>
+</tbody>
+</table>
+<table style="width:88%;">
+<caption>Fitting linear model: WISDOM ~ CONDITION</caption>
+<colgroup>
+<col width="20%" />
+<col width="30%" />
+<col width="12%" />
+<col width="23%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="center">Observations</th>
+<th align="center">Residual Std. Error</th>
+<th align="center"><span class="math inline">\(R^2\)</span></th>
+<th align="center">Adjusted <span class="math inline">\(R^2\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="center">115</td>
+<td align="center">0.9389</td>
+<td align="center">0.1262</td>
+<td align="center">0.1026</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="box-plot" class="section level4">
+<h4>Box plot</h4>
+<pre class="r"><code>ggplot(data = df 
+       , aes(x = CONDITION, y = WISDOM, colour = CONDITION)) + 
+  geom_boxplot(outlier.colour=&quot;red&quot; # the geom_ must be on the same line
+               , outlier.shape=16
+               , outlier.size=2
+               , notch=TRUE)  </code></pre>
+<p><img src="/post/2019-06-01-osl-workshop-solomons-paradox_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+<ol start="3" style="list-style-type: decimal">
+<li>Next, you want to determine whether the <em>self-immersed</em> condition was significantly lower in
+wisdom, relative to the <em>other-immersed</em> and <em>other-distanced</em> condition. Conduct a planned
+contrast to test the typical Solomon’s paradox effect.</li>
+</ol>
+<pre class="r"><code># planned contrasts
+c1 &lt;- c(2, 0, -1, -1)
+planned_contrasts &lt;-c1
+contrasts(df$CONDITION) &lt;- planned_contrasts
+model1 &lt;- aov(WISDOM ~ CONDITION, data = df)
+Anova(model1, type = &quot;III&quot;)</code></pre>
+<pre><code>## Anova Table (Type III tests)
+## 
+## Response: WISDOM
+##             Sum Sq  Df F value   Pr(&gt;F)   
+## (Intercept)  0.060   1  0.0682 0.794390   
+## CONDITION   14.131   3  5.3432 0.001783 **
+## Residuals   97.855 111                    
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<pre class="r"><code>summary.aov(model1, split = list(CONDITION = list(&quot;Self_immersed&quot; = 1, &quot;Self_dist&quot; = 2, &quot;other_immersed&quot; = 3, &quot;other_dist&quot; = 4)))</code></pre>
+<pre><code>##                              Df Sum Sq Mean Sq F value  Pr(&gt;F)    
+## CONDITION                     3  14.13   4.710   5.343 0.00178 ** 
+##   CONDITION: Self_immersed    1  13.47  13.468  15.277 0.00016 ***
+##   CONDITION: Self_dist        1   0.66   0.660   0.749 0.38875    
+##   CONDITION: other_immersed   1   0.00   0.003   0.004 0.95210    
+##   CONDITION: other_dist       1                                   
+## Residuals                   111  97.86   0.882                    
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<ol start="4" style="list-style-type: decimal">
+<li>Now, you want to show that taking a distant perspective increases wisdom relative to taking an
+immersed perspective when dealing with one’s own problems. Conduct a planned contrast to
+determine whether <em>self-distancing</em> results in significantly higher levels of wisdom, relative to
+<em>self-immersion</em>.</li>
+</ol>
+<pre class="r"><code>c2 &lt;- c(1, -1, 0, 0) # self distance vs self immursion
+planned_contrasts &lt;-c2
+contrasts(df$CONDITION) &lt;- planned_contrasts
+model2 &lt;- aov(WISDOM ~ CONDITION, data = df)
+Anova(model2, type = &quot;III&quot;)</code></pre>
+<pre><code>## Anova Table (Type III tests)
+## 
+## Response: WISDOM
+##             Sum Sq  Df F value   Pr(&gt;F)   
+## (Intercept)  0.060   1  0.0682 0.794390   
+## CONDITION   14.131   3  5.3432 0.001783 **
+## Residuals   97.855 111                    
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<pre class="r"><code>summary.aov(model2, split = list(CONDITION = list(&quot;Self_immersed&quot; = 1, &quot;Self_dist&quot; = 2, &quot;other_immersed&quot; = 3, &quot;other_dist&quot; = 4)))</code></pre>
+<pre><code>##                              Df Sum Sq Mean Sq F value  Pr(&gt;F)   
+## CONDITION                     3  14.13   4.710   5.343 0.00178 **
+##   CONDITION: Self_immersed    1   7.43   7.430   8.428 0.00446 **
+##   CONDITION: Self_dist        1   2.32   2.317   2.629 0.10780   
+##   CONDITION: other_immersed   1   4.38   4.384   4.973 0.02775 * 
+##   CONDITION: other_dist       1                                  
+## Residuals                   111  97.86   0.882                   
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<ol start="5" style="list-style-type: decimal">
+<li>You also want to determine whether distancing vs. immersion increases wisdom when
+contemplating other people’s problems. Conduct a planned contrast to compare the
+<em>other-distance</em> vs. <em>other-immersed</em> conditions.</li>
+</ol>
+<pre class="r"><code>c3 &lt;- c(0, 0, 1, -1) # other immersed vs other distance
+planned_contrasts &lt;-c3
+contrasts(df$CONDITION) &lt;- planned_contrasts
+model3 &lt;- aov(WISDOM ~ CONDITION, data = df)
+Anova(model3, type = &quot;III&quot;)</code></pre>
+<pre><code>## Anova Table (Type III tests)
+## 
+## Response: WISDOM
+##             Sum Sq  Df F value   Pr(&gt;F)   
+## (Intercept)  0.060   1  0.0682 0.794390   
+## CONDITION   14.131   3  5.3432 0.001783 **
+## Residuals   97.855 111                    
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<pre class="r"><code>summary.aov(model3, split = list(CONDITION = list(&quot;Self_immersed&quot; = 1, &quot;Self_dist&quot; = 2, &quot;other_immersed&quot; = 3, &quot;other_dist&quot; = 4)))</code></pre>
+<pre><code>##                              Df Sum Sq Mean Sq F value   Pr(&gt;F)    
+## CONDITION                     3  14.13   4.710   5.343 0.001783 ** 
+##   CONDITION: Self_immersed    1   0.07   0.068   0.077 0.781773    
+##   CONDITION: Self_dist        1   1.77   1.769   2.007 0.159391    
+##   CONDITION: other_immersed   1  12.29  12.294  13.946 0.000299 ***
+##   CONDITION: other_dist       1                                    
+## Residuals                   111  97.86   0.882                     
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<ol start="6" style="list-style-type: decimal">
+<li>Finally, you want to test whether self-distancing eliminates the increased wisdom typically found
+in reasoning about others. Conduct a planned comparison to determine whether the
+<em>self-distanced</em> condition is significantly different from the <em>other-immersed</em> and <em>other-distanced</em>
+conditions.</li>
+</ol>
+<pre class="r"><code>c4 &lt;- c(0, 2, -1, -1) # self dist vs other immersed &amp; other dist
+planned_contrasts &lt;-c4
+contrasts(df$CONDITION) &lt;- planned_contrasts
+model4 &lt;- aov(WISDOM ~ CONDITION, data = df)
+Anova(model4, type = &quot;III&quot;)</code></pre>
+<pre><code>## Anova Table (Type III tests)
+## 
+## Response: WISDOM
+##             Sum Sq  Df F value   Pr(&gt;F)   
+## (Intercept)  0.060   1  0.0682 0.794390   
+## CONDITION   14.131   3  5.3432 0.001783 **
+## Residuals   97.855 111                    
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<pre class="r"><code>summary.aov(model4, split = list(CONDITION = list(&quot;Self_immersed&quot; = 1, &quot;Self_dist&quot; = 2, &quot;other_immersed&quot; = 3, &quot;other_dist&quot; = 4)))</code></pre>
+<pre><code>##                              Df Sum Sq Mean Sq F value  Pr(&gt;F)   
+## CONDITION                     3  14.13   4.710   5.343 0.00178 **
+##   CONDITION: Self_immersed    1   0.44   0.438   0.496 0.48260   
+##   CONDITION: Self_dist        1   5.48   5.476   6.212 0.01417 * 
+##   CONDITION: other_immersed   1   8.22   8.218   9.322 0.00283 **
+##   CONDITION: other_dist       1                                  
+## Residuals                   111  97.86   0.882                   
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<ol start="7" style="list-style-type: decimal">
+<li><p>Prepare an APA-style results section to describe each of the analyses conducted above.</p></li>
+<li><p>Generate a bar graph to depict the results for the one-way ANOVA. Don’t forget to include error
+bars that reflect the +/- 1 standard error of the mean.</p></li>
+</ol>
+<pre class="r"><code>ggplot(df, aes(CONDITION, WISDOM))+
+  stat_boxplot( aes(CONDITION, WISDOM), 
+    geom=&#39;errorbar&#39;, linetype=1, width=0.5)+  #whiskers
+  geom_boxplot( aes(CONDITION, WISDOM),outlier.shape=1) +    
+  stat_summary(fun.y=mean, geom=&quot;point&quot;, size=2) + 
+  stat_summary(fun.data = mean_se, geom = &quot;errorbar&quot;)</code></pre>
+<p><img src="/post/2019-06-01-osl-workshop-solomons-paradox_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
+</div>
+</div>

@@ -1,0 +1,243 @@
+---
+title: OSL Workshop Solomons Paradox
+author: Aaron Willcox
+date: '2019-06-01'
+slug: osl-workshop-solomons-paradox
+categories:
+  - R
+tags:
+  - Academic
+  - R Markdown
+  - Workshop
+subtitle: ''
+summary: ''
+authors: []
+lastmod: '2019-06-01T20:20:58+02:00'
+featured: yes
+image:
+  caption: ''
+  focal_point: ''
+  preview_only: no
+projects: []
+---
+
+## Does reasoning about personal problems improve with psychological distance?
+
+#### STUDY DESCRIPTION
+
+Solomon’s paradox describes the tendency for people to reason more wisely about other people’s
+problems compared to their own. One potential explanation for this paradox is that people tend to view
+other people’s problems from a more psychologically distant perspective, whereas they view their own
+problems from a psychologically _immersed perspective_ . For example, imagine two friends, Beth and Zoe,
+are discussing Zoe’s relationship problems. Beth’s distance allows her to see that Zoe’s relationship is
+doomed, so she can offer her friend sage advice for how to proceed with her relationship. Zoe’s
+immersion in her own relationship may lead her to have a hard time reasoning wisely, because she may be
+worried that she will need to find a new apartment if she breaks up with her boyfriend.
+
+What if, however, Zoe was able to take a more psychologically _distanced perspective_ when contemplating
+her relationship problems? Would she exhibit a _higher level of wisdom_, similar to what Beth was able to
+show? To test this possibility, Grossmann and Kross (2014) asked romantically-involved participants to
+_think about a situation_ in which their partner cheated on them ( __self condition__ ) or a friend’s partner
+cheated on their friend ( __other condition__ ). Participants were also instructed to take a first-person
+perspective ( __immersed condition__ ) by using pronouns such as I and me, or a third-person perspective
+( ___distanced condition___ ) by using pronouns such as he and her.
+
+Participants were __120__ university students who were involved in monogamous, heterosexual romantic
+relationships, and participants were randomly assigned to condition. After contemplating the infidelity
+scenario described above with the assigned perspective, participants responded to various questions
+designed to assess __wise reasoning__.
+
+
+Grossmann, I., & Kross, E. (2014). Exploring Solomon’s paradox: Self-distancing eliminates self-other asymmetry in wise reasoning about close relationships in younger and older adults. Psychological Science, 25, 1571-1580.
+
+> Given the context of this study, a dimension that could have been explored more was that of how wisdom differs
+> to that of intelligence. In that inteliigence is more applied and wisdom is the ability to learn from an experience.
+ 
+
+#### ANAYSIS
+
+1. Open the data file (called Grossmann and Kross 2014 Study 2). Explore the data file. Note, you
+will not analyze all of these variables. Try to find the variables that are relevant to the study
+description above.
+
+```{r echo=TRUE, message=FALSE, warning=FALSE}
+library(car)
+library(dplyr)
+library(psych)
+library(ggplot2)
+library(knitr)
+library(pander)
+
+Psych_dist_df <- read.csv("data/Grossman and Kross 2014 Study 2.csv")
+```
+
+
+2. Conduct a one-way ANOVA to determine if there is a significant difference between the
+conditions on wisdom.
+
+Conditions: 
+DV: Wise Reasoning
+
+
+```{r message=FALSE, warning=FALSE}
+# Use the names() function to print out the list of variable names
+#names(Psych_dist_df)
+# We are interested in the conditions and wisdom variables
+# so we can use dplyr to select these and print a table to look at
+# Can see some NA cases
+#complete.cases(Psych_dist_df)
+
+df <- Psych_dist_df[complete.cases(Psych_dist_df), ] # remove cases with NA and subset to new dataframe
+df <- select(df, CONDITION, WISDOM) # filter out other variables and only use ones of interest
+
+```
+
+
+#### Descriptives
+
+
+```{r message=FALSE, warning=FALSE}
+Descriptives <- select(df, CONDITION, WISDOM) %>% 
+  group_by(CONDITION) %>% 
+  summarise(count = n()
+            ,mean = mean(WISDOM)
+            ,sd = sd(WISDOM))
+
+# viewing the dataframe shows that the CONDITION is currently treated as an INT so we will 
+# convert this to a factor with label names for clarity
+df$CONDITION <- factor(df$CONDITION, labels = c("Self_immersed", "Self_dist", "other_immersed", "other_dist") ) # convert the CONDITION int to a factor
+
+
+ggplot(data = df) +
+  aes(x = CONDITION, y = WISDOM) +
+  geom_boxplot(fill = "#26828e") +
+  labs(title = "Solomon’s paradox",
+    x = "Condition",
+    y = "Wisdom",
+    subtitle = "Subtitle") +
+  theme_bw()
+
+
+
+kable(Descriptives) %>% kableExtra::kable_styling()
+
+```
+
+#### Visual Analysis
+
+
+#### Run ANOVA
+
+
+```{r}
+
+anova_model <- lm(WISDOM ~ CONDITION, data = df) #run an anova or lm
+```
+
+#### Run the model through a Anova function
+
+```{r}
+pander(Anova(anova_model, type="III")) # Ue the car package to run the anova
+```
+
+
+#### Levene's Test
+
+```{r}
+pander(leveneTest(anova_model)) # tests of homogeniety
+```
+
+#### Using the lm() function from earlier, printing the summary results in contrasts.
+
+```{r}
+pander(summary(anova_model)) # summary.lm gives us each level of the condition
+
+
+```
+
+
+#### Box plot
+```{r}
+
+ggplot(data = df 
+       , aes(x = CONDITION, y = WISDOM, colour = CONDITION)) + 
+  geom_boxplot(outlier.colour="red" # the geom_ must be on the same line
+               , outlier.shape=16
+               , outlier.size=2
+               , notch=TRUE)  
+
+```
+
+
+3. Next, you want to determine whether the _self-immersed_ condition was significantly lower in
+wisdom, relative to the _other-immersed_ and _other-distanced_ condition. Conduct a planned
+contrast to test the typical Solomon’s paradox effect.
+
+```{r, planned contrasts}
+# planned contrasts
+c1 <- c(2, 0, -1, -1)
+planned_contrasts <-c1
+contrasts(df$CONDITION) <- planned_contrasts
+model1 <- aov(WISDOM ~ CONDITION, data = df)
+Anova(model1, type = "III")
+summary.aov(model1, split = list(CONDITION = list("Self_immersed" = 1, "Self_dist" = 2, "other_immersed" = 3, "other_dist" = 4)))
+```
+
+
+4. Now, you want to show that taking a distant perspective increases wisdom relative to taking an
+immersed perspective when dealing with one’s own problems. Conduct a planned contrast to
+determine whether _self-distancing_ results in significantly higher levels of wisdom, relative to
+_self-immersion_.
+
+```{r}
+c2 <- c(1, -1, 0, 0) # self distance vs self immursion
+planned_contrasts <-c2
+contrasts(df$CONDITION) <- planned_contrasts
+model2 <- aov(WISDOM ~ CONDITION, data = df)
+Anova(model2, type = "III")
+summary.aov(model2, split = list(CONDITION = list("Self_immersed" = 1, "Self_dist" = 2, "other_immersed" = 3, "other_dist" = 4)))
+```
+
+
+5. You also want to determine whether distancing vs. immersion increases wisdom when
+contemplating other people’s problems. Conduct a planned contrast to compare the
+_other-distance_ vs. _other-immersed_ conditions.
+
+```{r}
+c3 <- c(0, 0, 1, -1) # other immersed vs other distance
+planned_contrasts <-c3
+contrasts(df$CONDITION) <- planned_contrasts
+model3 <- aov(WISDOM ~ CONDITION, data = df)
+Anova(model3, type = "III")
+summary.aov(model3, split = list(CONDITION = list("Self_immersed" = 1, "Self_dist" = 2, "other_immersed" = 3, "other_dist" = 4)))
+```
+
+6. Finally, you want to test whether self-distancing eliminates the increased wisdom typically found
+in reasoning about others. Conduct a planned comparison to determine whether the
+_self-distanced_ condition is significantly different from the _other-immersed_ and _other-distanced_
+conditions.
+```{r}
+c4 <- c(0, 2, -1, -1) # self dist vs other immersed & other dist
+planned_contrasts <-c4
+contrasts(df$CONDITION) <- planned_contrasts
+model4 <- aov(WISDOM ~ CONDITION, data = df)
+Anova(model4, type = "III")
+summary.aov(model4, split = list(CONDITION = list("Self_immersed" = 1, "Self_dist" = 2, "other_immersed" = 3, "other_dist" = 4)))
+```
+
+
+7. Prepare an APA-style results section to describe each of the analyses conducted above.
+
+
+8. Generate a bar graph to depict the results for the one-way ANOVA. Don’t forget to include error
+bars that reflect the +/- 1 standard error of the mean.
+
+```{r}
+ggplot(df, aes(CONDITION, WISDOM))+
+  stat_boxplot( aes(CONDITION, WISDOM), 
+    geom='errorbar', linetype=1, width=0.5)+  #whiskers
+  geom_boxplot( aes(CONDITION, WISDOM),outlier.shape=1) +    
+  stat_summary(fun.y=mean, geom="point", size=2) + 
+  stat_summary(fun.data = mean_se, geom = "errorbar")
+```
+

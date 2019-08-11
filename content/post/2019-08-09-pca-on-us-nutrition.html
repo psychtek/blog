@@ -1,0 +1,1494 @@
+---
+title: PCA on US Nutrition
+author: Aaron Willcox
+date: '2019-08-09'
+slug: pca-on-us-nutrition
+categories:
+  - R
+tags:
+  - PCA
+  - R Markdown
+subtitle: ''
+summary: ''
+authors: []
+lastmod: '2019-08-09T11:00:18+10:00'
+featured: no
+image:
+  caption: ''
+  focal_point: ''
+  preview_only: no
+projects: []
+fig_width: 12
+---
+
+
+
+<pre class="r"><code>library(tidyverse)</code></pre>
+<pre><code>## -- Attaching packages ----------------------- tidyverse 1.2.1 --</code></pre>
+<pre><code>## v ggplot2 3.2.0     v purrr   0.3.2
+## v tibble  2.1.3     v dplyr   0.8.3
+## v tidyr   0.8.3     v stringr 1.4.0
+## v readr   1.3.1     v forcats 0.4.0</code></pre>
+<pre><code>## Warning: package &#39;dplyr&#39; was built under R version 3.6.1</code></pre>
+<pre><code>## -- Conflicts -------------------------- tidyverse_conflicts() --
+## x dplyr::filter() masks stats::filter()
+## x dplyr::lag()    masks stats::lag()</code></pre>
+<pre class="r"><code>library(corrplot)</code></pre>
+<pre><code>## corrplot 0.84 loaded</code></pre>
+<pre class="r"><code>library(cowplot)</code></pre>
+<pre><code>## Warning: package &#39;cowplot&#39; was built under R version 3.6.1</code></pre>
+<pre><code>## 
+## ********************************************************</code></pre>
+<pre><code>## Note: As of version 1.0.0, cowplot does not change the</code></pre>
+<pre><code>##   default ggplot2 theme anymore. To recover the previous</code></pre>
+<pre><code>##   behavior, execute:
+##   theme_set(theme_cowplot())</code></pre>
+<pre><code>## ********************************************************</code></pre>
+<div id="data" class="section level4">
+<h4>Data</h4>
+<p>The following dataset froms from the Nutrient database in the United States</p>
+<p>This is from the now outdated SR27. It is also created from the full database. The “abbreviated file” in SR28 is more up to date than this data and contains more nutrients than we provide here. See <a href="https://data.world/awram/food-nutritional-values" class="uri">https://data.world/awram/food-nutritional-values</a></p>
+<p>The columns in US RDA are created using data from Dietary Reference Intakes: The Essential Guide to Nutrient Requirements available from the National Academies Press at <a href="http://www.nap.edu/catalog/11537.html" class="uri">http://www.nap.edu/catalog/11537.html</a></p>
+<p>Data
+Each record is for 100 grams.</p>
+<p>The columns are mostly self-explanatory. The nutrient columns end with the units, so:</p>
+<p>Nutrient_g is in grams
+Nutrient_mg is in milligrams
+Nutrient_mcg is in micrograms
+Nutrient_USRDA is in percentage of US Recommended Daily Allows (e.g. 0.50 is 50%)
+Note that not every available RDA value in the text was used. For instance, the US RDA for Iron varies significantly by age and sex, so I deemed it easier to just leave out RDA information for Iron.</p>
+<pre class="r"><code># data_df &lt;- read.csv(file = &quot;https://query.data.world/s/iwzl7xgiagpimb2ixfj4fkyztngxs7&quot;, stringsAsFactors = FALSE, header = TRUE)
+
+#write.csv(data_df, file = &quot;data/nutrian_df.csv&quot;) # write the dataframe to csv
+
+data_df &lt;- read_csv(file = &quot;data/nutrian_df.csv&quot;)</code></pre>
+</div>
+<div id="running-a-principle-componant-analysis-on-the-united-states-dietry-reference-nutrient-database" class="section level4">
+<h4>Running a Principle Componant Analysis on the United States Dietry Reference Nutrient Database</h4>
+<p>The USRDA containts the same information as _mg so these are reduntant and can be removed.</p>
+<pre class="r"><code>data_df &lt;- data_df %&gt;% select(-contains(&quot;_USRDA&quot;))</code></pre>
+<p>Catagorical Visualisation</p>
+<pre class="r"><code>data_df$FoodGroup &lt;- factor(data_df$FoodGroup, ordered = is.ordered(data_df$FoodGroup)) # coerce to factor
+
+Foodgroup_cat &lt;- data_df %&gt;% # Group by the food group catagory and count the amont each one occurs
+  group_by(FoodGroup) %&gt;% 
+  summarise(N = n()) %&gt;% 
+  arrange(N)
+
+
+Foodgroup_cat$FoodGroup &lt;- str_remove(Foodgroup_cat$FoodGroup, &quot;Products&quot;) # Remove the word &quot;products&quot; from the list
+
+ggplot(Foodgroup_cat) +
+ aes(x = reorder(FoodGroup, -N), y = N) +
+ geom_bar(stat = &quot;identity&quot;) +
+ coord_flip() +
+  labs(title = &quot;Toal Amount of Food Products&quot;,
+       subtitle = &quot;USDRA&quot;,
+       x = &quot;Products&quot;, 
+       y = &quot;Frequency&quot;)</code></pre>
+<p><img src="/post/2019-08-09-pca-on-us-nutrition_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<p>Majority of US nutrients come from beef, vegetables and baked goods. Would be interesting to see the mean nutrient intake for each food group.</p>
+<pre class="r"><code>data_df %&gt;% 
+  select(FoodGroup, 9:31) %&gt;% 
+  group_by(FoodGroup) %&gt;% 
+  summarise_all(list(Mean = mean))</code></pre>
+<pre><code>## # A tibble: 25 x 24
+##    FoodGroup Energy_kcal_Mean Protein_g_Mean Fat_g_Mean Carb_g_Mean
+##    &lt;fct&gt;                &lt;dbl&gt;          &lt;dbl&gt;      &lt;dbl&gt;       &lt;dbl&gt;
+##  1 American~             209.         16.0       11.1        11.3  
+##  2 Baby Foo~             152.          4.11       5.58       21.6  
+##  3 Baked Pr~             392.          6.65      14.7        59.8  
+##  4 Beef Pro~             213.         24.4       12.4         0.108
+##  5 Beverages             111.          2.57       0.985      18.7  
+##  6 Breakfas~             342.          8.30       4.00       73.5  
+##  7 Cereal G~             286.          9.14       2.16       58.7  
+##  8 Dairy an~             232.         14.7       14.0        11.8  
+##  9 Fast Foo~             250.         11.7       12.7        22.7  
+## 10 Fats and~             626.          0.407     68.1         5.28 
+## # ... with 15 more rows, and 19 more variables: Sugar_g_Mean &lt;dbl&gt;,
+## #   Fiber_g_Mean &lt;dbl&gt;, VitA_mcg_Mean &lt;dbl&gt;, VitB6_mg_Mean &lt;dbl&gt;,
+## #   VitB12_mcg_Mean &lt;dbl&gt;, VitC_mg_Mean &lt;dbl&gt;, VitE_mg_Mean &lt;dbl&gt;,
+## #   Folate_mcg_Mean &lt;dbl&gt;, Niacin_mg_Mean &lt;dbl&gt;, Riboflavin_mg_Mean &lt;dbl&gt;,
+## #   Thiamin_mg_Mean &lt;dbl&gt;, Calcium_mg_Mean &lt;dbl&gt;, Copper_mcg_Mean &lt;dbl&gt;,
+## #   Iron_mg_Mean &lt;dbl&gt;, Magnesium_mg_Mean &lt;dbl&gt;, Manganese_mg_Mean &lt;dbl&gt;,
+## #   Phosphorus_mg_Mean &lt;dbl&gt;, Selenium_mcg_Mean &lt;dbl&gt;, Zinc_mg_Mean &lt;dbl&gt;</code></pre>
+<p>I am not a nutritionist however, be interesting to see what the correlation is between energy and sugar</p>
+<pre class="r"><code>ggplot(data_df) +
+ aes(x = Sugar_g, y = Energy_kcal, fill = FoodGroup, colour = FoodGroup) +
+ geom_point(size = 1L) +
+ scale_fill_hue() +
+ scale_color_hue() +
+ labs(x = &quot;Sugar in gram&quot;, y = &quot;Energy in k/cals&quot;, title = &quot;Energy as a Function of Sugar&quot;, subtitle = &quot;Food Groups&quot;) +
+ theme_bw() +
+ theme(legend.position = &quot;none&quot;) +
+ facet_wrap(vars(FoodGroup), scales = &quot;free_x&quot;)</code></pre>
+<p><img src="/post/2019-08-09-pca-on-us-nutrition_files/figure-html/unnamed-chunk-6-1.png" width="672" />
+Beef, lamb, veal and game products tend to have very little sugar/energy. Theres a clustering of points in the beverages table
+and would assume this would be water or low sugar drinks. Considering this is a database of nutrients based on major food groups, we cant tease out the underlying specifics of the types of drinks or products. We can however, look to see what nutrients are most consumed and which food group these come from.</p>
+<p>Descriptives</p>
+<pre class="r"><code>library(psych)</code></pre>
+<pre><code>## 
+## Attaching package: &#39;psych&#39;</code></pre>
+<pre><code>## The following objects are masked from &#39;package:ggplot2&#39;:
+## 
+##     %+%, alpha</code></pre>
+<pre class="r"><code>data_df %&gt;% 
+  select(-c(FoodGroup, ShortDescrip, Descrip, CommonName, MfgName, ScientificName)) %&gt;% 
+describe(.) %&gt;% 
+  kableExtra::kable()</code></pre>
+<table>
+<thead>
+<tr>
+<th style="text-align:left;">
+</th>
+<th style="text-align:right;">
+vars
+</th>
+<th style="text-align:right;">
+n
+</th>
+<th style="text-align:right;">
+mean
+</th>
+<th style="text-align:right;">
+sd
+</th>
+<th style="text-align:right;">
+median
+</th>
+<th style="text-align:right;">
+trimmed
+</th>
+<th style="text-align:right;">
+mad
+</th>
+<th style="text-align:right;">
+min
+</th>
+<th style="text-align:right;">
+max
+</th>
+<th style="text-align:right;">
+range
+</th>
+<th style="text-align:right;">
+skew
+</th>
+<th style="text-align:right;">
+kurtosis
+</th>
+<th style="text-align:right;">
+se
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+X1
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+8618
+</td>
+<td style="text-align:right;">
+4.309500e+03
+</td>
+<td style="text-align:right;">
+2487.9466433
+</td>
+<td style="text-align:right;">
+4309.5000
+</td>
+<td style="text-align:right;">
+4.309500e+03
+</td>
+<td style="text-align:right;">
+3194.2617000
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+8618.000
+</td>
+<td style="text-align:right;">
+8617.000
+</td>
+<td style="text-align:right;">
+0.000000
+</td>
+<td style="text-align:right;">
+-1.2004177
+</td>
+<td style="text-align:right;">
+26.8001866
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+ID
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+8618
+</td>
+<td style="text-align:right;">
+1.546776e+04
+</td>
+<td style="text-align:right;">
+9221.4287657
+</td>
+<td style="text-align:right;">
+14273.0000
+</td>
+<td style="text-align:right;">
+1.456007e+04
+</td>
+<td style="text-align:right;">
+8355.9336000
+</td>
+<td style="text-align:right;">
+1001
+</td>
+<td style="text-align:right;">
+93600.000
+</td>
+<td style="text-align:right;">
+92599.000
+</td>
+<td style="text-align:right;">
+1.185174
+</td>
+<td style="text-align:right;">
+3.3285354
+</td>
+<td style="text-align:right;">
+99.3333245
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Energy_kcal
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+8618
+</td>
+<td style="text-align:right;">
+2.264386e+02
+</td>
+<td style="text-align:right;">
+169.3889098
+</td>
+<td style="text-align:right;">
+191.0000
+</td>
+<td style="text-align:right;">
+2.077030e+02
+</td>
+<td style="text-align:right;">
+167.5338000
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+902.000
+</td>
+<td style="text-align:right;">
+902.000
+</td>
+<td style="text-align:right;">
+1.167836
+</td>
+<td style="text-align:right;">
+1.7913716
+</td>
+<td style="text-align:right;">
+1.8246591
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Protein_g
+</td>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:right;">
+8618
+</td>
+<td style="text-align:right;">
+1.152391e+01
+</td>
+<td style="text-align:right;">
+10.5505898
+</td>
+<td style="text-align:right;">
+8.2850
+</td>
+<td style="text-align:right;">
+1.043610e+01
+</td>
+<td style="text-align:right;">
+10.4375040
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+88.320
+</td>
+<td style="text-align:right;">
+88.320
+</td>
+<td style="text-align:right;">
+1.170202
+</td>
+<td style="text-align:right;">
+2.7350542
+</td>
+<td style="text-align:right;">
+0.1136511
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Fat_g
+</td>
+<td style="text-align:right;">
+5
+</td>
+<td style="text-align:right;">
+8618
+</td>
+<td style="text-align:right;">
+1.064702e+01
+</td>
+<td style="text-align:right;">
+15.8663527
+</td>
+<td style="text-align:right;">
+5.2350
+</td>
+<td style="text-align:right;">
+7.401263e+00
+</td>
+<td style="text-align:right;">
+7.2276750
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+100.000
+</td>
+<td style="text-align:right;">
+100.000
+</td>
+<td style="text-align:right;">
+3.305016
+</td>
+<td style="text-align:right;">
+13.7217994
+</td>
+<td style="text-align:right;">
+0.1709125
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Carb_g
+</td>
+<td style="text-align:right;">
+6
+</td>
+<td style="text-align:right;">
+8618
+</td>
+<td style="text-align:right;">
+2.181906e+01
+</td>
+<td style="text-align:right;">
+27.2390004
+</td>
+<td style="text-align:right;">
+8.9450
+</td>
+<td style="text-align:right;">
+1.731332e+01
+</td>
+<td style="text-align:right;">
+13.2618570
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+100.000
+</td>
+<td style="text-align:right;">
+100.000
+</td>
+<td style="text-align:right;">
+1.156809
+</td>
+<td style="text-align:right;">
+-0.0857852
+</td>
+<td style="text-align:right;">
+0.2934188
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Sugar_g
+</td>
+<td style="text-align:right;">
+7
+</td>
+<td style="text-align:right;">
+8618
+</td>
+<td style="text-align:right;">
+6.560253e+00
+</td>
+<td style="text-align:right;">
+13.6020984
+</td>
+<td style="text-align:right;">
+0.3700
+</td>
+<td style="text-align:right;">
+2.936167e+00
+</td>
+<td style="text-align:right;">
+0.5485620
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+99.800
+</td>
+<td style="text-align:right;">
+99.800
+</td>
+<td style="text-align:right;">
+2.952296
+</td>
+<td style="text-align:right;">
+9.6598799
+</td>
+<td style="text-align:right;">
+0.1465219
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Fiber_g
+</td>
+<td style="text-align:right;">
+8
+</td>
+<td style="text-align:right;">
+8618
+</td>
+<td style="text-align:right;">
+2.023242e+00
+</td>
+<td style="text-align:right;">
+4.3136703
+</td>
+<td style="text-align:right;">
+0.3000
+</td>
+<td style="text-align:right;">
+1.072129e+00
+</td>
+<td style="text-align:right;">
+0.4447800
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+79.000
+</td>
+<td style="text-align:right;">
+79.000
+</td>
+<td style="text-align:right;">
+5.791224
+</td>
+<td style="text-align:right;">
+56.3642510
+</td>
+<td style="text-align:right;">
+0.0464669
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+VitA_mcg
+</td>
+<td style="text-align:right;">
+9
+</td>
+<td style="text-align:right;">
+8618
+</td>
+<td style="text-align:right;">
+9.396879e+01
+</td>
+<td style="text-align:right;">
+779.3622050
+</td>
+<td style="text-align:right;">
+1.5000
+</td>
+<td style="text-align:right;">
+1.223593e+01
+</td>
+<td style="text-align:right;">
+2.2239000
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+30000.000
+</td>
+<td style="text-align:right;">
+30000.000
+</td>
+<td style="text-align:right;">
+24.082036
+</td>
+<td style="text-align:right;">
+716.7609214
+</td>
+<td style="text-align:right;">
+8.3952976
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+VitB6_mg
+</td>
+<td style="text-align:right;">
+10
+</td>
+<td style="text-align:right;">
+8618
+</td>
+<td style="text-align:right;">
+2.643692e-01
+</td>
+<td style="text-align:right;">
+0.4786141
+</td>
+<td style="text-align:right;">
+0.1200
+</td>
+<td style="text-align:right;">
+1.791069e-01
+</td>
+<td style="text-align:right;">
+0.1764294
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+12.000
+</td>
+<td style="text-align:right;">
+12.000
+</td>
+<td style="text-align:right;">
+7.554923
+</td>
+<td style="text-align:right;">
+101.5954226
+</td>
+<td style="text-align:right;">
+0.0051556
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+VitB12_mcg
+</td>
+<td style="text-align:right;">
+11
+</td>
+<td style="text-align:right;">
+8618
+</td>
+<td style="text-align:right;">
+1.225260e+00
+</td>
+<td style="text-align:right;">
+4.3191826
+</td>
+<td style="text-align:right;">
+0.0800
+</td>
+<td style="text-align:right;">
+5.444852e-01
+</td>
+<td style="text-align:right;">
+0.1186080
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+98.890
+</td>
+<td style="text-align:right;">
+98.890
+</td>
+<td style="text-align:right;">
+13.029760
+</td>
+<td style="text-align:right;">
+221.5308002
+</td>
+<td style="text-align:right;">
+0.0465263
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+VitC_mg
+</td>
+<td style="text-align:right;">
+12
+</td>
+<td style="text-align:right;">
+8618
+</td>
+<td style="text-align:right;">
+7.925377e+00
+</td>
+<td style="text-align:right;">
+57.5827577
+</td>
+<td style="text-align:right;">
+0.0000
+</td>
+<td style="text-align:right;">
+1.775957e+00
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+2400.000
+</td>
+<td style="text-align:right;">
+2400.000
+</td>
+<td style="text-align:right;">
+30.896704
+</td>
+<td style="text-align:right;">
+1114.3902369
+</td>
+<td style="text-align:right;">
+0.6202821
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+VitE_mg
+</td>
+<td style="text-align:right;">
+13
+</td>
+<td style="text-align:right;">
+8618
+</td>
+<td style="text-align:right;">
+8.723288e-01
+</td>
+<td style="text-align:right;">
+3.8490282
+</td>
+<td style="text-align:right;">
+0.1100
+</td>
+<td style="text-align:right;">
+2.302001e-01
+</td>
+<td style="text-align:right;">
+0.1630860
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+149.400
+</td>
+<td style="text-align:right;">
+149.400
+</td>
+<td style="text-align:right;">
+13.844613
+</td>
+<td style="text-align:right;">
+337.8264261
+</td>
+<td style="text-align:right;">
+0.0414618
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Folate_mcg
+</td>
+<td style="text-align:right;">
+14
+</td>
+<td style="text-align:right;">
+8618
+</td>
+<td style="text-align:right;">
+5.030610e+01
+</td>
+<td style="text-align:right;">
+186.5606528
+</td>
+<td style="text-align:right;">
+7.0000
+</td>
+<td style="text-align:right;">
+1.498260e+01
+</td>
+<td style="text-align:right;">
+10.3782000
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+5881.000
+</td>
+<td style="text-align:right;">
+5881.000
+</td>
+<td style="text-align:right;">
+10.323443
+</td>
+<td style="text-align:right;">
+176.6314735
+</td>
+<td style="text-align:right;">
+2.0096333
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Niacin_mg
+</td>
+<td style="text-align:right;">
+15
+</td>
+<td style="text-align:right;">
+8618
+</td>
+<td style="text-align:right;">
+3.411560e+00
+</td>
+<td style="text-align:right;">
+4.8345718
+</td>
+<td style="text-align:right;">
+2.1000
+</td>
+<td style="text-align:right;">
+2.618347e+00
+</td>
+<td style="text-align:right;">
+2.9385132
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+127.500
+</td>
+<td style="text-align:right;">
+127.500
+</td>
+<td style="text-align:right;">
+6.433094
+</td>
+<td style="text-align:right;">
+96.3881643
+</td>
+<td style="text-align:right;">
+0.0520781
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Riboflavin_mg
+</td>
+<td style="text-align:right;">
+16
+</td>
+<td style="text-align:right;">
+8618
+</td>
+<td style="text-align:right;">
+2.372482e-01
+</td>
+<td style="text-align:right;">
+0.4498800
+</td>
+<td style="text-align:right;">
+0.1500
+</td>
+<td style="text-align:right;">
+1.575980e-01
+</td>
+<td style="text-align:right;">
+0.1571556
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+17.500
+</td>
+<td style="text-align:right;">
+17.500
+</td>
+<td style="text-align:right;">
+11.308654
+</td>
+<td style="text-align:right;">
+292.6955792
+</td>
+<td style="text-align:right;">
+0.0048461
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Thiamin_mg
+</td>
+<td style="text-align:right;">
+17
+</td>
+<td style="text-align:right;">
+8618
+</td>
+<td style="text-align:right;">
+2.098569e-01
+</td>
+<td style="text-align:right;">
+0.5183690
+</td>
+<td style="text-align:right;">
+0.0775
+</td>
+<td style="text-align:right;">
+1.236027e-01
+</td>
+<td style="text-align:right;">
+0.0941451
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+23.375
+</td>
+<td style="text-align:right;">
+23.375
+</td>
+<td style="text-align:right;">
+17.503967
+</td>
+<td style="text-align:right;">
+576.4489955
+</td>
+<td style="text-align:right;">
+0.0055839
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Calcium_mg
+</td>
+<td style="text-align:right;">
+18
+</td>
+<td style="text-align:right;">
+8618
+</td>
+<td style="text-align:right;">
+7.341135e+01
+</td>
+<td style="text-align:right;">
+201.3636616
+</td>
+<td style="text-align:right;">
+19.0000
+</td>
+<td style="text-align:right;">
+3.590342e+01
+</td>
+<td style="text-align:right;">
+20.7564000
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+7364.000
+</td>
+<td style="text-align:right;">
+7364.000
+</td>
+<td style="text-align:right;">
+13.423304
+</td>
+<td style="text-align:right;">
+339.0676661
+</td>
+<td style="text-align:right;">
+2.1690914
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Copper_mcg
+</td>
+<td style="text-align:right;">
+19
+</td>
+<td style="text-align:right;">
+8618
+</td>
+<td style="text-align:right;">
+1.721814e-01
+</td>
+<td style="text-align:right;">
+0.5530524
+</td>
+<td style="text-align:right;">
+0.0790
+</td>
+<td style="text-align:right;">
+9.146880e-02
+</td>
+<td style="text-align:right;">
+0.0830256
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+15.050
+</td>
+<td style="text-align:right;">
+15.050
+</td>
+<td style="text-align:right;">
+15.937599
+</td>
+<td style="text-align:right;">
+344.9666109
+</td>
+<td style="text-align:right;">
+0.0059575
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Iron_mg
+</td>
+<td style="text-align:right;">
+20
+</td>
+<td style="text-align:right;">
+8618
+</td>
+<td style="text-align:right;">
+2.696771e+00
+</td>
+<td style="text-align:right;">
+5.7269669
+</td>
+<td style="text-align:right;">
+1.3300
+</td>
+<td style="text-align:right;">
+1.566060e+00
+</td>
+<td style="text-align:right;">
+1.4084700
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+123.600
+</td>
+<td style="text-align:right;">
+123.600
+</td>
+<td style="text-align:right;">
+6.836907
+</td>
+<td style="text-align:right;">
+70.1690511
+</td>
+<td style="text-align:right;">
+0.0616909
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Magnesium_mg
+</td>
+<td style="text-align:right;">
+21
+</td>
+<td style="text-align:right;">
+8618
+</td>
+<td style="text-align:right;">
+3.274530e+01
+</td>
+<td style="text-align:right;">
+56.0684543
+</td>
+<td style="text-align:right;">
+20.0000
+</td>
+<td style="text-align:right;">
+2.119272e+01
+</td>
+<td style="text-align:right;">
+14.8260000
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+781.000
+</td>
+<td style="text-align:right;">
+781.000
+</td>
+<td style="text-align:right;">
+5.563100
+</td>
+<td style="text-align:right;">
+43.9934769
+</td>
+<td style="text-align:right;">
+0.6039700
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Manganese_mg
+</td>
+<td style="text-align:right;">
+22
+</td>
+<td style="text-align:right;">
+8618
+</td>
+<td style="text-align:right;">
+5.044392e-01
+</td>
+<td style="text-align:right;">
+6.3834382
+</td>
+<td style="text-align:right;">
+0.0220
+</td>
+<td style="text-align:right;">
+1.068464e-01
+</td>
+<td style="text-align:right;">
+0.0326172
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+328.000
+</td>
+<td style="text-align:right;">
+328.000
+</td>
+<td style="text-align:right;">
+39.727939
+</td>
+<td style="text-align:right;">
+1784.8051705
+</td>
+<td style="text-align:right;">
+0.0687625
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Phosphorus_mg
+</td>
+<td style="text-align:right;">
+23
+</td>
+<td style="text-align:right;">
+8618
+</td>
+<td style="text-align:right;">
+1.559863e+02
+</td>
+<td style="text-align:right;">
+203.0932338
+</td>
+<td style="text-align:right;">
+133.0000
+</td>
+<td style="text-align:right;">
+1.320381e+02
+</td>
+<td style="text-align:right;">
+131.9514000
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+9918.000
+</td>
+<td style="text-align:right;">
+9918.000
+</td>
+<td style="text-align:right;">
+18.547486
+</td>
+<td style="text-align:right;">
+763.6703719
+</td>
+<td style="text-align:right;">
+2.1877224
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Selenium_mcg
+</td>
+<td style="text-align:right;">
+24
+</td>
+<td style="text-align:right;">
+8618
+</td>
+<td style="text-align:right;">
+1.261495e+01
+</td>
+<td style="text-align:right;">
+28.2923471
+</td>
+<td style="text-align:right;">
+3.9000
+</td>
+<td style="text-align:right;">
+9.253002e+00
+</td>
+<td style="text-align:right;">
+5.7821400
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1917.000
+</td>
+<td style="text-align:right;">
+1917.000
+</td>
+<td style="text-align:right;">
+38.194000
+</td>
+<td style="text-align:right;">
+2427.7478972
+</td>
+<td style="text-align:right;">
+0.3047655
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Zinc_mg
+</td>
+<td style="text-align:right;">
+25
+</td>
+<td style="text-align:right;">
+8618
+</td>
+<td style="text-align:right;">
+1.970216e+00
+</td>
+<td style="text-align:right;">
+3.3582128
+</td>
+<td style="text-align:right;">
+0.8450
+</td>
+<td style="text-align:right;">
+1.391885e+00
+</td>
+<td style="text-align:right;">
+1.1786670
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+90.950
+</td>
+<td style="text-align:right;">
+90.950
+</td>
+<td style="text-align:right;">
+9.625776
+</td>
+<td style="text-align:right;">
+185.7989029
+</td>
+<td style="text-align:right;">
+0.0361747
+</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>data_df[,9:31] &lt;- sqrt(data_df[,9:31]) # sqrt transform </code></pre>
+<p>There is some skewness in the data and could do with some transforming but theres no guarentee that it will improve results.
+Here we will rescale and center the variables with a mean of 0 and a variance of 1. Then run a correlation matrix to visualise the results.</p>
+<pre class="r"><code>data_df_rescale &lt;- data_df %&gt;% 
+  select(9:31) %&gt;% 
+  scale(center = TRUE)
+
+data_df_corr &lt;- data_df %&gt;% select(9:31)
+
+data_corrr &lt;- cor(data_df_corr)
+ 
+corrplot(as.matrix(data_corrr), is.corr = FALSE, method = &quot;square&quot;, type = &quot;full&quot;)</code></pre>
+<p><img src="/post/2019-08-09-pca-on-us-nutrition_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+<p>Run a PCA with the default prcomp function in R and run a summary on the object</p>
+<pre class="r"><code>data_PCA &lt;- prcomp(data_df_rescale)
+
+# print(data_PCA) # Full PCA matrix
+
+summary(data_PCA) </code></pre>
+<pre><code>## Importance of components:
+##                           PC1    PC2     PC3     PC4     PC5     PC6
+## Standard deviation     2.7035 1.9212 1.42556 1.24459 1.17551 0.96650
+## Proportion of Variance 0.3178 0.1605 0.08836 0.06735 0.06008 0.04061
+## Cumulative Proportion  0.3178 0.4783 0.56661 0.63396 0.69404 0.73465
+##                            PC7     PC8     PC9    PC10    PC11    PC12
+## Standard deviation     0.92451 0.81294 0.77169 0.73023 0.71235 0.68914
+## Proportion of Variance 0.03716 0.02873 0.02589 0.02318 0.02206 0.02065
+## Cumulative Proportion  0.77182 0.80055 0.82644 0.84963 0.87169 0.89234
+##                           PC13    PC14    PC15    PC16    PC17    PC18
+## Standard deviation     0.61955 0.60078 0.55051 0.51154 0.48452 0.46802
+## Proportion of Variance 0.01669 0.01569 0.01318 0.01138 0.01021 0.00952
+## Cumulative Proportion  0.90903 0.92472 0.93789 0.94927 0.95948 0.96900
+##                           PC19   PC20    PC21    PC22    PC23
+## Standard deviation     0.45204 0.4317 0.38515 0.37130 0.18989
+## Proportion of Variance 0.00888 0.0081 0.00645 0.00599 0.00157
+## Cumulative Proportion  0.97789 0.9860 0.99244 0.99843 1.00000</code></pre>
+<pre class="r"><code>plot(data_PCA, type = &quot;l&quot;)</code></pre>
+<p><img src="/post/2019-08-09-pca-on-us-nutrition_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
+<pre class="r"><code># data_PCA$rotation</code></pre>
+<p>The summary method describe the importance of the PCs. The first row describe again the standard deviation associated with each PC. The second row shows the proportion of the variance in the data explained by each component while the third row describe the cumulative proportion of explained variance. We can see there that the first two PCs accounts for more than 47% (0.31+0.16) of the variance of the data. The remaining 53% is shared across PC3 to PC23.</p>
+<p>From the plot we can see that factors load the most on PC1 and PC2. The Scree plot also shows us visualy where the components fall off after PC1 and PC2. Use the FactorMineR package to extract more detailed data howver, will use the first 5 components as these tend to load the most on the components (69%).</p>
+<pre class="r"><code>library(FactoMineR)</code></pre>
+<pre><code>## Warning: package &#39;FactoMineR&#39; was built under R version 3.6.1</code></pre>
+<pre class="r"><code>data_PCA_all &lt;- PCA(data_df_rescale, ncp  = 5, graph = TRUE)</code></pre>
+<p><img src="/post/2019-08-09-pca-on-us-nutrition_files/figure-html/unnamed-chunk-10-1.png" width="672" /><img src="/post/2019-08-09-pca-on-us-nutrition_files/figure-html/unnamed-chunk-10-2.png" width="672" /></p>
+<pre class="r"><code>data_PCA_all$eig #eigen values, percent of varaince and cumulative percentage</code></pre>
+<pre><code>##         eigenvalue percentage of variance
+## comp 1  7.30899804             31.7782524
+## comp 2  3.69088747             16.0473368
+## comp 3  2.03221880              8.8357339
+## comp 4  1.54900652              6.7348110
+## comp 5  1.38181755              6.0079024
+## comp 6  0.93411330              4.0613622
+## comp 7  0.85472741              3.7162061
+## comp 8  0.66087037              2.8733494
+## comp 9  0.59551138              2.5891799
+## comp 10 0.53323222              2.3184010
+## comp 11 0.50743683              2.2062471
+## comp 12 0.47491477              2.0648468
+## comp 13 0.38384585              1.6688950
+## comp 14 0.36094051              1.5693065
+## comp 15 0.30306178              1.3176599
+## comp 16 0.26167535              1.1377189
+## comp 17 0.23475988              1.0206951
+## comp 18 0.21904338              0.9523625
+## comp 19 0.20433782              0.8884253
+## comp 20 0.18634147              0.8101803
+## comp 21 0.14834034              0.6449580
+## comp 22 0.13786150              0.5993978
+## comp 23 0.03605747              0.1567716
+##         cumulative percentage of variance
+## comp 1                           31.77825
+## comp 2                           47.82559
+## comp 3                           56.66132
+## comp 4                           63.39613
+## comp 5                           69.40404
+## comp 6                           73.46540
+## comp 7                           77.18160
+## comp 8                           80.05495
+## comp 9                           82.64413
+## comp 10                          84.96254
+## comp 11                          87.16878
+## comp 12                          89.23363
+## comp 13                          90.90252
+## comp 14                          92.47183
+## comp 15                          93.78949
+## comp 16                          94.92721
+## comp 17                          95.94790
+## comp 18                          96.90027
+## comp 19                          97.78869
+## comp 20                          98.59887
+## comp 21                          99.24383
+## comp 22                          99.84323
+## comp 23                         100.00000</code></pre>
+<pre class="r"><code>data_PCA_all$var$coord # correlations betwewen variables and PCs</code></pre>
+<pre><code>##                      Dim.1       Dim.2        Dim.3       Dim.4
+## Energy_kcal    0.448057415  0.15136222  0.808067668  0.16772215
+## Protein_g      0.652364089 -0.58221037  0.124039889 -0.16411006
+## Fat_g          0.249819599 -0.18205001  0.813080220  0.15622913
+## Carb_g         0.158105970  0.85394168  0.195511126  0.06445781
+## Sugar_g       -0.004775929  0.65028120  0.172872424  0.36288014
+## Fiber_g        0.251606686  0.74499520  0.045907352 -0.23053244
+## VitA_mcg       0.307971932  0.13860307 -0.308581696  0.31485897
+## VitB6_mg       0.772433885 -0.09606918 -0.236507341  0.20721361
+## VitB12_mcg     0.547003966 -0.50985668 -0.200519292  0.30785702
+## VitC_mg        0.043794729  0.40875652 -0.503931530  0.19986213
+## VitE_mg        0.267686499  0.19364742  0.269780804  0.14840941
+## Folate_mcg     0.591668201  0.39794955 -0.221871329  0.10321999
+## Niacin_mg      0.807997717 -0.19436594 -0.066602377  0.23071896
+## Riboflavin_mg  0.812785526  0.02361212 -0.142305653  0.32300213
+## Thiamin_mg     0.716976586  0.23537745  0.008749311  0.21906736
+## Calcium_mg     0.413959708  0.36642193 -0.004481602 -0.13478594
+## Copper_mcg     0.601837302  0.10344439 -0.129714882 -0.42446934
+## Iron_mg        0.743808829  0.24374640 -0.055160770  0.09259546
+## Magnesium_mg   0.716083740  0.27292863  0.017770484 -0.47697037
+## Manganese_mg   0.376447365  0.37623498 -0.069298805 -0.48799125
+## Phosphorus_mg  0.780578918 -0.20048927  0.122022777 -0.27082988
+## Selenium_mcg   0.584192531 -0.52000769  0.002238510 -0.12737572
+## Zinc_mg        0.773393089 -0.33565448 -0.023589433 -0.05833394
+##                     Dim.5
+## Energy_kcal    0.05331007
+## Protein_g     -0.14302629
+## Fat_g          0.29635979
+## Carb_g        -0.22750655
+## Sugar_g       -0.07082780
+## Fiber_g       -0.15841592
+## VitA_mcg       0.58759000
+## VitB6_mg      -0.06650393
+## VitB12_mcg     0.17677269
+## VitC_mg        0.25893427
+## VitE_mg        0.59164427
+## Folate_mcg     0.01808910
+## Niacin_mg     -0.23391280
+## Riboflavin_mg -0.10035345
+## Thiamin_mg    -0.32081330
+## Calcium_mg     0.13514353
+## Copper_mcg     0.31309347
+## Iron_mg       -0.19128621
+## Magnesium_mg   0.00518765
+## Manganese_mg   0.25307917
+## Phosphorus_mg -0.05061221
+## Selenium_mcg   0.04733105
+## Zinc_mg       -0.03164408</code></pre>
+<p>When variables correlate strongly together they all converge on the same component. A simple method to extract the results, for variables, from a PCA output is to use the function get_pca_var() [factoextra package]. This function provides a list of matrices containing all the results for the active variables (coordinates, correlation between variables and axes, squared cosine and contributions)</p>
+<pre class="r"><code>library(factoextra)</code></pre>
+<pre><code>## Warning: package &#39;factoextra&#39; was built under R version 3.6.1</code></pre>
+<pre><code>## Welcome! Related Books: `Practical Guide To Cluster Analysis in R` at https://goo.gl/13EFCZ</code></pre>
+<pre class="r"><code># a more colourful visual representation of the variables and where they converge on a component. 
+fviz_pca_var(data_PCA_all
+             , col.var = &quot;cos2&quot;
+             , gradient.cols = c(&quot;#00AFBB&quot;, &quot;#E7B800&quot;, &quot;#FC4E07&quot;)
+             , repel = TRUE) # Avoid text overlapping)</code></pre>
+<p><img src="/post/2019-08-09-pca-on-us-nutrition_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
+<pre class="r"><code>corrplot(data_PCA_all$var$cor, is.corr=FALSE) </code></pre>
+<p><img src="/post/2019-08-09-pca-on-us-nutrition_files/figure-html/unnamed-chunk-11-2.png" width="672" /></p>
+<pre class="r"><code>fviz_contrib(data_PCA_all, choice = &quot;var&quot;, axes = 1:2, top = 10)</code></pre>
+<p><img src="/post/2019-08-09-pca-on-us-nutrition_files/figure-html/unnamed-chunk-11-3.png" width="672" /></p>
+<p>The most important (or, contributing) variables can be highlighted on the correlation plot as follows:</p>
+<pre class="r"><code>library(ggbiplot)
+
+ggscreeplot(data_PCA)</code></pre>
+<p><img src="/post/2019-08-09-pca-on-us-nutrition_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
+<pre class="r"><code>ggbiplot(data_PCA_all
+         , ellipse= TRUE
+         , choices=1:2
+         , alpha = 0.25
+         , circle = TRUE
+         , groups = data_df$FoodGroup
+         , varname.adjust = 8
+         , scale = TRUE)+
+  scale_color_discrete(name = &#39;&#39;) +
+  theme(legend.direction = &#39;horizontal&#39;, legend.position = &#39;top&#39;)</code></pre>
+<p><img src="/post/2019-08-09-pca-on-us-nutrition_files/figure-html/unnamed-chunk-12-2.png" width="672" /></p>
+<p>Biplot package also allows for more detail plots however, points are limited to 10 and we have 25.</p>
+<pre class="r"><code>fviz_pca_biplot(data_PCA_all, 
+                # Individuals
+                geom.ind = &quot;point&quot;,
+                fill.ind = data_df$FoodGroup, col.ind = &quot;black&quot;,
+                pointshape = 21, pointsize = 2,
+                palette = &quot;jco&quot;,
+                addEllipses = TRUE,
+                # Variables
+                alpha.var =&quot;contrib&quot;, col.var = &quot;contrib&quot;,
+                gradient.cols = &quot;RdYlBu&quot;,
+                
+                legend.title = list(fill = &quot;Species&quot;, color = &quot;Contrib&quot;,
+                                    alpha = &quot;Contrib&quot;)
+                )</code></pre>
+<p><img src="/post/2019-08-09-pca-on-us-nutrition_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
+<p>Finally, with the Ggforce package we are able to plot multiple components from a PCA analysis against each other:</p>
+<pre class="r"><code>library(ggforce)
+
+
+pca_grid &lt;- as.data.frame(data_PCA$rotation)
+
+# Since the first ttwo compomnents make up most of the variance explain will add the
+# 5 to make up 77% of the components for this example
+
+
+ggplot(pca_grid[,1:7], aes(x = .panel_x, y = .panel_y)) + 
+  geom_point(alpha = 0.9, shape = 16, size = 0.5) + 
+  geom_autodensity() +
+  geom_density2d() +
+  facet_matrix(vars(everything()), layer.diag = 2, layer.upper = 3, 
+               grid.y.diag = FALSE)</code></pre>
+<p><img src="/post/2019-08-09-pca-on-us-nutrition_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
+</div>

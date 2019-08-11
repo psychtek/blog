@@ -1,0 +1,285 @@
+---
+title: Global Suicides 1995 to 2015
+author: Aaron Willcox
+date: '2019-06-01'
+slug: global-suicides-1995-to-2015
+categories:
+  - R
+tags:
+  - R Markdown
+subtitle: ''
+summary: ''
+authors: []
+lastmod: '2019-06-01T20:03:33+02:00'
+featured: no
+image:
+  caption: ''
+  focal_point: ''
+  preview_only: no
+projects: []
+---
+
+
+
+<div id="r-markdown" class="section level2">
+<h2>R Markdown</h2>
+<div id="import-dataset" class="section level4">
+<h4>Import dataset</h4>
+<pre class="r"><code>suicide_raw &lt;- read_csv(&quot;data/master.csv&quot;)
+suicide_df &lt;- suicide_raw %&gt;% 
+  select(country
+         , year
+         , &quot;No_of_Suicides&quot; =`suicides_no`
+         , &quot;ave_suicide_100k&quot; = `suicides/100k pop`
+         , sex
+         , age
+         , population
+         , &quot;HDI&quot; = `HDI for year`
+         , &quot;GDP_per_year&quot; = `gdp_for_year ($)`
+         , &quot;GDP_per_capita&quot; = `gdp_per_capita ($)`
+         , generation)
+
+# converts to factors
+suicide_df$sex &lt;- factor(suicide_df$sex, levels = c(&quot;male&quot;, &quot;female&quot;))
+suicide_df$year &lt;- factor(suicide_df$year)
+suicide_df$generation &lt;- factor(suicide_df$generation)
+suicide_df$country &lt;- factor(suicide_df$country)
+
+suicide_df$generation &lt;- factor(suicide_df$generation, 
+                   ordered = T, 
+                   levels = c(&quot;G.I. Generation&quot;, 
+                              &quot;Silent&quot;,
+                              &quot;Boomers&quot;, 
+                              &quot;Generation X&quot;, 
+                              &quot;Millenials&quot;, 
+                              &quot;Generation Z&quot;))</code></pre>
+</div>
+<div id="explore-dataset" class="section level4">
+<h4>Explore dataset</h4>
+<p>Take a look at the top 50 global number of suicides from 1985 to 2015 and split by sex.</p>
+</div>
+<div id="total-amount-of-suicides-from-1995-to-2015" class="section level3">
+<h3>Total Amount of Suicides from 1995 to 2015</h3>
+<pre class="r"><code>suicide_df %&gt;% 
+  group_by(country, sex) %&gt;% 
+  summarise(Suicide_total = sum(No_of_Suicides)) %&gt;% 
+  arrange(desc(Suicide_total))  %&gt;% 
+  head(50) %&gt;%  
+  ggplot(aes(x = reorder(country, -Suicide_total), y = Suicide_total)
+  ) +
+  geom_col(show.legend = FALSE, alpha = 0.7) +
+  coord_flip() +
+  facet_wrap(~sex) +
+  theme_cowplot()+
+  labs(x = &quot;Country&quot;, y = &quot;Suicides 1995 to 2015&quot;, title = &quot;Total Number of Suicides from 1985 to 2015&quot;) </code></pre>
+<p><img src="/post/2019-06-01-global-suicides-1995-to-2015_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
+<p>The Russian Federation has had the most amount of people commit suicide between 1985 to 2015.
+Following this, United States and Japan have a high number of suicides with Males commiting suicide
+more than Females.</p>
+<div id="average-suicide-rate-per-population-of-100000" class="section level4">
+<h4>Average suicide rate per population of 100,000</h4>
+<pre class="r"><code>ave_suicide_100k_country &lt;- suicide_df %&gt;% 
+  group_by(country) %&gt;% 
+  summarise(n = n(), Ave = mean(ave_suicide_100k)) %&gt;% 
+  arrange(desc(Ave))
+
+
+ave_suicide_100k_year &lt;- suicide_df %&gt;% 
+  group_by(country, year) %&gt;% 
+  summarise(n = n(), Ave = mean(ave_suicide_100k)) %&gt;% 
+  arrange(desc(Ave))
+
+
+# reorder the country 
+ave_suicide_100k_country$country &lt;- factor(ave_suicide_100k_country$country, 
+                          ordered = T, 
+                          levels = rev(ave_suicide_100k_country$country))
+
+average_suicide_no &lt;- (mean(ave_suicide_100k_country$Ave))
+
+ave_suicide_100k_country %&gt;% 
+  ggplot(aes(x = country, y = Ave)) + 
+  geom_bar(stat = &quot;identity&quot;) + 
+  geom_hline(yintercept = average_suicide_no, linetype = 2, color = &quot;grey35&quot;, size = 1) +
+  labs(title = &quot;Global suicides per 100k, by Country&quot;,
+       caption = &quot;1985 to 2015&quot;,
+       x = &quot;Country&quot;, 
+       y = &quot;Suicides per 100k&quot;) +
+  coord_flip() +
+  scale_y_continuous(breaks = seq(0, 45, 2)) </code></pre>
+<p><img src="/post/2019-06-01-global-suicides-1995-to-2015_files/figure-html/unnamed-chunk-3-1.png" width="960" /></p>
+</div>
+<div id="average-suicide-rate-per-generation" class="section level4">
+<h4>Average Suicide Rate per Generation</h4>
+<ul>
+<li>Gen Z, iGen, or Centennials: Born 1996 – TBD</li>
+<li>Millennials or Gen Y: Born 1977 – 1995</li>
+<li>Generation X: Born 1965 – 1976: 15 - 24 years</li>
+<li>Baby Boomers: Born 1946 – 1964</li>
+<li>Traditionalists or Silent Generation: Born 1945 and before</li>
+</ul>
+<div id="not-adjusted-for-time" class="section level5">
+<h5>Not adjusted for time</h5>
+<pre class="r"><code>ave_suicide_100k_gen &lt;- suicide_df %&gt;% 
+  group_by(generation) %&gt;% 
+  summarise(n = n(), Ave = sum(No_of_Suicides)) %&gt;% 
+  arrange(desc(Ave))
+
+ave_suicide_100k_gen$generation &lt;- factor(ave_suicide_100k_gen$generation, 
+                          ordered = T, 
+                          levels = rev(ave_suicide_100k_gen$generation))
+
+ggplot(data = ave_suicide_100k_gen) +
+  aes(x = generation, weight = Ave) +
+  geom_bar(fill = &quot;#0c4c8a&quot;) +
+  labs(title = &quot;Total Suicides per Generation&quot;,
+    x = &quot;Generation&quot;,
+    y = &quot;Average Suicide Rate&quot;,
+    subtitle = &quot;1985 to 2015&quot;) +
+  theme_bw() +
+  coord_flip()</code></pre>
+<p><img src="/post/2019-06-01-global-suicides-1995-to-2015_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+</div>
+</div>
+<div id="total-amount-of-suicides-per-country-by-age-1985-to-2015" class="section level4">
+<h4>Total Amount of Suicides per country by Age (1985 to 2015)</h4>
+<pre class="r"><code>x &lt;- suicide_df %&gt;% 
+  group_by(country, age) %&gt;% 
+  summarise(total = sum(No_of_Suicides)) %&gt;% 
+  filter(total &gt; 2000) %&gt;% 
+  arrange(desc(total))
+
+ggplot(x, aes(x = reorder(country, - total), y = total, fill = age)) + 
+  geom_bar(stat = &quot;identity&quot;) + 
+  labs(title = &quot;Total Amount of Suicides per country by Age (1985 to 2015)&quot;,
+       subtitle = &quot;Filtered by Suicides greater than 2000&quot;,
+       x = &quot;Country&quot;, 
+       y = &quot;Total Amount of Suicides&quot;, 
+       fill = &quot;age&quot;) +
+  coord_flip() + 
+  theme(legend.position = &quot;bottom&quot;)</code></pre>
+<p><img src="/post/2019-06-01-global-suicides-1995-to-2015_files/figure-html/unnamed-chunk-5-1.png" width="960" /></p>
+<p>Age group of 15 to 24 years has been a consistant marker for suicides. To Explore this further, we can look at
+a scatter plot of that age group over time.</p>
+<pre class="r"><code># line graph by age group
+
+
+
+all_age_group &lt;- suicide_df %&gt;%
+  group_by(year, age) %&gt;% 
+ filter(!(age %in% &quot;5-14 years&quot;)) %&gt;% 
+  filter(!(year %in% &quot;2016&quot;)) %&gt;% 
+  #na.omit() %&gt;% 
+  summarise(Num = sum(No_of_Suicides))
+
+ggplot(all_age_group) +
+ aes(x = year, y = Num, fill = age, colour = age, group = age) +
+ geom_point(size = 2.2) +
+  geom_line() +
+ labs(x = &quot;Year&quot;, y = &quot;Total Num Suicides&quot;, title = &quot;Total Suicides per Age Group&quot;) +
+ theme_bw()+ 
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))</code></pre>
+<p><img src="/post/2019-06-01-global-suicides-1995-to-2015_files/figure-html/unnamed-chunk-6-1.png" width="960" /></p>
+</div>
+<div id="regression-model" class="section level4">
+<h4>Regression model</h4>
+<pre class="r"><code>model &lt;- suicide_df %&gt;% 
+  lm(No_of_Suicides ~ GDP_per_year + age + sex + generation, data = .) 
+
+model %&gt;% 
+  tidy(conf.int = TRUE) %&gt;% 
+  filter(term != &quot;(Intercept)&quot;) %&gt;%
+  mutate(term = fct_reorder(term, estimate)) %&gt;% # almost always remove this
+  ggplot(aes(estimate, term)) +
+  geom_point() +
+  geom_errorbarh(aes(xmin = conf.low, xmax = conf.high))</code></pre>
+<p><img src="/post/2019-06-01-global-suicides-1995-to-2015_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+<pre class="r"><code># model %&gt;% 
+#  augment(data = suicide_df) %&gt;% 
+#  ggplot(aes(.fitted, No_of_Suicides)) +
+#  geom_point(alpha = .1)
+
+tidy(anova(model)) %&gt;% 
+  mutate(Unique = sumsq / sum(sumsq))</code></pre>
+<pre><code>## # A tibble: 5 x 7
+##   term            df        sumsq      meansq statistic    p.value  Unique
+##   &lt;chr&gt;        &lt;int&gt;        &lt;dbl&gt;       &lt;dbl&gt;     &lt;dbl&gt;      &lt;dbl&gt;   &lt;dbl&gt;
+## 1 GDP_per_year     1  4187272638. 4187272638.    6777.   0.        0.185  
+## 2 age              5   757335476.  151467095.     245.   3.76e-257 0.0335 
+## 3 sex              1   473491889.  473491889.     766.   2.07e-166 0.0209 
+## 4 generation       5    36328382.    7265676.      11.8  2.22e- 11 0.00160
+## 5 Residuals    27807 17181626084.     617889.      NA   NA         0.759</code></pre>
+<p>A rough look at the effects supports previous assumptions that being male and aged between 35 - 54 years are at a higher risk of suicide. Although there might well be some collinearity between generation and age groups as these are essentially capturing similar items. I will also remove the 5 -14 year old age group as this doesnt seem to be adding anything to the model.</p>
+<pre class="r"><code>model2 &lt;- suicide_df %&gt;% 
+  filter(!(age %in% &quot;5-14 years&quot;)) %&gt;% 
+  lm(No_of_Suicides ~ GDP_per_year + age + sex, data = .) 
+
+model2 %&gt;% 
+  tidy(conf.int = TRUE) %&gt;% 
+  filter(term != &quot;(Intercept)&quot;) %&gt;%
+  mutate(term = fct_reorder(term, estimate)) %&gt;% # almost always remove this
+  ggplot(aes(estimate, term)) +
+  geom_point() +
+  geom_errorbarh(aes(xmin = conf.low, xmax = conf.high))</code></pre>
+<p><img src="/post/2019-06-01-global-suicides-1995-to-2015_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+<pre class="r"><code>tidy(anova(model2)) %&gt;% 
+  mutate(Unique = sumsq / sum(sumsq))</code></pre>
+<pre><code>## # A tibble: 4 x 7
+##   term            df        sumsq      meansq statistic    p.value Unique
+##   &lt;chr&gt;        &lt;int&gt;        &lt;dbl&gt;       &lt;dbl&gt;     &lt;dbl&gt;      &lt;dbl&gt;  &lt;dbl&gt;
+## 1 GDP_per_year     1  4959288738. 4959288738.     7036.  0.        0.222 
+## 2 age              4   460837808.  115209452.      163.  3.10e-138 0.0206
+## 3 sex              1   561837996.  561837996.      797.  1.87e-172 0.0252
+## 4 Residuals    23203 16354227025.     704832.       NA  NA         0.732</code></pre>
+<p>Interestly, men aged between 35 - 54 years old have the strongest effect on the number of suicides followed by older generation then young adults.</p>
+</div>
+<div id="take-a-look-at-suicide-rate-in-australia" class="section level4">
+<h4>Take a look at Suicide Rate in Australia</h4>
+<pre class="r"><code>au_model &lt;- suicide_df %&gt;% 
+  filter(country %in% &quot;Australia&quot;) %&gt;% 
+  group_by(year, sex, age) %&gt;% 
+  summarise(No_of_Suicides = sum(No_of_Suicides), GDP_per_year = mean(GDP_per_year))
+
+model2 &lt;- au_model %&gt;% 
+  filter(!(age %in% &quot;5-14 years&quot;)) %&gt;% 
+  lm(No_of_Suicides ~ GDP_per_year + age + sex, data = .) 
+
+model2 %&gt;% 
+  tidy(conf.int = TRUE) %&gt;% 
+  filter(term != &quot;(Intercept)&quot;) %&gt;%
+  mutate(term = fct_reorder(term, estimate)) %&gt;% # almost always remove this
+  ggplot(aes(estimate, term)) +
+  geom_point() +
+  geom_errorbarh(aes(xmin = conf.low, xmax = conf.high))</code></pre>
+<p><img src="/post/2019-06-01-global-suicides-1995-to-2015_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
+<pre class="r"><code>tidy(anova(model2)) %&gt;% 
+  mutate(Unique = sumsq / sum(sumsq))</code></pre>
+<pre><code>## # A tibble: 4 x 7
+##   term            df    sumsq   meansq statistic   p.value  Unique
+##   &lt;chr&gt;        &lt;int&gt;    &lt;dbl&gt;    &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt;
+## 1 GDP_per_year     1   71814.   71814.      10.3  1.50e- 3 0.00630
+## 2 age              4 4108872. 1027218.     147.   9.14e-69 0.361  
+## 3 sex              1 5167969. 5167969.     739.   4.05e-82 0.453  
+## 4 Residuals      293 2047900.    6989.      NA   NA        0.180</code></pre>
+<p>Similar pattern in Australia. Men aged 35 - 54 years old have the highest suicide rate. This is a concern as there are plenty of mental health networks available to people for access however, either these arent accessed enough or men arent simply seeking the help in the first place.</p>
+<pre class="r"><code>age_group_35_54 &lt;- suicide_df %&gt;% 
+  group_by(country, year, age) %&gt;% 
+ filter(age %in% &quot;35-54 years&quot;) %&gt;% 
+  summarise(Num = sum(No_of_Suicides))
+
+
+age_group_35_54 %&gt;%  
+  filter(country %in% &quot;Australia&quot;) %&gt;% 
+ggplot() +
+ aes(x = year, y = Num) +
+ geom_point(size = 2, colour = &quot;#0c4c8a&quot;) +
+  geom_line() +
+  labs(title = &quot;Total Suicides in Australia 1985 to 2015&quot;, 
+         subtitle = &quot;Age Group 35 to 54 Years Old&quot;,
+       x = &quot;Year&quot;,
+       y = &quot;Number of Suicides&quot;) +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))</code></pre>
+<p><img src="/post/2019-06-01-global-suicides-1995-to-2015_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
+</div>
+</div>
+</div>

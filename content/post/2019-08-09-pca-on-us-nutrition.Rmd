@@ -1,0 +1,266 @@
+---
+title: PCA on US Nutrition
+author: Aaron Willcox
+date: '2019-08-09'
+slug: pca-on-us-nutrition
+categories:
+  - R
+tags:
+  - PCA
+  - R Markdown
+subtitle: ''
+summary: ''
+authors: []
+lastmod: '2019-08-09T11:00:18+10:00'
+featured: no
+image:
+  caption: ''
+  focal_point: ''
+  preview_only: no
+projects: []
+fig_width: 12
+---
+
+```{r}
+library(tidyverse)
+library(corrplot)
+library(cowplot)
+```
+
+#### Data
+The following dataset froms from the Nutrient database in the United States
+
+This is from the now outdated SR27. It is also created from the full database. The "abbreviated file" in SR28 is more up to date than this data and contains more nutrients than we provide here. See https://data.world/awram/food-nutritional-values
+
+The columns in US RDA are created using data from Dietary Reference Intakes: The Essential Guide to Nutrient Requirements available from the National Academies Press at http://www.nap.edu/catalog/11537.html
+
+Data
+Each record is for 100 grams.
+
+The columns are mostly self-explanatory. The nutrient columns end with the units, so:
+
+Nutrient_g is in grams
+Nutrient_mg is in milligrams
+Nutrient_mcg is in micrograms
+Nutrient_USRDA is in percentage of US Recommended Daily Allows (e.g. 0.50 is 50%)
+Note that not every available RDA value in the text was used. For instance, the US RDA for Iron varies significantly by age and sex, so I deemed it easier to just leave out RDA information for Iron.
+
+```{r message=FALSE, warning=FALSE}
+# data_df <- read.csv(file = "https://query.data.world/s/iwzl7xgiagpimb2ixfj4fkyztngxs7", stringsAsFactors = FALSE, header = TRUE)
+
+#write.csv(data_df, file = "data/nutrian_df.csv") # write the dataframe to csv
+
+data_df <- read_csv(file = "data/nutrian_df.csv")
+```
+
+#### Running a Principle Componant Analysis on the United States Dietry Reference Nutrient Database
+
+The USRDA containts the same information as _mg so these are reduntant and can be removed. 
+
+```{r}
+
+data_df <- data_df %>% select(-contains("_USRDA"))
+
+```
+
+
+Catagorical Visualisation 
+
+```{r message=FALSE, warning=FALSE}
+
+data_df$FoodGroup <- factor(data_df$FoodGroup, ordered = is.ordered(data_df$FoodGroup)) # coerce to factor
+
+Foodgroup_cat <- data_df %>% # Group by the food group catagory and count the amont each one occurs
+  group_by(FoodGroup) %>% 
+  summarise(N = n()) %>% 
+  arrange(N)
+
+
+Foodgroup_cat$FoodGroup <- str_remove(Foodgroup_cat$FoodGroup, "Products") # Remove the word "products" from the list
+
+ggplot(Foodgroup_cat) +
+ aes(x = reorder(FoodGroup, -N), y = N) +
+ geom_bar(stat = "identity") +
+ coord_flip() +
+  labs(title = "Toal Amount of Food Products",
+       subtitle = "USDRA",
+       x = "Products", 
+       y = "Frequency")
+
+
+
+```
+
+Majority of US nutrients come from beef, vegetables and baked goods. Would be interesting to see the mean nutrient intake for each food group.
+
+```{r}
+
+
+data_df %>% 
+  select(FoodGroup, 9:31) %>% 
+  group_by(FoodGroup) %>% 
+  summarise_all(list(Mean = mean))
+
+```
+
+I am not a nutritionist however, be interesting to see what the correlation is between energy and sugar
+
+```{r}
+
+ggplot(data_df) +
+ aes(x = Sugar_g, y = Energy_kcal, fill = FoodGroup, colour = FoodGroup) +
+ geom_point(size = 1L) +
+ scale_fill_hue() +
+ scale_color_hue() +
+ labs(x = "Sugar in gram", y = "Energy in k/cals", title = "Energy as a Function of Sugar", subtitle = "Food Groups") +
+ theme_bw() +
+ theme(legend.position = "none") +
+ facet_wrap(vars(FoodGroup), scales = "free_x")
+
+```
+Beef, lamb, veal and game products tend to have very little sugar/energy. Theres a clustering of points in the beverages table 
+and would assume this would be water or low sugar drinks. Considering this is a database of nutrients based on major food groups, we cant tease out the underlying specifics of the types of drinks or products. We can however, look to see what nutrients are most consumed and which food group these come from. 
+
+Descriptives
+
+```{r}
+
+library(psych)
+
+
+data_df %>% 
+  select(-c(FoodGroup, ShortDescrip, Descrip, CommonName, MfgName, ScientificName)) %>% 
+describe(.) %>% 
+  kableExtra::kable()
+
+data_df[,9:31] <- sqrt(data_df[,9:31]) # sqrt transform 
+
+```
+
+There is some skewness in the data and could do with some transforming but theres no guarentee that it will improve results. 
+Here we will rescale and center the variables with a mean of 0 and a variance of 1. Then run a correlation matrix to visualise the results. 
+
+```{r}
+
+data_df_rescale <- data_df %>% 
+  select(9:31) %>% 
+  scale(center = TRUE)
+
+data_df_corr <- data_df %>% select(9:31)
+
+data_corrr <- cor(data_df_corr)
+ 
+corrplot(as.matrix(data_corrr), is.corr = FALSE, method = "square", type = "full")
+```
+
+Run a PCA with the default prcomp function in R and run a summary on the object
+
+```{r}
+
+
+data_PCA <- prcomp(data_df_rescale)
+
+# print(data_PCA) # Full PCA matrix
+
+summary(data_PCA) 
+
+plot(data_PCA, type = "l")
+
+# data_PCA$rotation
+
+```
+
+The summary method describe the importance of the PCs. The first row describe again the standard deviation associated with each PC. The second row shows the proportion of the variance in the data explained by each component while the third row describe the cumulative proportion of explained variance. We can see there that the first two PCs accounts for more than 47% (0.31+0.16) of the variance of the data. The remaining 53% is shared across PC3 to PC23. 
+
+From the plot we can see that factors load the most on PC1 and PC2. The Scree plot also shows us visualy where the components fall off after PC1 and PC2. Use the FactorMineR package to extract more detailed data howver, will use the first 5 components as these tend to load the most on the components (69%). 
+
+```{r}
+library(FactoMineR)
+
+data_PCA_all <- PCA(data_df_rescale, ncp  = 5, graph = TRUE)
+
+data_PCA_all$eig #eigen values, percent of varaince and cumulative percentage
+
+data_PCA_all$var$coord # correlations betwewen variables and PCs
+
+```
+
+
+
+When variables correlate strongly together they all converge on the same component. A simple method to extract the results, for variables, from a PCA output is to use the function get_pca_var() [factoextra package]. This function provides a list of matrices containing all the results for the active variables (coordinates, correlation between variables and axes, squared cosine and contributions)
+
+```{r}
+library(factoextra)
+
+# a more colourful visual representation of the variables and where they converge on a component. 
+fviz_pca_var(data_PCA_all
+             , col.var = "cos2"
+             , gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07")
+             , repel = TRUE) # Avoid text overlapping)
+
+
+corrplot(data_PCA_all$var$cor, is.corr=FALSE) 
+
+fviz_contrib(data_PCA_all, choice = "var", axes = 1:2, top = 10)
+```
+
+The most important (or, contributing) variables can be highlighted on the correlation plot as follows:
+
+
+```{r message=FALSE, warning=FALSE}
+library(ggbiplot)
+
+ggscreeplot(data_PCA)
+
+ggbiplot(data_PCA_all
+         , ellipse= TRUE
+         , choices=1:2
+         , alpha = 0.25
+         , circle = TRUE
+         , groups = data_df$FoodGroup
+         , varname.adjust = 8
+         , scale = TRUE)+
+  scale_color_discrete(name = '') +
+  theme(legend.direction = 'horizontal', legend.position = 'top')
+```
+
+Biplot package also allows for more detail plots however, points are limited to 10 and we have 25. 
+
+```{r message=FALSE, warning=FALSE}
+fviz_pca_biplot(data_PCA_all, 
+                # Individuals
+                geom.ind = "point",
+                fill.ind = data_df$FoodGroup, col.ind = "black",
+                pointshape = 21, pointsize = 2,
+                palette = "jco",
+                addEllipses = TRUE,
+                # Variables
+                alpha.var ="contrib", col.var = "contrib",
+                gradient.cols = "RdYlBu",
+                
+                legend.title = list(fill = "Species", color = "Contrib",
+                                    alpha = "Contrib")
+                )
+```
+
+
+Finally, with the Ggforce package we are able to plot  multiple components from a PCA analysis against each other:
+
+```{r message=FALSE, warning=FALSE}
+library(ggforce)
+
+
+pca_grid <- as.data.frame(data_PCA$rotation)
+
+# Since the first ttwo compomnents make up most of the variance explain will add the
+# 5 to make up 77% of the components for this example
+
+
+ggplot(pca_grid[,1:7], aes(x = .panel_x, y = .panel_y)) + 
+  geom_point(alpha = 0.9, shape = 16, size = 0.5) + 
+  geom_autodensity() +
+  geom_density2d() +
+  facet_matrix(vars(everything()), layer.diag = 2, layer.upper = 3, 
+               grid.y.diag = FALSE)
+```
+
