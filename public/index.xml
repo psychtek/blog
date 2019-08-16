@@ -108,6 +108,585 @@
     </item>
     
     <item>
+      <title>Emotional Impact on Memory Part 2</title>
+      <link>/post/emotional-impact-on-memory-part-2/</link>
+      <pubDate>Fri, 16 Aug 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/post/emotional-impact-on-memory-part-2/</guid>
+      <description>
+&lt;script src=&#34;/rmarkdown-libs/htmlwidgets/htmlwidgets.js&#34;&gt;&lt;/script&gt;
+&lt;script src=&#34;/rmarkdown-libs/jquery/jquery.min.js&#34;&gt;&lt;/script&gt;
+&lt;link href=&#34;/rmarkdown-libs/datatables-css/datatables-crosstalk.css&#34; rel=&#34;stylesheet&#34; /&gt;
+&lt;script src=&#34;/rmarkdown-libs/datatables-binding/datatables.js&#34;&gt;&lt;/script&gt;
+&lt;link href=&#34;/rmarkdown-libs/dt-core/css/jquery.dataTables.min.css&#34; rel=&#34;stylesheet&#34; /&gt;
+&lt;link href=&#34;/rmarkdown-libs/dt-core/css/jquery.dataTables.extra.css&#34; rel=&#34;stylesheet&#34; /&gt;
+&lt;script src=&#34;/rmarkdown-libs/dt-core/js/jquery.dataTables.min.js&#34;&gt;&lt;/script&gt;
+&lt;link href=&#34;/rmarkdown-libs/crosstalk/css/crosstalk.css&#34; rel=&#34;stylesheet&#34; /&gt;
+&lt;script src=&#34;/rmarkdown-libs/crosstalk/js/crosstalk.min.js&#34;&gt;&lt;/script&gt;
+&lt;script src=&#34;/rmarkdown-libs/kePrint/kePrint.js&#34;&gt;&lt;/script&gt;
+
+
+&lt;div id=&#34;library&#34; class=&#34;section level4&#34;&gt;
+&lt;h4&gt;Library&lt;/h4&gt;
+&lt;/div&gt;
+&lt;div id=&#34;import&#34; class=&#34;section level4&#34;&gt;
+&lt;h4&gt;Import&lt;/h4&gt;
+&lt;p&gt;Raw CSV files with all IAPS database and images to be used in each task imported into an object.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;raw_df &amp;lt;- read_csv(&amp;quot;data/ret_task.csv&amp;quot;
+                   , col_types = cols(CR = col_factor(levels = c(&amp;quot;same&amp;quot;,  &amp;quot;different&amp;quot;))
+                   , Emotion = col_factor(levels = c(&amp;quot;negative&amp;quot;, &amp;quot;neutral&amp;quot;))
+                  , Sex = col_factor(levels = c(&amp;quot;male&amp;quot;, &amp;quot;female&amp;quot;))))
+
+raw_df$CorrectAnswer &amp;lt;- recode(raw_df$CorrectAnswer, a = &amp;quot;l&amp;quot;, l = &amp;quot;a&amp;quot;)
+raw_df$Stimulus1.RESP &amp;lt;- recode(raw_df$Stimulus1.RESP, a = &amp;quot;l&amp;quot;, l = &amp;quot;a&amp;quot;)
+
+# import tables 
+
+RET_SEEN &amp;lt;- read_csv(&amp;quot;data/RET_SEEN.csv&amp;quot;)
+RET_UNSEEN_NEW &amp;lt;- read_csv(&amp;quot;data/RET_UNSEEN_NEW.csv&amp;quot;)
+RET_PS_a &amp;lt;- read_csv(&amp;quot;data/RET_PS_a.csv&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;data-setup&#34; class=&#34;section level4&#34;&gt;
+&lt;h4&gt;Data Setup&lt;/h4&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;75 Negative Images&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;75 Neutral Images&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;General d-prime score: p(hits|75) and then p(FA|75)&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr class=&#34;header&#34;&gt;
+&lt;th&gt;&lt;/th&gt;
+&lt;th&gt;SAME(A)&lt;/th&gt;
+&lt;th&gt;DIFFERENT(L)&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td&gt;NEW&lt;/td&gt;
+&lt;td&gt;MISS(FA)&lt;/td&gt;
+&lt;td&gt;HIT(CR)&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td&gt;OLD&lt;/td&gt;
+&lt;td&gt;MISS&lt;/td&gt;
+&lt;td&gt;MISS&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td&gt;SIMILAR&lt;/td&gt;
+&lt;td&gt;HIT&lt;/td&gt;
+&lt;td&gt;MISS&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;div id=&#34;compute-new-variables&#34; class=&#34;section level5&#34;&gt;
+&lt;h5&gt;Compute New Variables&lt;/h5&gt;
+&lt;p&gt;Pattern separation scores were calculated by comparing the &lt;strong&gt;CorrectAnswer&lt;/strong&gt; response to the actual &lt;strong&gt;Stimulus1.RESP&lt;/strong&gt; and then allocated either a &lt;strong&gt;hit&lt;/strong&gt; or &lt;strong&gt;miss&lt;/strong&gt; where appropriate. Futher variables were then computed as a binary response of &lt;strong&gt;1&lt;/strong&gt; for a hit or &lt;strong&gt;0&lt;/strong&gt; for a miss.&lt;/p&gt;
+&lt;p&gt;Negative and Neutral conditions were also computed as when a participant responded to a hit when a image is in the negative condition. Neutral was the compliment of this.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;raw_df &amp;lt;- raw_df %&amp;gt;% 
+  select_all() %&amp;gt;% 
+  mutate(
+    Pattern_Sep = case_when(
+      CorrectAnswer == Stimulus1.RESP &amp;amp; CorrectAnswer == &amp;quot;a&amp;quot;  ~ &amp;quot;Hit&amp;quot;, 
+      # Condition checks to match correct answer to 
+      CorrectAnswer == Stimulus1.RESP &amp;amp; CorrectAnswer == &amp;quot;l&amp;quot; ~ &amp;quot;Hit&amp;quot;,  
+      # the participants response. Labelled as &amp;quot;hits&amp;quot;
+      CorrectAnswer != Stimulus1.RESP &amp;amp; CorrectAnswer == &amp;quot;l&amp;quot; ~ &amp;quot;Miss&amp;quot;, 
+      # and &amp;quot;miss&amp;quot; for easy identifying. 
+      CorrectAnswer != Stimulus1.RESP &amp;amp; CorrectAnswer == &amp;quot;a&amp;quot; ~ &amp;quot;Miss&amp;quot;,
+      TRUE  ~ &amp;quot;&amp;quot;)) %&amp;gt;% 
+  mutate(
+    Score = case_when(
+      Pattern_Sep == &amp;quot;Hit&amp;quot; ~ 1, # A column of hits and misses coded 1 for hit and 0 for miss
+      Pattern_Sep == &amp;quot;Miss&amp;quot; ~ 0
+    )
+  )  %&amp;gt;% 
+  mutate(
+    Total_Hits = factor(case_when( # total counts for hits and misses
+      Score == 1 ~ 1,
+      Score == 0 ~ 0
+    )),
+    Total_Miss = factor(case_when(
+      Score == 0 ~ 1,
+      Score == 1 ~ 0
+    ))
+  )  %&amp;gt;% 
+  mutate(Hit_similar = factor(ifelse(CorrectAnswer %in% c(&amp;quot;a&amp;quot;) &amp;amp;   
+                                       # These columns count the appropriate hits and misses
+                                Stimulus1.RESP == &amp;quot;a&amp;quot;, 1, 0)),      
+         # for each emotional condition. 
+         Negative_Hit = factor(ifelse(Emotion %in% c(&amp;quot;negative&amp;quot;) &amp;amp;
+                            Pattern_Sep == &amp;quot;Hit&amp;quot;, 1, 0)),
+         Negative_Miss = factor(ifelse(Emotion %in% c(&amp;quot;negative&amp;quot;) &amp;amp;
+                              Pattern_Sep == &amp;quot;Miss&amp;quot;, 1, 0)),
+         Neutral_Hit = factor(ifelse(Emotion %in% c(&amp;quot;neutral&amp;quot;) &amp;amp;
+                             Pattern_Sep == &amp;quot;Hit&amp;quot;, 1, 0)),
+         Neutral_Miss = factor(ifelse(Emotion %in% c(&amp;quot;neutral&amp;quot;) &amp;amp;
+                                 Pattern_Sep == &amp;quot;Miss&amp;quot;, 1, 0)))
+ 
+raw_df$Picture &amp;lt;-  str_remove(raw_df$Picture, &amp;quot;.jpg&amp;quot;) #remove the jpg extention
+
+
+# check the column picture number and compare to the originally coded
+# tasks use to setup the experiment. 
+raw_df &amp;lt;- raw_df %&amp;gt;% 
+  mutate(
+    coding = case_when(
+      Picture %in% RET_PS_a$V1 ~ &amp;quot;SIMILAR&amp;quot;, 
+      Picture %in% RET_UNSEEN_NEW$nr ~ &amp;quot;NEW&amp;quot;, 
+      Picture %in% RET_SEEN$nr ~ &amp;quot;OLD&amp;quot;,
+      TRUE ~ &amp;quot;&amp;quot;))
+
+# Added pattern separation counts similar to Stark(2013)
+raw_df &amp;lt;- raw_df %&amp;gt;% 
+  mutate(pshits = ifelse(coding %in% c(&amp;quot;SIMILAR&amp;quot;) &amp;amp; Stimulus1.RESP == &amp;quot;a&amp;quot;, 1, 0),
+         psmiss = ifelse(coding %in% c(&amp;quot;SIMILAR&amp;quot;) &amp;amp; Stimulus1.RESP == &amp;quot;l&amp;quot;, 1, 0),
+         pscr = ifelse(coding %in% c(&amp;quot;NEW&amp;quot;) &amp;amp; Stimulus1.RESP == &amp;quot;l&amp;quot;, 1, 0),
+         psfa = ifelse(coding %in% c(&amp;quot;NEW&amp;quot;) &amp;amp; Stimulus1.RESP == &amp;quot;a&amp;quot;, 1, 0))&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div id=&#34;grouping-variables-and-joining-to-long-format&#34; class=&#34;section level4&#34;&gt;
+&lt;h4&gt;Grouping Variables and Joining To Long Format:&lt;/h4&gt;
+&lt;p&gt;Temporary tables are then created per subject based on hits and misses.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;a &amp;lt;- raw_df %&amp;gt;% group_by(Subject, Neutral_Hit) %&amp;gt;% 
+  tally() %&amp;gt;% 
+  filter(Neutral_Hit == 1) %&amp;gt;% 
+  select(n) %&amp;gt;% 
+  rename(Neutral_hits = n) 
+
+b &amp;lt;- raw_df %&amp;gt;% group_by(Subject, Neutral_Miss) %&amp;gt;% 
+  tally() %&amp;gt;% 
+  filter(Neutral_Miss == 1) %&amp;gt;% 
+  select(n) %&amp;gt;% 
+  rename(Neutral_miss = n) 
+
+c &amp;lt;- raw_df %&amp;gt;% group_by(Subject, Negative_Hit) %&amp;gt;% 
+  tally() %&amp;gt;% 
+  filter(Negative_Hit == 1) %&amp;gt;% 
+  select(n) %&amp;gt;% 
+  rename(Negative_hits = n) 
+
+d &amp;lt;- raw_df %&amp;gt;% group_by(Subject, Negative_Miss) %&amp;gt;% 
+  tally() %&amp;gt;% 
+  filter(Negative_Miss == 1) %&amp;gt;% 
+  select(n) %&amp;gt;% 
+  rename(Negative_miss = n) 
+
+e &amp;lt;- full_join(a, b)
+
+f &amp;lt;- full_join(c, d)
+
+g &amp;lt;- full_join(e, f)
+
+
+h &amp;lt;- raw_df %&amp;gt;% 
+  group_by(Subject) %&amp;gt;% 
+  filter(Total_Hits == 1) %&amp;gt;% 
+  tally() %&amp;gt;% 
+  rename(&amp;quot;Total_hits&amp;quot; = n)
+
+i &amp;lt;- raw_df %&amp;gt;% 
+  group_by(Subject) %&amp;gt;% 
+  filter(Total_Miss == 1) %&amp;gt;% 
+  tally() %&amp;gt;% 
+  rename(&amp;quot;Total_miss&amp;quot; = n)
+
+j &amp;lt;- full_join(h, i)
+k &amp;lt;- full_join(g, j)
+
+l &amp;lt;- raw_df %&amp;gt;% 
+  select(Subject, Sex, Stimulus1.RT) %&amp;gt;% 
+  group_by(Subject, Sex) %&amp;gt;% 
+  summarise(MeanRT = mean(Stimulus1.RT), )
+
+Ret_task_a &amp;lt;- full_join(l, k)
+
+
+m &amp;lt;- raw_df %&amp;gt;% 
+  select(Subject, Sex, Emotion, Stimulus1.RT) %&amp;gt;% 
+  filter(Emotion == &amp;quot;negative&amp;quot;) %&amp;gt;% 
+  group_by(Subject, Sex) %&amp;gt;% 
+  summarise(Neg_RT = mean(Stimulus1.RT))
+
+n &amp;lt;- raw_df %&amp;gt;% 
+  select(Subject, Sex, Emotion, Stimulus1.RT) %&amp;gt;% 
+  filter(Emotion == &amp;quot;neutral&amp;quot;) %&amp;gt;% 
+  group_by(Subject, Sex) %&amp;gt;% 
+  summarise(Neut_RT = mean(Stimulus1.RT))
+
+# ---
+d1 &amp;lt;- raw_df %&amp;gt;% 
+  group_by(Subject) %&amp;gt;% 
+  filter(Emotion == &amp;quot;negative&amp;quot; &amp;amp; Hit_similar == &amp;quot;1&amp;quot;) %&amp;gt;%
+  tally() %&amp;gt;%
+  rename(&amp;quot;Neg_Sim_Hit&amp;quot; = n)
+
+d2 &amp;lt;- raw_df %&amp;gt;% 
+  group_by(Subject) %&amp;gt;% 
+  filter(Emotion == &amp;quot;neutral&amp;quot; &amp;amp; Hit_similar == &amp;quot;1&amp;quot;) %&amp;gt;%
+  tally() %&amp;gt;%
+  rename(&amp;quot;Neut_Sim_Hit&amp;quot; = n)
+
+Ret_task_c &amp;lt;- full_join(d1, d2)
+
+# ---
+
+Ret_task_b &amp;lt;- full_join(m, n)  
+
+Ret_task_d &amp;lt;- full_join(Ret_task_b, Ret_task_c)
+
+Ret_task_df_temp &amp;lt;- full_join(Ret_task_a, Ret_task_d) # temp join of data tables
+
+pattern_sep_scores &amp;lt;- raw_df %&amp;gt;% 
+  group_by(Subject, Sex) %&amp;gt;% 
+  summarise(n_hits = sum(pshits)
+            , n_miss = sum(psmiss)
+            , n_cr = sum(pscr)
+            , n_fa = sum(psfa)) %&amp;gt;% 
+  mutate(n_hits = replace(n_hits, which(is.na(n_hits)), 0)) %&amp;gt;% 
+  mutate(n_miss = replace(n_miss, which(is.na(n_miss)), 0)) %&amp;gt;% 
+  mutate(n_cr = replace(n_cr, which(is.na(n_cr)), 0)) %&amp;gt;% 
+  mutate(n_fa = replace(n_fa, which(is.na(n_fa)), 0))
+
+ 
+ 
+pattern_sep_scores &amp;lt;- pattern_sep_scores  %&amp;gt;% 
+  mutate(Perc_correct = (n_hits + n_cr)/(n_hits + n_miss + n_fa +n_cr)
+         , Dprime = (n_hits/(n_hits + n_miss)-(n_fa/(n_fa + n_cr))))
+
+Ret_task_df_join &amp;lt;-  full_join(Ret_task_df_temp, pattern_sep_scores)
+
+
+datatable(Ret_task_df_join)&lt;/code&gt;&lt;/pre&gt;
+&lt;div id=&#34;htmlwidget-1&#34; style=&#34;width:100%;height:auto;&#34; class=&#34;datatables html-widget&#34;&gt;&lt;/div&gt;
+&lt;script type=&#34;application/json&#34; data-for=&#34;htmlwidget-1&#34;&gt;{&#34;x&#34;:{&#34;filter&#34;:&#34;none&#34;,&#34;data&#34;:[[&#34;1&#34;,&#34;2&#34;,&#34;3&#34;,&#34;4&#34;,&#34;5&#34;,&#34;6&#34;,&#34;7&#34;,&#34;8&#34;,&#34;9&#34;,&#34;10&#34;,&#34;11&#34;,&#34;12&#34;,&#34;13&#34;,&#34;14&#34;,&#34;15&#34;,&#34;16&#34;,&#34;17&#34;,&#34;18&#34;,&#34;19&#34;,&#34;20&#34;,&#34;21&#34;,&#34;22&#34;,&#34;23&#34;,&#34;24&#34;,&#34;25&#34;,&#34;26&#34;,&#34;27&#34;,&#34;28&#34;,&#34;29&#34;,&#34;30&#34;,&#34;31&#34;,&#34;32&#34;,&#34;33&#34;,&#34;34&#34;,&#34;35&#34;,&#34;36&#34;,&#34;37&#34;,&#34;38&#34;,&#34;39&#34;,&#34;40&#34;,&#34;41&#34;,&#34;42&#34;,&#34;43&#34;,&#34;44&#34;,&#34;45&#34;,&#34;46&#34;,&#34;47&#34;,&#34;48&#34;,&#34;49&#34;,&#34;50&#34;,&#34;51&#34;,&#34;52&#34;,&#34;53&#34;,&#34;54&#34;,&#34;55&#34;,&#34;56&#34;,&#34;57&#34;,&#34;58&#34;],[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,50,51,52,53,54,55,56,57,58,59],[&#34;female&#34;,&#34;female&#34;,&#34;female&#34;,&#34;female&#34;,&#34;female&#34;,&#34;female&#34;,&#34;female&#34;,&#34;female&#34;,&#34;female&#34;,&#34;female&#34;,&#34;female&#34;,&#34;female&#34;,&#34;female&#34;,&#34;female&#34;,&#34;male&#34;,&#34;female&#34;,&#34;female&#34;,&#34;female&#34;,&#34;female&#34;,&#34;female&#34;,&#34;male&#34;,&#34;female&#34;,&#34;female&#34;,&#34;female&#34;,&#34;female&#34;,&#34;male&#34;,&#34;female&#34;,&#34;male&#34;,&#34;male&#34;,&#34;male&#34;,&#34;female&#34;,&#34;female&#34;,&#34;female&#34;,&#34;female&#34;,&#34;female&#34;,&#34;female&#34;,&#34;female&#34;,&#34;female&#34;,&#34;female&#34;,&#34;female&#34;,&#34;male&#34;,&#34;female&#34;,&#34;male&#34;,&#34;female&#34;,&#34;male&#34;,&#34;male&#34;,&#34;female&#34;,&#34;female&#34;,&#34;male&#34;,&#34;female&#34;,&#34;male&#34;,&#34;female&#34;,&#34;female&#34;,&#34;male&#34;,&#34;female&#34;,&#34;female&#34;,&#34;female&#34;,&#34;male&#34;],[0,1298.66666666667,10.52,1525.94666666667,1213.78,1799.62,1119.41333333333,1217.12,744.86,1304.34,1294.08666666667,1481.85333333333,1198.86666666667,1226.98,1439.39333333333,1254.48666666667,1455.61333333333,1785.65333333333,1252.78,1431.15333333333,1131.36,1609.92666666667,1436.04666666667,1581.80666666667,2077.56,1302.44666666667,1296.04,1613,1530.57333333333,1603.76666666667,1780.80666666667,1547.81333333333,1611.20666666667,1794.96,1505.66666666667,1487.03333333333,1520.32666666667,1531.78666666667,954.386666666667,1763.06,1261.64,1394.30666666667,1757.8,1673.36666666667,1483.72666666667,1496.02,1354.52666666667,1414.34,1669.83333333333,1150.92,1635.57333333333,1553.92666666667,1379.62,2022.31333333333,1032.76666666667,1129.14666666667,1311.34,1954.56666666667],[null,9,1,53,63,49,69,55,38,60,63,57,59,58,65,55,68,56,65,61,58,59,67,67,58,62,57,64,64,62,65,64,54,62,61,65,68,64,65,56,57,63,65,63,58,67,60,50,58,52,69,65,58,52,44,64,53,50],[null,66,null,22,12,19,6,20,7,15,12,17,16,16,9,19,7,19,10,14,17,16,8,8,14,13,18,11,11,11,9,11,21,13,14,10,7,11,10,19,18,12,8,12,17,8,15,25,17,23,6,10,17,22,8,11,22,24],[null,9,null,57,63,46,69,45,33,53,65,62,55,57,65,52,64,55,64,62,56,66,68,58,55,52,52,64,65,67,66,61,56,60,59,53,66,61,58,67,63,59,59,62,64,65,67,61,62,52,62,59,65,46,43,68,64,46],[null,66,null,18,12,18,6,30,11,22,10,13,20,18,10,23,11,20,10,13,19,9,6,16,18,23,23,11,10,7,7,14,19,15,16,22,9,14,17,8,12,16,10,13,11,10,8,14,13,23,12,15,10,28,9,7,11,27],[null,18,1,110,126,95,138,100,71,113,128,119,114,115,130,107,132,111,129,123,114,125,135,125,113,114,109,128,129,129,131,125,110,122,120,118,134,125,123,123,120,122,124,125,122,132,127,111,120,104,131,124,123,98,87,132,117,96],[null,132,null,40,24,37,12,50,18,37,22,30,36,34,19,42,18,39,20,27,36,25,14,24,32,36,41,22,21,18,16,25,40,28,30,32,16,25,27,27,30,28,18,25,28,18,23,39,30,46,18,25,27,50,17,18,33,51],[0,1436.54666666667,0,1542.25333333333,1331.24,1801.16,1180.41333333333,1335.93333333333,720.533333333333,1379.02666666667,1435.82666666667,1710.89333333333,1275.65333333333,1303.58666666667,1578.14666666667,1300.25333333333,1567.52,1881.14666666667,1306.61333333333,1572.25333333333,1182.74666666667,1662.46666666667,1443.50666666667,1752.22666666667,2146.66666666667,1371.09333333333,1356.54666666667,1672.26666666667,1603.96,1743.04,2002.08,1741.22666666667,1787,1894.76,1682.26666666667,1606.81333333333,1728.26666666667,1612.97333333333,1026.22666666667,1978.97333333333,1293.29333333333,1407.12,1848.41333333333,1843.32,1587.05333333333,1620.12,1481.8,1449.64,1702.42666666667,1286.36,1728.53333333333,1743.64,1422.98666666667,2056.34666666667,1141.70666666667,1175.32,1411.66666666667,1985.09333333333],[0,1160.78666666667,21.04,1509.64,1096.32,1798.08,1058.41333333333,1098.30666666667,769.186666666667,1229.65333333333,1152.34666666667,1252.81333333333,1122.08,1150.37333333333,1300.64,1208.72,1343.70666666667,1690.16,1198.94666666667,1290.05333333333,1079.97333333333,1557.38666666667,1428.58666666667,1411.38666666667,2008.45333333333,1233.8,1235.53333333333,1553.73333333333,1457.18666666667,1464.49333333333,1559.53333333333,1354.4,1435.41333333333,1695.16,1329.06666666667,1367.25333333333,1312.38666666667,1450.6,882.546666666667,1547.14666666667,1229.98666666667,1381.49333333333,1667.18666666667,1503.41333333333,1380.4,1371.92,1227.25333333333,1379.04,1637.24,1015.48,1542.61333333333,1364.21333333333,1336.25333333333,1988.28,923.826666666667,1082.97333333333,1211.01333333333,1924.04],[null,1,null,15,21,16,23,15,3,15,20,18,21,14,22,19,18,22,24,25,16,18,23,20,20,21,22,19,21,22,22,21,8,17,17,12,23,24,23,22,17,19,21,20,23,22,24,17,14,22,18,21,23,21,11,22,20,11],[null,5,null,12,21,11,25,15,10,13,17,19,19,14,19,19,23,20,20,23,15,15,20,22,22,18,18,18,23,21,21,21,8,16,20,20,21,21,21,15,14,19,24,20,22,23,17,9,8,17,22,20,15,19,10,19,11,11],[0,40,0,13,12,0,8,21,0,9,9,16,20,10,6,21,9,20,0,19,12,7,6,11,0,19,22,6,12,0,9,13,6,5,14,12,7,15,16,12,10,13,0,13,18,11,11,11,2,28,0,11,13,27,0,8,12,0],[0,10,0,37,38,0,42,29,0,41,41,34,30,40,44,29,41,30,0,31,38,43,44,39,0,31,28,44,38,0,41,37,44,45,36,38,43,35,34,38,40,37,0,37,32,39,39,39,48,22,0,39,37,23,0,42,38,0],[0,2,0,46,46,0,48,41,0,44,50,48,44,0,45,0,50,39,49,44,45,49,0,44,0,44,41,47,47,0,0,46,50,44,47,48,47,45,45,48,49,47,0,48,45,48,47,46,50,43,50,0,48,0,0,49,48,46],[0,48,0,4,4,0,2,9,0,6,0,2,6,0,5,0,0,11,1,6,5,1,0,6,0,6,9,3,3,0,0,4,0,6,3,2,3,5,5,2,1,3,0,2,5,2,3,4,0,7,0,0,2,0,0,1,2,4],[null,0.42,null,0.59,0.58,null,0.56,0.62,null,0.53,0.59,0.64,0.64,0.2,0.51,0.42,0.59,0.59,0.98,0.63,0.57,0.56,0.12,0.55,null,0.63,0.63,0.53,0.59,null,0.18,0.59,0.56,0.49,0.61,0.6,0.54,0.6,0.61,0.6,0.59,0.6,null,0.61,0.63,0.59,0.58,0.57,0.52,0.71,1,0.22,0.61,0.54,null,0.57,0.6,0.92],[null,-0.16,null,0.18,0.16,null,0.12,0.24,null,0.06,0.18,0.28,0.28,null,0.02,null,0.18,0.18,null,0.26,0.14,0.12,null,0.1,null,0.26,0.26,0.06,0.18,null,null,0.18,0.12,-0.02,0.22,0.2,0.08,0.2,0.22,0.2,0.18,0.2,null,0.22,0.26,0.18,0.16,0.14,0.04,0.42,null,null,0.22,null,null,0.14,0.2,null]],&#34;container&#34;:&#34;&lt;table class=\&#34;display\&#34;&gt;\n  &lt;thead&gt;\n    &lt;tr&gt;\n      &lt;th&gt; &lt;\/th&gt;\n      &lt;th&gt;Subject&lt;\/th&gt;\n      &lt;th&gt;Sex&lt;\/th&gt;\n      &lt;th&gt;MeanRT&lt;\/th&gt;\n      &lt;th&gt;Neutral_hits&lt;\/th&gt;\n      &lt;th&gt;Neutral_miss&lt;\/th&gt;\n      &lt;th&gt;Negative_hits&lt;\/th&gt;\n      &lt;th&gt;Negative_miss&lt;\/th&gt;\n      &lt;th&gt;Total_hits&lt;\/th&gt;\n      &lt;th&gt;Total_miss&lt;\/th&gt;\n      &lt;th&gt;Neg_RT&lt;\/th&gt;\n      &lt;th&gt;Neut_RT&lt;\/th&gt;\n      &lt;th&gt;Neg_Sim_Hit&lt;\/th&gt;\n      &lt;th&gt;Neut_Sim_Hit&lt;\/th&gt;\n      &lt;th&gt;n_hits&lt;\/th&gt;\n      &lt;th&gt;n_miss&lt;\/th&gt;\n      &lt;th&gt;n_cr&lt;\/th&gt;\n      &lt;th&gt;n_fa&lt;\/th&gt;\n      &lt;th&gt;Perc_correct&lt;\/th&gt;\n      &lt;th&gt;Dprime&lt;\/th&gt;\n    &lt;\/tr&gt;\n  &lt;\/thead&gt;\n&lt;\/table&gt;&#34;,&#34;options&#34;:{&#34;columnDefs&#34;:[{&#34;className&#34;:&#34;dt-right&#34;,&#34;targets&#34;:[1,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19]},{&#34;orderable&#34;:false,&#34;targets&#34;:0}],&#34;order&#34;:[],&#34;autoWidth&#34;:false,&#34;orderClasses&#34;:false}},&#34;evals&#34;:[],&#34;jsHooks&#34;:[]}&lt;/script&gt;
+&lt;/div&gt;
+&lt;div id=&#34;validation-task-data&#34; class=&#34;section level4&#34;&gt;
+&lt;h4&gt;Validation Task Data&lt;/h4&gt;
+&lt;p&gt;Validation database imported into an object&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;val_task &amp;lt;- read_csv(file = &amp;quot;data/val_task.csv&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;A table is created by grouping by each subject and then a new variable is computed for each emotion score dimension.
+There is also response times for each image but wont be using those for this analysis.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;val_df &amp;lt;- val_task %&amp;gt;% 
+  group_by(Subject) %&amp;gt;% 
+  summarise(Arousal = mean(arousal.RESP), Valence = mean(valence.RESP), Dominance = mean(dominance.RESP))&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;full-join-of-both-tasks-to-one-dataframe-in-wide-format&#34; class=&#34;section level4&#34;&gt;
+&lt;h4&gt;Full join of both tasks to one dataframe in wide format&lt;/h4&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;val_df$Subject &amp;lt;- as.factor(val_df$Subject)
+
+Ret_task_df_join$Subject &amp;lt;- as.factor(Ret_task_df_join$Subject)
+
+group_39_wide &amp;lt;- full_join(Ret_task_df_join, val_df) # Final data table with all computed results
+
+datatable(group_39_wide)&lt;/code&gt;&lt;/pre&gt;
+&lt;div id=&#34;htmlwidget-2&#34; style=&#34;width:100%;height:auto;&#34; class=&#34;datatables html-widget&#34;&gt;&lt;/div&gt;
+&lt;script type=&#34;application/json&#34; data-for=&#34;htmlwidget-2&#34;&gt;{&#34;x&#34;:{&#34;filter&#34;:&#34;none&#34;,&#34;data&#34;:[[&#34;1&#34;,&#34;2&#34;,&#34;3&#34;,&#34;4&#34;,&#34;5&#34;,&#34;6&#34;,&#34;7&#34;,&#34;8&#34;,&#34;9&#34;,&#34;10&#34;,&#34;11&#34;,&#34;12&#34;,&#34;13&#34;,&#34;14&#34;,&#34;15&#34;,&#34;16&#34;,&#34;17&#34;,&#34;18&#34;,&#34;19&#34;,&#34;20&#34;,&#34;21&#34;,&#34;22&#34;,&#34;23&#34;,&#34;24&#34;,&#34;25&#34;,&#34;26&#34;,&#34;27&#34;,&#34;28&#34;,&#34;29&#34;,&#34;30&#34;,&#34;31&#34;,&#34;32&#34;,&#34;33&#34;,&#34;34&#34;,&#34;35&#34;,&#34;36&#34;,&#34;37&#34;,&#34;38&#34;,&#34;39&#34;,&#34;40&#34;,&#34;41&#34;,&#34;42&#34;,&#34;43&#34;,&#34;44&#34;,&#34;45&#34;,&#34;46&#34;,&#34;47&#34;,&#34;48&#34;,&#34;49&#34;,&#34;50&#34;,&#34;51&#34;,&#34;52&#34;,&#34;53&#34;,&#34;54&#34;,&#34;55&#34;,&#34;56&#34;,&#34;57&#34;,&#34;58&#34;],[&#34;1&#34;,&#34;2&#34;,&#34;3&#34;,&#34;4&#34;,&#34;5&#34;,&#34;6&#34;,&#34;7&#34;,&#34;8&#34;,&#34;9&#34;,&#34;10&#34;,&#34;11&#34;,&#34;12&#34;,&#34;13&#34;,&#34;14&#34;,&#34;15&#34;,&#34;16&#34;,&#34;17&#34;,&#34;18&#34;,&#34;19&#34;,&#34;20&#34;,&#34;21&#34;,&#34;22&#34;,&#34;23&#34;,&#34;24&#34;,&#34;25&#34;,&#34;26&#34;,&#34;27&#34;,&#34;28&#34;,&#34;29&#34;,&#34;30&#34;,&#34;31&#34;,&#34;32&#34;,&#34;33&#34;,&#34;34&#34;,&#34;35&#34;,&#34;36&#34;,&#34;37&#34;,&#34;38&#34;,&#34;39&#34;,&#34;40&#34;,&#34;41&#34;,&#34;42&#34;,&#34;43&#34;,&#34;44&#34;,&#34;45&#34;,&#34;46&#34;,&#34;47&#34;,&#34;48&#34;,&#34;50&#34;,&#34;51&#34;,&#34;52&#34;,&#34;53&#34;,&#34;54&#34;,&#34;55&#34;,&#34;56&#34;,&#34;57&#34;,&#34;58&#34;,&#34;59&#34;],[&#34;female&#34;,&#34;female&#34;,&#34;female&#34;,&#34;female&#34;,&#34;female&#34;,&#34;female&#34;,&#34;female&#34;,&#34;female&#34;,&#34;female&#34;,&#34;female&#34;,&#34;female&#34;,&#34;female&#34;,&#34;female&#34;,&#34;female&#34;,&#34;male&#34;,&#34;female&#34;,&#34;female&#34;,&#34;female&#34;,&#34;female&#34;,&#34;female&#34;,&#34;male&#34;,&#34;female&#34;,&#34;female&#34;,&#34;female&#34;,&#34;female&#34;,&#34;male&#34;,&#34;female&#34;,&#34;male&#34;,&#34;male&#34;,&#34;male&#34;,&#34;female&#34;,&#34;female&#34;,&#34;female&#34;,&#34;female&#34;,&#34;female&#34;,&#34;female&#34;,&#34;female&#34;,&#34;female&#34;,&#34;female&#34;,&#34;female&#34;,&#34;male&#34;,&#34;female&#34;,&#34;male&#34;,&#34;female&#34;,&#34;male&#34;,&#34;male&#34;,&#34;female&#34;,&#34;female&#34;,&#34;male&#34;,&#34;female&#34;,&#34;male&#34;,&#34;female&#34;,&#34;female&#34;,&#34;male&#34;,&#34;female&#34;,&#34;female&#34;,&#34;female&#34;,&#34;male&#34;],[0,1298.66666666667,10.52,1525.94666666667,1213.78,1799.62,1119.41333333333,1217.12,744.86,1304.34,1294.08666666667,1481.85333333333,1198.86666666667,1226.98,1439.39333333333,1254.48666666667,1455.61333333333,1785.65333333333,1252.78,1431.15333333333,1131.36,1609.92666666667,1436.04666666667,1581.80666666667,2077.56,1302.44666666667,1296.04,1613,1530.57333333333,1603.76666666667,1780.80666666667,1547.81333333333,1611.20666666667,1794.96,1505.66666666667,1487.03333333333,1520.32666666667,1531.78666666667,954.386666666667,1763.06,1261.64,1394.30666666667,1757.8,1673.36666666667,1483.72666666667,1496.02,1354.52666666667,1414.34,1669.83333333333,1150.92,1635.57333333333,1553.92666666667,1379.62,2022.31333333333,1032.76666666667,1129.14666666667,1311.34,1954.56666666667],[null,9,1,53,63,49,69,55,38,60,63,57,59,58,65,55,68,56,65,61,58,59,67,67,58,62,57,64,64,62,65,64,54,62,61,65,68,64,65,56,57,63,65,63,58,67,60,50,58,52,69,65,58,52,44,64,53,50],[null,66,null,22,12,19,6,20,7,15,12,17,16,16,9,19,7,19,10,14,17,16,8,8,14,13,18,11,11,11,9,11,21,13,14,10,7,11,10,19,18,12,8,12,17,8,15,25,17,23,6,10,17,22,8,11,22,24],[null,9,null,57,63,46,69,45,33,53,65,62,55,57,65,52,64,55,64,62,56,66,68,58,55,52,52,64,65,67,66,61,56,60,59,53,66,61,58,67,63,59,59,62,64,65,67,61,62,52,62,59,65,46,43,68,64,46],[null,66,null,18,12,18,6,30,11,22,10,13,20,18,10,23,11,20,10,13,19,9,6,16,18,23,23,11,10,7,7,14,19,15,16,22,9,14,17,8,12,16,10,13,11,10,8,14,13,23,12,15,10,28,9,7,11,27],[null,18,1,110,126,95,138,100,71,113,128,119,114,115,130,107,132,111,129,123,114,125,135,125,113,114,109,128,129,129,131,125,110,122,120,118,134,125,123,123,120,122,124,125,122,132,127,111,120,104,131,124,123,98,87,132,117,96],[null,132,null,40,24,37,12,50,18,37,22,30,36,34,19,42,18,39,20,27,36,25,14,24,32,36,41,22,21,18,16,25,40,28,30,32,16,25,27,27,30,28,18,25,28,18,23,39,30,46,18,25,27,50,17,18,33,51],[0,1436.54666666667,0,1542.25333333333,1331.24,1801.16,1180.41333333333,1335.93333333333,720.533333333333,1379.02666666667,1435.82666666667,1710.89333333333,1275.65333333333,1303.58666666667,1578.14666666667,1300.25333333333,1567.52,1881.14666666667,1306.61333333333,1572.25333333333,1182.74666666667,1662.46666666667,1443.50666666667,1752.22666666667,2146.66666666667,1371.09333333333,1356.54666666667,1672.26666666667,1603.96,1743.04,2002.08,1741.22666666667,1787,1894.76,1682.26666666667,1606.81333333333,1728.26666666667,1612.97333333333,1026.22666666667,1978.97333333333,1293.29333333333,1407.12,1848.41333333333,1843.32,1587.05333333333,1620.12,1481.8,1449.64,1702.42666666667,1286.36,1728.53333333333,1743.64,1422.98666666667,2056.34666666667,1141.70666666667,1175.32,1411.66666666667,1985.09333333333],[0,1160.78666666667,21.04,1509.64,1096.32,1798.08,1058.41333333333,1098.30666666667,769.186666666667,1229.65333333333,1152.34666666667,1252.81333333333,1122.08,1150.37333333333,1300.64,1208.72,1343.70666666667,1690.16,1198.94666666667,1290.05333333333,1079.97333333333,1557.38666666667,1428.58666666667,1411.38666666667,2008.45333333333,1233.8,1235.53333333333,1553.73333333333,1457.18666666667,1464.49333333333,1559.53333333333,1354.4,1435.41333333333,1695.16,1329.06666666667,1367.25333333333,1312.38666666667,1450.6,882.546666666667,1547.14666666667,1229.98666666667,1381.49333333333,1667.18666666667,1503.41333333333,1380.4,1371.92,1227.25333333333,1379.04,1637.24,1015.48,1542.61333333333,1364.21333333333,1336.25333333333,1988.28,923.826666666667,1082.97333333333,1211.01333333333,1924.04],[null,1,null,15,21,16,23,15,3,15,20,18,21,14,22,19,18,22,24,25,16,18,23,20,20,21,22,19,21,22,22,21,8,17,17,12,23,24,23,22,17,19,21,20,23,22,24,17,14,22,18,21,23,21,11,22,20,11],[null,5,null,12,21,11,25,15,10,13,17,19,19,14,19,19,23,20,20,23,15,15,20,22,22,18,18,18,23,21,21,21,8,16,20,20,21,21,21,15,14,19,24,20,22,23,17,9,8,17,22,20,15,19,10,19,11,11],[0,40,0,13,12,0,8,21,0,9,9,16,20,10,6,21,9,20,0,19,12,7,6,11,0,19,22,6,12,0,9,13,6,5,14,12,7,15,16,12,10,13,0,13,18,11,11,11,2,28,0,11,13,27,0,8,12,0],[0,10,0,37,38,0,42,29,0,41,41,34,30,40,44,29,41,30,0,31,38,43,44,39,0,31,28,44,38,0,41,37,44,45,36,38,43,35,34,38,40,37,0,37,32,39,39,39,48,22,0,39,37,23,0,42,38,0],[0,2,0,46,46,0,48,41,0,44,50,48,44,0,45,0,50,39,49,44,45,49,0,44,0,44,41,47,47,0,0,46,50,44,47,48,47,45,45,48,49,47,0,48,45,48,47,46,50,43,50,0,48,0,0,49,48,46],[0,48,0,4,4,0,2,9,0,6,0,2,6,0,5,0,0,11,1,6,5,1,0,6,0,6,9,3,3,0,0,4,0,6,3,2,3,5,5,2,1,3,0,2,5,2,3,4,0,7,0,0,2,0,0,1,2,4],[null,0.42,null,0.59,0.58,null,0.56,0.62,null,0.53,0.59,0.64,0.64,0.2,0.51,0.42,0.59,0.59,0.98,0.63,0.57,0.56,0.12,0.55,null,0.63,0.63,0.53,0.59,null,0.18,0.59,0.56,0.49,0.61,0.6,0.54,0.6,0.61,0.6,0.59,0.6,null,0.61,0.63,0.59,0.58,0.57,0.52,0.71,1,0.22,0.61,0.54,null,0.57,0.6,0.92],[null,-0.16,null,0.18,0.16,null,0.12,0.24,null,0.06,0.18,0.28,0.28,null,0.02,null,0.18,0.18,null,0.26,0.14,0.12,null,0.1,null,0.26,0.26,0.06,0.18,null,null,0.18,0.12,-0.02,0.22,0.2,0.08,0.2,0.22,0.2,0.18,0.2,null,0.22,0.26,0.18,0.16,0.14,0.04,0.42,null,null,0.22,null,null,0.14,0.2,null],[null,4.63,null,5.36,3.98,5.1,4.67,5.41,5.21,4.3,4.18,2.21,4.52,2.76,4.27,5.58,3.88,4.29,4.23,3.92,2.36,3.94,4.68,3.66,4.98,5.29,5.07,4.36,4.98,4.05,4.26,3.66,4.87,1.73,2.51,5.18,4.7,4.01,4.27,4.46,4.99,4.64,4.05,3.12,3.85,4.18,4.99,3.78,5.25,3.42,4.43,4.79,4.82,2.63,5.7,1.09,6.78,4.48],[null,null,null,3.93,3.9,4.59,4.22,4.43,4.29,5.2,4.93,4.49,4.2,6.66,3.35,4.08,4.05,5.2,4.9,5.91,5.45,4.38,3.93,4.74,4.77,3.71,4.49,4.31,4.61,4.98,4.18,4.68,3.99,3.9,4.7,3.91,5.17,5.98,4.13,4.38,3.55,4.38,4.63,4.21,4.55,4.34,4.84,5.03,4.08,4.73,4.89,4.86,4.77,6,3.96,5,3.4,3.83],[null,null,null,4.17,4.97,5.63,5.59,4.93,5.19,5.52,4.86,7.84,5.29,7.58,4.98,4.31,5.77,5.59,5.79,5.53,5.35,5.27,4.58,5.83,5.08,4.4,4.86,5.09,4.92,6.2,6.89,6.23,4.89,5.09,5.11,4.87,5.04,7.03,5.76,6.57,6.76,4.97,5.2,3.29,5.62,6.52,5.27,6.12,3.85,5.15,5.84,5.45,5.67,6.78,5.26,8.76,3.99,4.94]],&#34;container&#34;:&#34;&lt;table class=\&#34;display\&#34;&gt;\n  &lt;thead&gt;\n    &lt;tr&gt;\n      &lt;th&gt; &lt;\/th&gt;\n      &lt;th&gt;Subject&lt;\/th&gt;\n      &lt;th&gt;Sex&lt;\/th&gt;\n      &lt;th&gt;MeanRT&lt;\/th&gt;\n      &lt;th&gt;Neutral_hits&lt;\/th&gt;\n      &lt;th&gt;Neutral_miss&lt;\/th&gt;\n      &lt;th&gt;Negative_hits&lt;\/th&gt;\n      &lt;th&gt;Negative_miss&lt;\/th&gt;\n      &lt;th&gt;Total_hits&lt;\/th&gt;\n      &lt;th&gt;Total_miss&lt;\/th&gt;\n      &lt;th&gt;Neg_RT&lt;\/th&gt;\n      &lt;th&gt;Neut_RT&lt;\/th&gt;\n      &lt;th&gt;Neg_Sim_Hit&lt;\/th&gt;\n      &lt;th&gt;Neut_Sim_Hit&lt;\/th&gt;\n      &lt;th&gt;n_hits&lt;\/th&gt;\n      &lt;th&gt;n_miss&lt;\/th&gt;\n      &lt;th&gt;n_cr&lt;\/th&gt;\n      &lt;th&gt;n_fa&lt;\/th&gt;\n      &lt;th&gt;Perc_correct&lt;\/th&gt;\n      &lt;th&gt;Dprime&lt;\/th&gt;\n      &lt;th&gt;Arousal&lt;\/th&gt;\n      &lt;th&gt;Valence&lt;\/th&gt;\n      &lt;th&gt;Dominance&lt;\/th&gt;\n    &lt;\/tr&gt;\n  &lt;\/thead&gt;\n&lt;\/table&gt;&#34;,&#34;options&#34;:{&#34;columnDefs&#34;:[{&#34;className&#34;:&#34;dt-right&#34;,&#34;targets&#34;:[3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22]},{&#34;orderable&#34;:false,&#34;targets&#34;:0}],&#34;order&#34;:[],&#34;autoWidth&#34;:false,&#34;orderClasses&#34;:false}},&#34;evals&#34;:[],&#34;jsHooks&#34;:[]}&lt;/script&gt;
+&lt;/div&gt;
+&lt;div id=&#34;descriptives&#34; class=&#34;section level4&#34;&gt;
+&lt;h4&gt;Descriptives&lt;/h4&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;my_fun &amp;lt;- function(x, num_var){
+  num_var &amp;lt;- enquo(num_var)
+
+  x %&amp;gt;%
+    summarize(avg = mean(!!num_var), n = n(), 
+              sd = sd(!!num_var), se = sd/sqrt(n))
+}
+
+mean_response_time &amp;lt;- group_39_wide %&amp;gt;%
+  group_by(Sex) %&amp;gt;%
+  my_fun(MeanRT)
+
+neg_similar_hits &amp;lt;- group_39_wide %&amp;gt;%
+  group_by(Sex) %&amp;gt;%
+  na.omit() %&amp;gt;% 
+  my_fun(Neg_Sim_Hit)
+
+kable(mean_response_time) %&amp;gt;% kable_styling()&lt;/code&gt;&lt;/pre&gt;
+&lt;table class=&#34;table&#34; style=&#34;margin-left: auto; margin-right: auto;&#34;&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th style=&#34;text-align:left;&#34;&gt;
+Sex
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+avg
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+n
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+sd
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+se
+&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+male
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1564.430
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+14
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+247.320
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+66.09905
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+female
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1352.464
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+44
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+389.461
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+58.71346
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;kable(neg_similar_hits) %&amp;gt;% kable_styling()&lt;/code&gt;&lt;/pre&gt;
+&lt;table class=&#34;table&#34; style=&#34;margin-left: auto; margin-right: auto;&#34;&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th style=&#34;text-align:left;&#34;&gt;
+Sex
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+avg
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+n
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+sd
+&lt;/th&gt;
+&lt;th style=&#34;text-align:right;&#34;&gt;
+se
+&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+male
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+19.44444
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+9
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+3.126944
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+1.0423146
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left;&#34;&gt;
+female
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+19.58065
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+31
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+3.801528
+&lt;/td&gt;
+&lt;td style=&#34;text-align:right;&#34;&gt;
+0.6827745
+&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;/div&gt;
+&lt;div id=&#34;emotion-scores&#34; class=&#34;section level4&#34;&gt;
+&lt;h4&gt;Emotion Scores&lt;/h4&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;# Gather variables and change to wide format
+ret_long &amp;lt;- group_39_wide %&amp;gt;% 
+  gather(key, value, Valence, Arousal, Dominance) %&amp;gt;%
+  select(Subject, key, value, Sex) %&amp;gt;% 
+  rename(&amp;quot;Emotion&amp;quot; = key) %&amp;gt;% 
+  arrange(desc(Subject))
+
+ggplot(data = ret_long) +
+  aes(x = value) +
+  geom_histogram(bins = 30, fill = &amp;quot;#1f78b4&amp;quot;) +
+  labs(title = &amp;quot;Distribution of Emotion Response Scores&amp;quot;,
+    x = &amp;quot;Mean Scores&amp;quot;,
+    y = &amp;quot;Ratings&amp;quot;,
+    subtitle = &amp;quot;IAPS Scores&amp;quot;) +
+  theme_cowplot() +
+  facet_wrap(vars(Emotion))&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2019-08-16-emotional-impact-on-memory-part-2_files/figure-html/emotion-1.png&#34; width=&#34;864&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;emotion-ratings-from-negative-stimuli&#34; class=&#34;section level4&#34;&gt;
+&lt;h4&gt;Emotion Ratings from Negative Stimuli&lt;/h4&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;# Negative Emotion Scores
+val_task %&amp;gt;% 
+  filter(condition == &amp;quot;negative&amp;quot;) %&amp;gt;% 
+  na.omit() %&amp;gt;% 
+  group_by(Subject, Sex) %&amp;gt;% 
+  summarise(Arousal = mean(arousal.RESP)
+            , Dominance = mean(dominance.RESP)
+            , Valence = mean(valence.RESP)) %&amp;gt;% 
+  gather(key, value, Arousal, Dominance, Valence) %&amp;gt;% 
+  rename(&amp;quot;Emotion&amp;quot; = key) %&amp;gt;% 
+  ggplot(aes(x = value)) +
+  geom_histogram(bins = 20, fill = &amp;quot;#1f78b4&amp;quot;) +
+  labs(title = &amp;quot;Emotion Scores from Negative Stimuli&amp;quot;,
+       y = &amp;quot;Response&amp;quot;,
+    subtitle = &amp;quot;Arousal, Dominance and Valence&amp;quot;) +
+  theme_cowplot() +
+  facet_wrap(vars(Emotion))&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2019-08-16-emotional-impact-on-memory-part-2_files/figure-html/unnamed-chunk-6-1.png&#34; width=&#34;864&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;As expected, negative stimuli have a higher arousal rating and lower valence rating.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;emotion-ratings-from-neutral-stimuli&#34; class=&#34;section level4&#34;&gt;
+&lt;h4&gt;Emotion Ratings from Neutral Stimuli&lt;/h4&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;# Neutral Emotion Scores
+val_task %&amp;gt;% 
+  filter(condition == &amp;quot;neutral&amp;quot;) %&amp;gt;% 
+  na.omit() %&amp;gt;% 
+  group_by(Subject, Sex) %&amp;gt;% 
+  summarise(Arousal = mean(arousal.RESP)
+            , Dominance = mean(dominance.RESP)
+            , Valence = mean(valence.RESP)) %&amp;gt;% 
+  gather(key, value, Arousal, Dominance, Valence) %&amp;gt;% 
+  rename(&amp;quot;Emotion&amp;quot; = key) %&amp;gt;% 
+  ggplot(aes(x = value)) +
+  geom_histogram(bins = 20, fill = &amp;quot;#1f78b4&amp;quot;) +
+  labs(title = &amp;quot;Emotion Scores from the Neutral Condition&amp;quot;,
+    subtitle = &amp;quot;Arousal, Dominance and Valence&amp;quot;) +
+  theme_cowplot() +
+  facet_wrap(vars(Emotion))&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2019-08-16-emotional-impact-on-memory-part-2_files/figure-html/unnamed-chunk-7-1.png&#34; width=&#34;864&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;This is what we would expect. Neutral stimuli should have low arousal ratings and higher valence ratings.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;histogram-of-total-negative-and-neutral-condition-hits&#34; class=&#34;section level4&#34;&gt;
+&lt;h4&gt;Histogram of Total Negative and Neutral Condition hits&lt;/h4&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;group_39_wide %&amp;gt;% 
+  gather(key, value, Neutral_hits, Negative_hits) %&amp;gt;% # change to long format
+  select(Subject, Sex, key, value) %&amp;gt;%
+  na.omit() %&amp;gt;% 
+  ggplot(aes(x = value)) +
+  geom_histogram(bins = 22, fill = &amp;quot;#1f78b4&amp;quot;) +
+  theme_cowplot() +
+  facet_wrap(vars(key)) +
+  geom_vline(aes(xintercept = mean(value)), linetype = &amp;quot;dashed&amp;quot;) &lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2019-08-16-emotional-impact-on-memory-part-2_files/figure-html/unnamed-chunk-8-1.png&#34; width=&#34;864&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;negative-similar-hits-male-vs-females&#34; class=&#34;section level4&#34;&gt;
+&lt;h4&gt;Negative Similar Hits (Male vs Females)&lt;/h4&gt;
+&lt;p&gt;This is our overall indicator of if there is evidence of pattern separation performance. The ability to detect
+a image that was seen in the encoding task and recall if it they had seen it previously.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;group_39_wide %&amp;gt;% 
+  select(Sex, Neg_Sim_Hit, Subject) %&amp;gt;%
+  na.omit() %&amp;gt;% 
+  ggplot(aes(x = Neg_Sim_Hit)) +
+  geom_histogram(bins = 22, fill = &amp;quot;#1f78b4&amp;quot;) +
+  labs(title = &amp;quot;Negative Similar Hits&amp;quot;,
+    subtitle = &amp;quot;Male and Females&amp;quot;) +
+  theme_cowplot() +
+  facet_wrap(vars(Sex)) +
+  geom_vline(data = na.omit(group_39_wide), aes(xintercept = mean(Neg_Sim_Hit)), linetype = &amp;quot;dashed&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2019-08-16-emotional-impact-on-memory-part-2_files/figure-html/unnamed-chunk-9-1.png&#34; width=&#34;864&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;neutral-simiar-hits-male-vs-females&#34; class=&#34;section level4&#34;&gt;
+&lt;h4&gt;Neutral Simiar Hits (Male vs Females)&lt;/h4&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;group_39_wide %&amp;gt;% 
+  select(Sex, Neut_Sim_Hit, Subject) %&amp;gt;%
+  na.omit() %&amp;gt;% 
+  ggplot(aes(x = Neut_Sim_Hit)) +
+  geom_histogram(bins = 22, fill = &amp;quot;#1f78b4&amp;quot;) +
+  labs(title = &amp;quot;Neutral Similar Hits&amp;quot;,
+    subtitle = &amp;quot;Male and Females&amp;quot;) +
+  theme_cowplot() +
+  facet_wrap(vars(Sex)) +
+  geom_vline(data = na.omit(group_39_wide), aes(xintercept = mean(Neut_Sim_Hit)), linetype = &amp;quot;dashed&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2019-08-16-emotional-impact-on-memory-part-2_files/figure-html/unnamed-chunk-10-1.png&#34; width=&#34;864&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;validated-vs-fake-comparisons&#34; class=&#34;section level4&#34;&gt;
+&lt;h4&gt;Validated vs Fake Comparisons&lt;/h4&gt;
+&lt;p&gt;We need to check if the altered images were eliciting a similar emotional response as to the
+original IAPS validated images. There should be no difference between dimensions specifically, arousal and valence. If there is a difference then we dont know if we are actually eliciting the same response from participants as we want to.&lt;/p&gt;
+&lt;p&gt;I had already processed this file previous created a file with two groups. Group “a” is the original IAPS images with the means and sds taken from the manual. Group “b” is the altered images used in the retrieval task.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;IAPS_Fake_df &amp;lt;- read_csv(&amp;quot;data/validation_task_df.csv&amp;quot;, # import data
+    col_types = cols(Group = col_factor(levels = c(&amp;quot;b&amp;quot;, 
+        &amp;quot;a&amp;quot;)), aromn = col_number(), dommn = col_number(), 
+        valmn = col_number()), na = &amp;quot;0&amp;quot;)
+
+
+# Change to long format
+
+IAPS_Fake_df &amp;lt;- IAPS_Fake_df %&amp;gt;% 
+  gather(key, value, aromn, valmn, dommn) %&amp;gt;% 
+  rename(&amp;quot;Emotion&amp;quot; = key)
+
+IAPS_Fake_df$Emotion &amp;lt;- as.factor(IAPS_Fake_df$Emotion)
+IAPS_Fake_df$Group &amp;lt;- as.factor(IAPS_Fake_df$Group)
+
+library(cowplot)
+
+IAPS_Fake_df %&amp;gt;% 
+  na.omit() %&amp;gt;% 
+ggplot() +
+ aes(x = Emotion, y = value, fill = Group, colour = Group) +
+ geom_boxplot() +
+ scale_fill_hue() +
+ scale_color_hue() +
+ labs(x = &amp;quot;Emotion&amp;quot;, y = &amp;quot;Mean Arousal Score&amp;quot;, title = &amp;quot;Validated vs Fake Comparison&amp;quot;, subtitle = &amp;quot;Original IAPS Images with Altered Images&amp;quot;) +
+ theme_cowplot() +
+ theme(legend.position = &amp;quot;none&amp;quot;) +
+ facet_wrap(vars(Group))&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2019-08-16-emotional-impact-on-memory-part-2_files/figure-html/unnamed-chunk-11-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;Boxplot seems to indicate we are getting pretty similar responses to the IAPS images.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(ggpubr)
+
+comparison &amp;lt;- compare_means(value ~ Emotion, group.by = &amp;quot;Group&amp;quot;,  data = IAPS_Fake_df)
+
+comparison&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## # A tibble: 6 x 9
+##   Group .y.   group1 group2        p   p.adj p.format p.signif method  
+##   &amp;lt;fct&amp;gt; &amp;lt;chr&amp;gt; &amp;lt;chr&amp;gt;  &amp;lt;chr&amp;gt;     &amp;lt;dbl&amp;gt;   &amp;lt;dbl&amp;gt; &amp;lt;chr&amp;gt;    &amp;lt;chr&amp;gt;    &amp;lt;chr&amp;gt;   
+## 1 b     value aromn  dommn  0.109    0.33    0.10930  ns       Wilcoxon
+## 2 b     value aromn  valmn  0.150    0.33    0.15010  ns       Wilcoxon
+## 3 b     value dommn  valmn  0.00362  0.014   0.00362  **       Wilcoxon
+## 4 a     value aromn  dommn  0.992    0.99    0.99175  ns       Wilcoxon
+## 5 a     value aromn  valmn  0.000505 0.0025  0.00051  ***      Wilcoxon
+## 6 a     value dommn  valmn  0.000203 0.00120 0.00020  ***      Wilcoxon&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;data-analysis&#34; class=&#34;section level4&#34;&gt;
+&lt;h4&gt;Data Analysis&lt;/h4&gt;
+&lt;ol style=&#34;list-style-type: decimal&#34;&gt;
+&lt;li&gt;&lt;p&gt;Participants will show increased pattern separation scores on high arousal trials versus low-arousal trials.&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;We expect an interaction effect between sex and emotion, females will have a higher pattern separation score than males for negative stimuli only.&lt;/p&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;Next post will go through how to conduct a split-plot anova and analyse the results.&lt;/p&gt;
+&lt;/div&gt;
+</description>
+    </item>
+    
+    <item>
       <title>PCA on US Nutrition</title>
       <link>/post/pca-on-us-nutrition/</link>
       <pubDate>Fri, 09 Aug 2019 00:00:00 +0000</pubDate>
@@ -116,27 +695,9 @@
       <description>
 
 
-&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(tidyverse)&lt;/code&gt;&lt;/pre&gt;
-&lt;pre&gt;&lt;code&gt;## -- Attaching packages ----------------------- tidyverse 1.2.1 --&lt;/code&gt;&lt;/pre&gt;
-&lt;pre&gt;&lt;code&gt;## v ggplot2 3.2.0     v purrr   0.3.2
-## v tibble  2.1.3     v dplyr   0.8.3
-## v tidyr   0.8.3     v stringr 1.4.0
-## v readr   1.3.1     v forcats 0.4.0&lt;/code&gt;&lt;/pre&gt;
-&lt;pre&gt;&lt;code&gt;## Warning: package &amp;#39;dplyr&amp;#39; was built under R version 3.6.1&lt;/code&gt;&lt;/pre&gt;
-&lt;pre&gt;&lt;code&gt;## -- Conflicts -------------------------- tidyverse_conflicts() --
-## x dplyr::filter() masks stats::filter()
-## x dplyr::lag()    masks stats::lag()&lt;/code&gt;&lt;/pre&gt;
-&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(corrplot)&lt;/code&gt;&lt;/pre&gt;
-&lt;pre&gt;&lt;code&gt;## corrplot 0.84 loaded&lt;/code&gt;&lt;/pre&gt;
-&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(cowplot)&lt;/code&gt;&lt;/pre&gt;
-&lt;pre&gt;&lt;code&gt;## Warning: package &amp;#39;cowplot&amp;#39; was built under R version 3.6.1&lt;/code&gt;&lt;/pre&gt;
-&lt;pre&gt;&lt;code&gt;## 
-## ********************************************************&lt;/code&gt;&lt;/pre&gt;
-&lt;pre&gt;&lt;code&gt;## Note: As of version 1.0.0, cowplot does not change the&lt;/code&gt;&lt;/pre&gt;
-&lt;pre&gt;&lt;code&gt;##   default ggplot2 theme anymore. To recover the previous&lt;/code&gt;&lt;/pre&gt;
-&lt;pre&gt;&lt;code&gt;##   behavior, execute:
-##   theme_set(theme_cowplot())&lt;/code&gt;&lt;/pre&gt;
-&lt;pre&gt;&lt;code&gt;## ********************************************************&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(tidyverse)
+library(corrplot)
+library(cowplot)&lt;/code&gt;&lt;/pre&gt;
 &lt;div id=&#34;data&#34; class=&#34;section level4&#34;&gt;
 &lt;h4&gt;Data&lt;/h4&gt;
 &lt;p&gt;The following dataset froms from the Nutrient database in the United States&lt;/p&gt;
@@ -179,33 +740,7 @@ ggplot(Foodgroup_cat) +
        subtitle = &amp;quot;USDRA&amp;quot;,
        x = &amp;quot;Products&amp;quot;, 
        y = &amp;quot;Frequency&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/post/2019-08-09-pca-on-us-nutrition_files/figure-html/unnamed-chunk-4-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
-&lt;p&gt;Majority of US nutrients come from beef, vegetables and baked goods. Would be interesting to see the mean nutrient intake for each food group.&lt;/p&gt;
-&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;data_df %&amp;gt;% 
-  select(FoodGroup, 9:31) %&amp;gt;% 
-  group_by(FoodGroup) %&amp;gt;% 
-  summarise_all(list(Mean = mean))&lt;/code&gt;&lt;/pre&gt;
-&lt;pre&gt;&lt;code&gt;## # A tibble: 25 x 24
-##    FoodGroup Energy_kcal_Mean Protein_g_Mean Fat_g_Mean Carb_g_Mean
-##    &amp;lt;fct&amp;gt;                &amp;lt;dbl&amp;gt;          &amp;lt;dbl&amp;gt;      &amp;lt;dbl&amp;gt;       &amp;lt;dbl&amp;gt;
-##  1 American~             209.         16.0       11.1        11.3  
-##  2 Baby Foo~             152.          4.11       5.58       21.6  
-##  3 Baked Pr~             392.          6.65      14.7        59.8  
-##  4 Beef Pro~             213.         24.4       12.4         0.108
-##  5 Beverages             111.          2.57       0.985      18.7  
-##  6 Breakfas~             342.          8.30       4.00       73.5  
-##  7 Cereal G~             286.          9.14       2.16       58.7  
-##  8 Dairy an~             232.         14.7       14.0        11.8  
-##  9 Fast Foo~             250.         11.7       12.7        22.7  
-## 10 Fats and~             626.          0.407     68.1         5.28 
-## # ... with 15 more rows, and 19 more variables: Sugar_g_Mean &amp;lt;dbl&amp;gt;,
-## #   Fiber_g_Mean &amp;lt;dbl&amp;gt;, VitA_mcg_Mean &amp;lt;dbl&amp;gt;, VitB6_mg_Mean &amp;lt;dbl&amp;gt;,
-## #   VitB12_mcg_Mean &amp;lt;dbl&amp;gt;, VitC_mg_Mean &amp;lt;dbl&amp;gt;, VitE_mg_Mean &amp;lt;dbl&amp;gt;,
-## #   Folate_mcg_Mean &amp;lt;dbl&amp;gt;, Niacin_mg_Mean &amp;lt;dbl&amp;gt;, Riboflavin_mg_Mean &amp;lt;dbl&amp;gt;,
-## #   Thiamin_mg_Mean &amp;lt;dbl&amp;gt;, Calcium_mg_Mean &amp;lt;dbl&amp;gt;, Copper_mcg_Mean &amp;lt;dbl&amp;gt;,
-## #   Iron_mg_Mean &amp;lt;dbl&amp;gt;, Magnesium_mg_Mean &amp;lt;dbl&amp;gt;, Manganese_mg_Mean &amp;lt;dbl&amp;gt;,
-## #   Phosphorus_mg_Mean &amp;lt;dbl&amp;gt;, Selenium_mcg_Mean &amp;lt;dbl&amp;gt;, Zinc_mg_Mean &amp;lt;dbl&amp;gt;&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;I am not a nutritionist however, be interesting to see what the correlation is between energy and sugar&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2019-08-09-pca-on-us-nutrition_files/figure-html/unnamed-chunk-4-1.png&#34; width=&#34;960&#34; /&gt;&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;ggplot(data_df) +
  aes(x = Sugar_g, y = Energy_kcal, fill = FoodGroup, colour = FoodGroup) +
  geom_point(size = 1L) +
@@ -215,1173 +750,14 @@ ggplot(Foodgroup_cat) +
  theme_bw() +
  theme(legend.position = &amp;quot;none&amp;quot;) +
  facet_wrap(vars(FoodGroup), scales = &amp;quot;free_x&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/post/2019-08-09-pca-on-us-nutrition_files/figure-html/unnamed-chunk-6-1.png&#34; width=&#34;672&#34; /&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2019-08-09-pca-on-us-nutrition_files/figure-html/unnamed-chunk-5-1.png&#34; width=&#34;960&#34; /&gt;
 Beef, lamb, veal and game products tend to have very little sugar/energy. Theres a clustering of points in the beverages table
-and would assume this would be water or low sugar drinks. Considering this is a database of nutrients based on major food groups, we cant tease out the underlying specifics of the types of drinks or products. We can however, look to see what nutrients are most consumed and which food group these come from.&lt;/p&gt;
-&lt;p&gt;Descriptives&lt;/p&gt;
-&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(psych)&lt;/code&gt;&lt;/pre&gt;
-&lt;pre&gt;&lt;code&gt;## 
-## Attaching package: &amp;#39;psych&amp;#39;&lt;/code&gt;&lt;/pre&gt;
-&lt;pre&gt;&lt;code&gt;## The following objects are masked from &amp;#39;package:ggplot2&amp;#39;:
-## 
-##     %+%, alpha&lt;/code&gt;&lt;/pre&gt;
-&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;data_df %&amp;gt;% 
-  select(-c(FoodGroup, ShortDescrip, Descrip, CommonName, MfgName, ScientificName)) %&amp;gt;% 
-describe(.) %&amp;gt;% 
-  kableExtra::kable()&lt;/code&gt;&lt;/pre&gt;
-&lt;table&gt;
-&lt;thead&gt;
-&lt;tr&gt;
-&lt;th style=&#34;text-align:left;&#34;&gt;
-&lt;/th&gt;
-&lt;th style=&#34;text-align:right;&#34;&gt;
-vars
-&lt;/th&gt;
-&lt;th style=&#34;text-align:right;&#34;&gt;
-n
-&lt;/th&gt;
-&lt;th style=&#34;text-align:right;&#34;&gt;
-mean
-&lt;/th&gt;
-&lt;th style=&#34;text-align:right;&#34;&gt;
-sd
-&lt;/th&gt;
-&lt;th style=&#34;text-align:right;&#34;&gt;
-median
-&lt;/th&gt;
-&lt;th style=&#34;text-align:right;&#34;&gt;
-trimmed
-&lt;/th&gt;
-&lt;th style=&#34;text-align:right;&#34;&gt;
-mad
-&lt;/th&gt;
-&lt;th style=&#34;text-align:right;&#34;&gt;
-min
-&lt;/th&gt;
-&lt;th style=&#34;text-align:right;&#34;&gt;
-max
-&lt;/th&gt;
-&lt;th style=&#34;text-align:right;&#34;&gt;
-range
-&lt;/th&gt;
-&lt;th style=&#34;text-align:right;&#34;&gt;
-skew
-&lt;/th&gt;
-&lt;th style=&#34;text-align:right;&#34;&gt;
-kurtosis
-&lt;/th&gt;
-&lt;th style=&#34;text-align:right;&#34;&gt;
-se
-&lt;/th&gt;
-&lt;/tr&gt;
-&lt;/thead&gt;
-&lt;tbody&gt;
-&lt;tr&gt;
-&lt;td style=&#34;text-align:left;&#34;&gt;
-X1
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-1
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-8618
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-4.309500e+03
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-2487.9466433
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-4309.5000
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-4.309500e+03
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-3194.2617000
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-1
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-8618.000
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-8617.000
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0.000000
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
--1.2004177
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-26.8001866
-&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td style=&#34;text-align:left;&#34;&gt;
-ID
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-2
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-8618
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-1.546776e+04
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-9221.4287657
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-14273.0000
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-1.456007e+04
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-8355.9336000
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-1001
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-93600.000
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-92599.000
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-1.185174
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-3.3285354
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-99.3333245
-&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td style=&#34;text-align:left;&#34;&gt;
-Energy_kcal
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-3
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-8618
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-2.264386e+02
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-169.3889098
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-191.0000
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-2.077030e+02
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-167.5338000
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-902.000
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-902.000
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-1.167836
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-1.7913716
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-1.8246591
-&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td style=&#34;text-align:left;&#34;&gt;
-Protein_g
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-4
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-8618
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-1.152391e+01
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-10.5505898
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-8.2850
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-1.043610e+01
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-10.4375040
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-88.320
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-88.320
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-1.170202
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-2.7350542
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0.1136511
-&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td style=&#34;text-align:left;&#34;&gt;
-Fat_g
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-5
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-8618
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-1.064702e+01
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-15.8663527
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-5.2350
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-7.401263e+00
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-7.2276750
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-100.000
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-100.000
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-3.305016
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-13.7217994
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0.1709125
-&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td style=&#34;text-align:left;&#34;&gt;
-Carb_g
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-6
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-8618
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-2.181906e+01
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-27.2390004
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-8.9450
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-1.731332e+01
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-13.2618570
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-100.000
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-100.000
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-1.156809
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
--0.0857852
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0.2934188
-&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td style=&#34;text-align:left;&#34;&gt;
-Sugar_g
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-7
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-8618
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-6.560253e+00
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-13.6020984
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0.3700
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-2.936167e+00
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0.5485620
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-99.800
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-99.800
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-2.952296
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-9.6598799
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0.1465219
-&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td style=&#34;text-align:left;&#34;&gt;
-Fiber_g
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-8
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-8618
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-2.023242e+00
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-4.3136703
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0.3000
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-1.072129e+00
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0.4447800
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-79.000
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-79.000
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-5.791224
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-56.3642510
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0.0464669
-&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td style=&#34;text-align:left;&#34;&gt;
-VitA_mcg
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-9
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-8618
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-9.396879e+01
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-779.3622050
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-1.5000
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-1.223593e+01
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-2.2239000
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-30000.000
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-30000.000
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-24.082036
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-716.7609214
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-8.3952976
-&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td style=&#34;text-align:left;&#34;&gt;
-VitB6_mg
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-10
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-8618
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-2.643692e-01
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0.4786141
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0.1200
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-1.791069e-01
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0.1764294
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-12.000
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-12.000
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-7.554923
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-101.5954226
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0.0051556
-&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td style=&#34;text-align:left;&#34;&gt;
-VitB12_mcg
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-11
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-8618
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-1.225260e+00
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-4.3191826
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0.0800
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-5.444852e-01
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0.1186080
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-98.890
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-98.890
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-13.029760
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-221.5308002
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0.0465263
-&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td style=&#34;text-align:left;&#34;&gt;
-VitC_mg
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-12
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-8618
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-7.925377e+00
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-57.5827577
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0.0000
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-1.775957e+00
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0.0000000
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-2400.000
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-2400.000
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-30.896704
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-1114.3902369
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0.6202821
-&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td style=&#34;text-align:left;&#34;&gt;
-VitE_mg
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-13
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-8618
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-8.723288e-01
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-3.8490282
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0.1100
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-2.302001e-01
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0.1630860
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-149.400
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-149.400
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-13.844613
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-337.8264261
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0.0414618
-&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td style=&#34;text-align:left;&#34;&gt;
-Folate_mcg
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-14
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-8618
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-5.030610e+01
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-186.5606528
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-7.0000
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-1.498260e+01
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-10.3782000
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-5881.000
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-5881.000
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-10.323443
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-176.6314735
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-2.0096333
-&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td style=&#34;text-align:left;&#34;&gt;
-Niacin_mg
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-15
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-8618
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-3.411560e+00
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-4.8345718
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-2.1000
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-2.618347e+00
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-2.9385132
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-127.500
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-127.500
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-6.433094
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-96.3881643
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0.0520781
-&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td style=&#34;text-align:left;&#34;&gt;
-Riboflavin_mg
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-16
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-8618
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-2.372482e-01
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0.4498800
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0.1500
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-1.575980e-01
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0.1571556
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-17.500
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-17.500
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-11.308654
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-292.6955792
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0.0048461
-&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td style=&#34;text-align:left;&#34;&gt;
-Thiamin_mg
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-17
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-8618
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-2.098569e-01
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0.5183690
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0.0775
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-1.236027e-01
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0.0941451
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-23.375
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-23.375
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-17.503967
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-576.4489955
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0.0055839
-&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td style=&#34;text-align:left;&#34;&gt;
-Calcium_mg
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-18
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-8618
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-7.341135e+01
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-201.3636616
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-19.0000
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-3.590342e+01
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-20.7564000
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-7364.000
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-7364.000
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-13.423304
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-339.0676661
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-2.1690914
-&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td style=&#34;text-align:left;&#34;&gt;
-Copper_mcg
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-19
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-8618
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-1.721814e-01
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0.5530524
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0.0790
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-9.146880e-02
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0.0830256
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-15.050
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-15.050
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-15.937599
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-344.9666109
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0.0059575
-&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td style=&#34;text-align:left;&#34;&gt;
-Iron_mg
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-20
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-8618
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-2.696771e+00
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-5.7269669
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-1.3300
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-1.566060e+00
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-1.4084700
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-123.600
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-123.600
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-6.836907
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-70.1690511
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0.0616909
-&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td style=&#34;text-align:left;&#34;&gt;
-Magnesium_mg
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-21
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-8618
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-3.274530e+01
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-56.0684543
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-20.0000
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-2.119272e+01
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-14.8260000
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-781.000
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-781.000
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-5.563100
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-43.9934769
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0.6039700
-&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td style=&#34;text-align:left;&#34;&gt;
-Manganese_mg
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-22
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-8618
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-5.044392e-01
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-6.3834382
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0.0220
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-1.068464e-01
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0.0326172
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-328.000
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-328.000
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-39.727939
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-1784.8051705
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0.0687625
-&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td style=&#34;text-align:left;&#34;&gt;
-Phosphorus_mg
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-23
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-8618
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-1.559863e+02
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-203.0932338
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-133.0000
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-1.320381e+02
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-131.9514000
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-9918.000
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-9918.000
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-18.547486
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-763.6703719
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-2.1877224
-&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td style=&#34;text-align:left;&#34;&gt;
-Selenium_mcg
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-24
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-8618
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-1.261495e+01
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-28.2923471
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-3.9000
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-9.253002e+00
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-5.7821400
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-1917.000
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-1917.000
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-38.194000
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-2427.7478972
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0.3047655
-&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td style=&#34;text-align:left;&#34;&gt;
-Zinc_mg
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-25
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-8618
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-1.970216e+00
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-3.3582128
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0.8450
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-1.391885e+00
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-1.1786670
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-90.950
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-90.950
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-9.625776
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-185.7989029
-&lt;/td&gt;
-&lt;td style=&#34;text-align:right;&#34;&gt;
-0.0361747
-&lt;/td&gt;
-&lt;/tr&gt;
-&lt;/tbody&gt;
-&lt;/table&gt;
-&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;data_df[,9:31] &amp;lt;- sqrt(data_df[,9:31]) # sqrt transform &lt;/code&gt;&lt;/pre&gt;
+and would assume this would be water or low sugar drinks. Considering this is a database of nutrients based on major food groups, we cant tease out the underlying specifics of the types of drinks or products.&lt;/p&gt;
 &lt;p&gt;There is some skewness in the data and could do with some transforming but theres no guarentee that it will improve results.
 Here we will rescale and center the variables with a mean of 0 and a variance of 1. Then run a correlation matrix to visualise the results.&lt;/p&gt;
-&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;data_df_rescale &amp;lt;- data_df %&amp;gt;% 
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;data_df[,9:31] &amp;lt;- sqrt(data_df[,9:31]) # sqrt transform 
+
+data_df_rescale &amp;lt;- data_df %&amp;gt;% 
   select(9:31) %&amp;gt;% 
   scale(center = TRUE)
 
@@ -1390,7 +766,7 @@ data_df_corr &amp;lt;- data_df %&amp;gt;% select(9:31)
 data_corrr &amp;lt;- cor(data_df_corr)
  
 corrplot(as.matrix(data_corrr), is.corr = FALSE, method = &amp;quot;square&amp;quot;, type = &amp;quot;full&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/post/2019-08-09-pca-on-us-nutrition_files/figure-html/unnamed-chunk-8-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2019-08-09-pca-on-us-nutrition_files/figure-html/unnamed-chunk-6-1.png&#34; width=&#34;960&#34; /&gt;&lt;/p&gt;
 &lt;p&gt;Run a PCA with the default prcomp function in R and run a summary on the object&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;data_PCA &amp;lt;- prcomp(data_df_rescale)
 
@@ -1415,14 +791,14 @@ summary(data_PCA) &lt;/code&gt;&lt;/pre&gt;
 ## Proportion of Variance 0.00888 0.0081 0.00645 0.00599 0.00157
 ## Cumulative Proportion  0.97789 0.9860 0.99244 0.99843 1.00000&lt;/code&gt;&lt;/pre&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;plot(data_PCA, type = &amp;quot;l&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/post/2019-08-09-pca-on-us-nutrition_files/figure-html/unnamed-chunk-9-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2019-08-09-pca-on-us-nutrition_files/figure-html/unnamed-chunk-7-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;# data_PCA$rotation&lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;The summary method describe the importance of the PCs. The first row describe again the standard deviation associated with each PC. The second row shows the proportion of the variance in the data explained by each component while the third row describe the cumulative proportion of explained variance. We can see there that the first two PCs accounts for more than 47% (0.31+0.16) of the variance of the data. The remaining 53% is shared across PC3 to PC23.&lt;/p&gt;
 &lt;p&gt;From the plot we can see that factors load the most on PC1 and PC2. The Scree plot also shows us visualy where the components fall off after PC1 and PC2. Use the FactorMineR package to extract more detailed data howver, will use the first 5 components as these tend to load the most on the components (69%).&lt;/p&gt;
-&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(FactoMineR)&lt;/code&gt;&lt;/pre&gt;
-&lt;pre&gt;&lt;code&gt;## Warning: package &amp;#39;FactoMineR&amp;#39; was built under R version 3.6.1&lt;/code&gt;&lt;/pre&gt;
-&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;data_PCA_all &amp;lt;- PCA(data_df_rescale, ncp  = 5, graph = TRUE)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/post/2019-08-09-pca-on-us-nutrition_files/figure-html/unnamed-chunk-10-1.png&#34; width=&#34;672&#34; /&gt;&lt;img src=&#34;/post/2019-08-09-pca-on-us-nutrition_files/figure-html/unnamed-chunk-10-2.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(FactoMineR)
+
+data_PCA_all &amp;lt;- PCA(data_df_rescale, ncp  = 5, graph = TRUE)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2019-08-09-pca-on-us-nutrition_files/figure-html/unnamed-chunk-8-1.png&#34; width=&#34;672&#34; /&gt;&lt;img src=&#34;/post/2019-08-09-pca-on-us-nutrition_files/figure-html/unnamed-chunk-8-2.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;data_PCA_all$eig #eigen values, percent of varaince and cumulative percentage&lt;/code&gt;&lt;/pre&gt;
 &lt;pre&gt;&lt;code&gt;##         eigenvalue percentage of variance
 ## comp 1  7.30899804             31.7782524
@@ -1522,35 +898,18 @@ summary(data_PCA) &lt;/code&gt;&lt;/pre&gt;
 ## Selenium_mcg   0.04733105
 ## Zinc_mg       -0.03164408&lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;When variables correlate strongly together they all converge on the same component. A simple method to extract the results, for variables, from a PCA output is to use the function get_pca_var() [factoextra package]. This function provides a list of matrices containing all the results for the active variables (coordinates, correlation between variables and axes, squared cosine and contributions)&lt;/p&gt;
-&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(factoextra)&lt;/code&gt;&lt;/pre&gt;
-&lt;pre&gt;&lt;code&gt;## Warning: package &amp;#39;factoextra&amp;#39; was built under R version 3.6.1&lt;/code&gt;&lt;/pre&gt;
-&lt;pre&gt;&lt;code&gt;## Welcome! Related Books: `Practical Guide To Cluster Analysis in R` at https://goo.gl/13EFCZ&lt;/code&gt;&lt;/pre&gt;
-&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;# a more colourful visual representation of the variables and where they converge on a component. 
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(factoextra)
+
+# a more colourful visual representation of the variables and where they converge on a component. 
 fviz_pca_var(data_PCA_all
              , col.var = &amp;quot;cos2&amp;quot;
              , gradient.cols = c(&amp;quot;#00AFBB&amp;quot;, &amp;quot;#E7B800&amp;quot;, &amp;quot;#FC4E07&amp;quot;)
              , repel = TRUE) # Avoid text overlapping)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/post/2019-08-09-pca-on-us-nutrition_files/figure-html/unnamed-chunk-11-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2019-08-09-pca-on-us-nutrition_files/figure-html/unnamed-chunk-9-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;corrplot(data_PCA_all$var$cor, is.corr=FALSE) &lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/post/2019-08-09-pca-on-us-nutrition_files/figure-html/unnamed-chunk-11-2.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2019-08-09-pca-on-us-nutrition_files/figure-html/unnamed-chunk-9-2.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;fviz_contrib(data_PCA_all, choice = &amp;quot;var&amp;quot;, axes = 1:2, top = 10)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/post/2019-08-09-pca-on-us-nutrition_files/figure-html/unnamed-chunk-11-3.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
-&lt;p&gt;The most important (or, contributing) variables can be highlighted on the correlation plot as follows:&lt;/p&gt;
-&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(ggbiplot)
-
-ggscreeplot(data_PCA)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/post/2019-08-09-pca-on-us-nutrition_files/figure-html/unnamed-chunk-12-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
-&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;ggbiplot(data_PCA_all
-         , ellipse= TRUE
-         , choices=1:2
-         , alpha = 0.25
-         , circle = TRUE
-         , groups = data_df$FoodGroup
-         , varname.adjust = 8
-         , scale = TRUE)+
-  scale_color_discrete(name = &amp;#39;&amp;#39;) +
-  theme(legend.direction = &amp;#39;horizontal&amp;#39;, legend.position = &amp;#39;top&amp;#39;)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/post/2019-08-09-pca-on-us-nutrition_files/figure-html/unnamed-chunk-12-2.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2019-08-09-pca-on-us-nutrition_files/figure-html/unnamed-chunk-9-3.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;p&gt;Biplot package also allows for more detail plots however, points are limited to 10 and we have 25.&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;fviz_pca_biplot(data_PCA_all, 
                 # Individuals
@@ -1566,8 +925,8 @@ ggscreeplot(data_PCA)&lt;/code&gt;&lt;/pre&gt;
                 legend.title = list(fill = &amp;quot;Species&amp;quot;, color = &amp;quot;Contrib&amp;quot;,
                                     alpha = &amp;quot;Contrib&amp;quot;)
                 )&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/post/2019-08-09-pca-on-us-nutrition_files/figure-html/unnamed-chunk-13-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
-&lt;p&gt;Finally, with the Ggforce package we are able to plot multiple components from a PCA analysis against each other:&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2019-08-09-pca-on-us-nutrition_files/figure-html/unnamed-chunk-10-1.png&#34; width=&#34;960&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;Finally, with the Ggforce package we are able to plot multiple components from a PCA analysis against each other component:&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(ggforce)
 
 
@@ -1583,7 +942,7 @@ ggplot(pca_grid[,1:7], aes(x = .panel_x, y = .panel_y)) +
   geom_density2d() +
   facet_matrix(vars(everything()), layer.diag = 2, layer.upper = 3, 
                grid.y.diag = FALSE)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/post/2019-08-09-pca-on-us-nutrition_files/figure-html/unnamed-chunk-14-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2019-08-09-pca-on-us-nutrition_files/figure-html/unnamed-chunk-11-1.png&#34; width=&#34;960&#34; /&gt;&lt;/p&gt;
 &lt;/div&gt;
 </description>
     </item>
@@ -1982,9 +1341,8 @@ suicide_df$generation &amp;lt;- factor(suicide_df$generation,
   geom_col(show.legend = FALSE, alpha = 0.7) +
   coord_flip() +
   facet_wrap(~sex) +
-  theme_cowplot()+
   labs(x = &amp;quot;Country&amp;quot;, y = &amp;quot;Suicides 1995 to 2015&amp;quot;, title = &amp;quot;Total Number of Suicides from 1985 to 2015&amp;quot;) &lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/post/2019-06-01-global-suicides-1995-to-2015_files/figure-html/unnamed-chunk-2-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2019-06-01-global-suicides-1995-to-2015_files/figure-html/unnamed-chunk-2-1.png&#34; width=&#34;960&#34; /&gt;&lt;/p&gt;
 &lt;p&gt;The Russian Federation has had the most amount of people commit suicide between 1985 to 2015.
 Following this, United States and Japan have a high number of suicides with Males commiting suicide
 more than Females.&lt;/p&gt;
@@ -2021,8 +1379,8 @@ ave_suicide_100k_country %&amp;gt;%
   scale_y_continuous(breaks = seq(0, 45, 2)) &lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;&lt;img src=&#34;/post/2019-06-01-global-suicides-1995-to-2015_files/figure-html/unnamed-chunk-3-1.png&#34; width=&#34;960&#34; /&gt;&lt;/p&gt;
 &lt;/div&gt;
-&lt;div id=&#34;average-suicide-rate-per-generation&#34; class=&#34;section level4&#34;&gt;
-&lt;h4&gt;Average Suicide Rate per Generation&lt;/h4&gt;
+&lt;div id=&#34;total-average-suicide-rate-per-generation-between-1985-to-2015&#34; class=&#34;section level4&#34;&gt;
+&lt;h4&gt;Total Average Suicide Rate per Generation between 1985 to 2015&lt;/h4&gt;
 &lt;ul&gt;
 &lt;li&gt;Gen Z, iGen, or Centennials: Born 1996 – TBD&lt;/li&gt;
 &lt;li&gt;Millennials or Gen Y: Born 1977 – 1995&lt;/li&gt;
@@ -2030,8 +1388,6 @@ ave_suicide_100k_country %&amp;gt;%
 &lt;li&gt;Baby Boomers: Born 1946 – 1964&lt;/li&gt;
 &lt;li&gt;Traditionalists or Silent Generation: Born 1945 and before&lt;/li&gt;
 &lt;/ul&gt;
-&lt;div id=&#34;not-adjusted-for-time&#34; class=&#34;section level5&#34;&gt;
-&lt;h5&gt;Not adjusted for time&lt;/h5&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;ave_suicide_100k_gen &amp;lt;- suicide_df %&amp;gt;% 
   group_by(generation) %&amp;gt;% 
   summarise(n = n(), Ave = sum(No_of_Suicides)) %&amp;gt;% 
@@ -2052,7 +1408,6 @@ ggplot(data = ave_suicide_100k_gen) +
   coord_flip()&lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;&lt;img src=&#34;/post/2019-06-01-global-suicides-1995-to-2015_files/figure-html/unnamed-chunk-4-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;/div&gt;
-&lt;/div&gt;
 &lt;div id=&#34;total-amount-of-suicides-per-country-by-age-1985-to-2015&#34; class=&#34;section level4&#34;&gt;
 &lt;h4&gt;Total Amount of Suicides per country by Age (1985 to 2015)&lt;/h4&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;x &amp;lt;- suicide_df %&amp;gt;% 
@@ -2070,9 +1425,9 @@ ggplot(x, aes(x = reorder(country, - total), y = total, fill = age)) +
        fill = &amp;quot;age&amp;quot;) +
   coord_flip() + 
   theme(legend.position = &amp;quot;bottom&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/post/2019-06-01-global-suicides-1995-to-2015_files/figure-html/unnamed-chunk-5-1.png&#34; width=&#34;960&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2019-06-01-global-suicides-1995-to-2015_files/figure-html/unnamed-chunk-5-1.png&#34; width=&#34;1152&#34; /&gt;&lt;/p&gt;
 &lt;p&gt;Age group of 15 to 24 years has been a consistant marker for suicides. To Explore this further, we can look at
-a scatter plot of that age group over time.&lt;/p&gt;
+a scatter plot ages over time. Will also remove the 5 to 14 years age group.&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;# line graph by age group
 
 
@@ -2095,6 +1450,7 @@ ggplot(all_age_group) +
 &lt;/div&gt;
 &lt;div id=&#34;regression-model&#34; class=&#34;section level4&#34;&gt;
 &lt;h4&gt;Regression model&lt;/h4&gt;
+&lt;p&gt;We can use a regression model to see which age group is most likely to attempt suicide.&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;model &amp;lt;- suicide_df %&amp;gt;% 
   lm(No_of_Suicides ~ GDP_per_year + age + sex + generation, data = .) 
 
@@ -2143,7 +1499,7 @@ model2 %&amp;gt;%
 ## 2 age              4   460837808.  115209452.      163.  3.10e-138 0.0206
 ## 3 sex              1   561837996.  561837996.      797.  1.87e-172 0.0252
 ## 4 Residuals    23203 16354227025.     704832.       NA  NA         0.732&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;Interestly, men aged between 35 - 54 years old have the strongest effect on the number of suicides followed by older generation then young adults.&lt;/p&gt;
+&lt;p&gt;Interestly, men aged between 35 - 54 years old have the strongest effect on the number of suicides followed by the 55 to 74 year old age group then young adults.&lt;/p&gt;
 &lt;/div&gt;
 &lt;div id=&#34;take-a-look-at-suicide-rate-in-australia&#34; class=&#34;section level4&#34;&gt;
 &lt;h4&gt;Take a look at Suicide Rate in Australia&lt;/h4&gt;
@@ -2163,7 +1519,7 @@ model2 %&amp;gt;%
   ggplot(aes(estimate, term)) +
   geom_point() +
   geom_errorbarh(aes(xmin = conf.low, xmax = conf.high))&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/post/2019-06-01-global-suicides-1995-to-2015_files/figure-html/unnamed-chunk-9-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2019-06-01-global-suicides-1995-to-2015_files/figure-html/unnamed-chunk-9-1.png&#34; width=&#34;960&#34; /&gt;&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;tidy(anova(model2)) %&amp;gt;% 
   mutate(Unique = sumsq / sum(sumsq))&lt;/code&gt;&lt;/pre&gt;
 &lt;pre&gt;&lt;code&gt;## # A tibble: 4 x 7
@@ -2173,7 +1529,7 @@ model2 %&amp;gt;%
 ## 2 age              4 4108872. 1027218.     147.   9.14e-69 0.361  
 ## 3 sex              1 5167969. 5167969.     739.   4.05e-82 0.453  
 ## 4 Residuals      293 2047900.    6989.      NA   NA        0.180&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;Similar pattern in Australia. Men aged 35 - 54 years old have the highest suicide rate. This is a concern as there are plenty of mental health networks available to people for access however, either these arent accessed enough or men arent simply seeking the help in the first place.&lt;/p&gt;
+&lt;p&gt;Similar pattern in Australia. Men aged 35 - 54 years old have the highest suicide rate.&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;age_group_35_54 &amp;lt;- suicide_df %&amp;gt;% 
   group_by(country, year, age) %&amp;gt;% 
  filter(age %in% &amp;quot;35-54 years&amp;quot;) %&amp;gt;% 

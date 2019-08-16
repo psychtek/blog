@@ -6,10 +6,20 @@
     <description>Recent content in research on PsychTek - Aaron Willcox</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Tue, 16 Jul 2019 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Fri, 16 Aug 2019 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/tags/research/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Emotional Impact on Memory Part 2</title>
+      <link>/post/emotional-impact-on-memory-part-2/</link>
+      <pubDate>Fri, 16 Aug 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/post/emotional-impact-on-memory-part-2/</guid>
+      <description>LibraryImportRaw CSV files with all IAPS database and images to be used in each task imported into an object.
+raw_df &amp;lt;- read_csv(&amp;quot;data/ret_task.csv&amp;quot;, col_types = cols(CR = col_factor(levels = c(&amp;quot;same&amp;quot;, &amp;quot;different&amp;quot;)), Emotion = col_factor(levels = c(&amp;quot;negative&amp;quot;, &amp;quot;neutral&amp;quot;)), Sex = col_factor(levels = c(&amp;quot;male&amp;quot;, &amp;quot;female&amp;quot;))))raw_df$CorrectAnswer &amp;lt;- recode(raw_df$CorrectAnswer, a = &amp;quot;l&amp;quot;, l = &amp;quot;a&amp;quot;)raw_df$Stimulus1.RESP &amp;lt;- recode(raw_df$Stimulus1.RESP, a = &amp;quot;l&amp;quot;, l = &amp;quot;a&amp;quot;)# import tables RET_SEEN &amp;lt;- read_csv(&amp;quot;data/RET_SEEN.</description>
+    </item>
     
     <item>
       <title>Emotional Impact of Memory Part One </title>

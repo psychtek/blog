@@ -21,7 +21,7 @@ projects: []
 fig_width: 12
 ---
 
-```{r}
+```{r message=FALSE, warning=FALSE}
 library(tidyverse)
 library(corrplot)
 library(cowplot)
@@ -66,7 +66,7 @@ data_df <- data_df %>% select(-contains("_USRDA"))
 
 Catagorical Visualisation 
 
-```{r message=FALSE, warning=FALSE}
+```{r message=FALSE, warning=FALSE,  fig.width=10, fig.height=12}
 
 data_df$FoodGroup <- factor(data_df$FoodGroup, ordered = is.ordered(data_df$FoodGroup)) # coerce to factor
 
@@ -91,21 +91,8 @@ ggplot(Foodgroup_cat) +
 
 ```
 
-Majority of US nutrients come from beef, vegetables and baked goods. Would be interesting to see the mean nutrient intake for each food group.
 
-```{r}
-
-
-data_df %>% 
-  select(FoodGroup, 9:31) %>% 
-  group_by(FoodGroup) %>% 
-  summarise_all(list(Mean = mean))
-
-```
-
-I am not a nutritionist however, be interesting to see what the correlation is between energy and sugar
-
-```{r}
+```{r, fig.width=10, fig.height=12}
 
 ggplot(data_df) +
  aes(x = Sugar_g, y = Energy_kcal, fill = FoodGroup, colour = FoodGroup) +
@@ -119,28 +106,15 @@ ggplot(data_df) +
 
 ```
 Beef, lamb, veal and game products tend to have very little sugar/energy. Theres a clustering of points in the beverages table 
-and would assume this would be water or low sugar drinks. Considering this is a database of nutrients based on major food groups, we cant tease out the underlying specifics of the types of drinks or products. We can however, look to see what nutrients are most consumed and which food group these come from. 
+and would assume this would be water or low sugar drinks. Considering this is a database of nutrients based on major food groups, we cant tease out the underlying specifics of the types of drinks or products. 
 
-Descriptives
-
-```{r}
-
-library(psych)
-
-
-data_df %>% 
-  select(-c(FoodGroup, ShortDescrip, Descrip, CommonName, MfgName, ScientificName)) %>% 
-describe(.) %>% 
-  kableExtra::kable()
-
-data_df[,9:31] <- sqrt(data_df[,9:31]) # sqrt transform 
-
-```
 
 There is some skewness in the data and could do with some transforming but theres no guarentee that it will improve results. 
 Here we will rescale and center the variables with a mean of 0 and a variance of 1. Then run a correlation matrix to visualise the results. 
 
-```{r}
+```{r, fig.width=10, fig.height=12}
+
+data_df[,9:31] <- sqrt(data_df[,9:31]) # sqrt transform 
 
 data_df_rescale <- data_df %>% 
   select(9:31) %>% 
@@ -174,7 +148,7 @@ The summary method describe the importance of the PCs. The first row describe ag
 
 From the plot we can see that factors load the most on PC1 and PC2. The Scree plot also shows us visualy where the components fall off after PC1 and PC2. Use the FactorMineR package to extract more detailed data howver, will use the first 5 components as these tend to load the most on the components (69%). 
 
-```{r}
+```{r message=FALSE, warning=FALSE}
 library(FactoMineR)
 
 data_PCA_all <- PCA(data_df_rescale, ncp  = 5, graph = TRUE)
@@ -189,7 +163,7 @@ data_PCA_all$var$coord # correlations betwewen variables and PCs
 
 When variables correlate strongly together they all converge on the same component. A simple method to extract the results, for variables, from a PCA output is to use the function get_pca_var() [factoextra package]. This function provides a list of matrices containing all the results for the active variables (coordinates, correlation between variables and axes, squared cosine and contributions)
 
-```{r}
+```{r message=FALSE, warning=FALSE}
 library(factoextra)
 
 # a more colourful visual representation of the variables and where they converge on a component. 
@@ -204,29 +178,10 @@ corrplot(data_PCA_all$var$cor, is.corr=FALSE)
 fviz_contrib(data_PCA_all, choice = "var", axes = 1:2, top = 10)
 ```
 
-The most important (or, contributing) variables can be highlighted on the correlation plot as follows:
-
-
-```{r message=FALSE, warning=FALSE}
-library(ggbiplot)
-
-ggscreeplot(data_PCA)
-
-ggbiplot(data_PCA_all
-         , ellipse= TRUE
-         , choices=1:2
-         , alpha = 0.25
-         , circle = TRUE
-         , groups = data_df$FoodGroup
-         , varname.adjust = 8
-         , scale = TRUE)+
-  scale_color_discrete(name = '') +
-  theme(legend.direction = 'horizontal', legend.position = 'top')
-```
 
 Biplot package also allows for more detail plots however, points are limited to 10 and we have 25. 
 
-```{r message=FALSE, warning=FALSE}
+```{r message=FALSE, warning=FALSE, fig.width=10, fig.height=12}
 fviz_pca_biplot(data_PCA_all, 
                 # Individuals
                 geom.ind = "point",
@@ -244,9 +199,9 @@ fviz_pca_biplot(data_PCA_all,
 ```
 
 
-Finally, with the Ggforce package we are able to plot  multiple components from a PCA analysis against each other:
+Finally, with the Ggforce package we are able to plot  multiple components from a PCA analysis against each other component:
 
-```{r message=FALSE, warning=FALSE}
+```{r message=FALSE, warning=FALSE, fig.width=10, fig.height=10}
 library(ggforce)
 
 

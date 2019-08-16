@@ -17,6 +17,7 @@ image:
   focal_point: ''
   preview_only: no
 projects: []
+fig_width: 12
 ---
 
 ## R Markdown
@@ -72,7 +73,7 @@ Take a look at the top 50 global number of suicides from 1985 to 2015 and split 
 
 ### Total Amount of Suicides from 1995 to 2015
 
-```{r}
+```{r, fig.width=10, fig.height=10}
 
 
 suicide_df %>% 
@@ -85,7 +86,6 @@ suicide_df %>%
   geom_col(show.legend = FALSE, alpha = 0.7) +
   coord_flip() +
   facet_wrap(~sex) +
-  theme_cowplot()+
   labs(x = "Country", y = "Suicides 1995 to 2015", title = "Total Number of Suicides from 1985 to 2015") 
 
 ```
@@ -96,7 +96,7 @@ more than Females.
 
 #### Average suicide rate per population of 100,000
 
-```{r, fig.width=10, fig.height=10}
+```{r, fig.width=10, fig.height=12}
 
 
 ave_suicide_100k_country <- suicide_df %>% 
@@ -131,7 +131,7 @@ ave_suicide_100k_country %>%
 ```
 
 
-#### Average Suicide Rate per Generation
+#### Total Average Suicide Rate per Generation between 1985 to 2015
 
 
   * Gen Z, iGen, or Centennials: Born 1996 – TBD
@@ -140,7 +140,6 @@ ave_suicide_100k_country %>%
   * Baby Boomers: Born 1946 – 1964
   * Traditionalists or Silent Generation: Born 1945 and before
 
-##### Not adjusted for time
 
 ```{r}
 ave_suicide_100k_gen <- suicide_df %>% 
@@ -166,7 +165,7 @@ ggplot(data = ave_suicide_100k_gen) +
 
 #### Total Amount of Suicides per country by Age (1985 to 2015)
 
-```{r fig.height=10, fig.width=10, message=FALSE, warning=FALSE}
+```{r fig.height=12, fig.width=12, message=FALSE, warning=FALSE}
 
 x <- suicide_df %>% 
   group_by(country, age) %>% 
@@ -186,7 +185,7 @@ ggplot(x, aes(x = reorder(country, - total), y = total, fill = age)) +
 ```
 
 Age group of 15 to 24 years has been a consistant marker for suicides. To Explore this further, we can look at 
-a scatter plot of that age group over time. 
+a scatter plot ages over time. Will also remove the 5 to 14 years age group. 
 
 ```{r, fig.width=10, fig.height=8}
 
@@ -214,10 +213,9 @@ ggplot(all_age_group) +
 
 #### Regression model 
 
+We can use a regression model to see which age group is most likely to attempt suicide.  
 
 ```{r}
-
-
 
 model <- suicide_df %>% 
   lm(No_of_Suicides ~ GDP_per_year + age + sex + generation, data = .) 
@@ -262,12 +260,12 @@ tidy(anova(model2)) %>%
   mutate(Unique = sumsq / sum(sumsq))
 ```
 
-Interestly, men aged between 35 - 54 years old have the strongest effect on the number of suicides followed by older generation then young adults. 
+Interestly, men aged between 35 - 54 years old have the strongest effect on the number of suicides followed by the 55 to 74 year old age group then young adults. 
 
 #### Take a look at Suicide Rate in Australia
 
 
-```{r}
+```{r, fig.width=10, fig.height=12}
 
 au_model <- suicide_df %>% 
   filter(country %in% "Australia") %>% 
@@ -291,7 +289,7 @@ tidy(anova(model2)) %>%
 
 ```
 
-Similar pattern in Australia. Men aged 35 - 54 years old have the highest suicide rate. This is a concern as there are plenty of mental health networks available to people for access however, either these arent accessed enough or men arent simply seeking the help in the first place. 
+Similar pattern in Australia. Men aged 35 - 54 years old have the highest suicide rate.
 
 ```{r message=FALSE, warning=FALSE}
 

@@ -17,6 +17,7 @@ image:
   focal_point: ''
   preview_only: no
 projects: []
+fig_width: 12
 ---
 
 
@@ -70,9 +71,8 @@ suicide_df$generation &lt;- factor(suicide_df$generation,
   geom_col(show.legend = FALSE, alpha = 0.7) +
   coord_flip() +
   facet_wrap(~sex) +
-  theme_cowplot()+
   labs(x = &quot;Country&quot;, y = &quot;Suicides 1995 to 2015&quot;, title = &quot;Total Number of Suicides from 1985 to 2015&quot;) </code></pre>
-<p><img src="/post/2019-06-01-global-suicides-1995-to-2015_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
+<p><img src="/post/2019-06-01-global-suicides-1995-to-2015_files/figure-html/unnamed-chunk-2-1.png" width="960" /></p>
 <p>The Russian Federation has had the most amount of people commit suicide between 1985 to 2015.
 Following this, United States and Japan have a high number of suicides with Males commiting suicide
 more than Females.</p>
@@ -109,8 +109,8 @@ ave_suicide_100k_country %&gt;%
   scale_y_continuous(breaks = seq(0, 45, 2)) </code></pre>
 <p><img src="/post/2019-06-01-global-suicides-1995-to-2015_files/figure-html/unnamed-chunk-3-1.png" width="960" /></p>
 </div>
-<div id="average-suicide-rate-per-generation" class="section level4">
-<h4>Average Suicide Rate per Generation</h4>
+<div id="total-average-suicide-rate-per-generation-between-1985-to-2015" class="section level4">
+<h4>Total Average Suicide Rate per Generation between 1985 to 2015</h4>
 <ul>
 <li>Gen Z, iGen, or Centennials: Born 1996 – TBD</li>
 <li>Millennials or Gen Y: Born 1977 – 1995</li>
@@ -118,8 +118,6 @@ ave_suicide_100k_country %&gt;%
 <li>Baby Boomers: Born 1946 – 1964</li>
 <li>Traditionalists or Silent Generation: Born 1945 and before</li>
 </ul>
-<div id="not-adjusted-for-time" class="section level5">
-<h5>Not adjusted for time</h5>
 <pre class="r"><code>ave_suicide_100k_gen &lt;- suicide_df %&gt;% 
   group_by(generation) %&gt;% 
   summarise(n = n(), Ave = sum(No_of_Suicides)) %&gt;% 
@@ -140,7 +138,6 @@ ggplot(data = ave_suicide_100k_gen) +
   coord_flip()</code></pre>
 <p><img src="/post/2019-06-01-global-suicides-1995-to-2015_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
 </div>
-</div>
 <div id="total-amount-of-suicides-per-country-by-age-1985-to-2015" class="section level4">
 <h4>Total Amount of Suicides per country by Age (1985 to 2015)</h4>
 <pre class="r"><code>x &lt;- suicide_df %&gt;% 
@@ -158,9 +155,9 @@ ggplot(x, aes(x = reorder(country, - total), y = total, fill = age)) +
        fill = &quot;age&quot;) +
   coord_flip() + 
   theme(legend.position = &quot;bottom&quot;)</code></pre>
-<p><img src="/post/2019-06-01-global-suicides-1995-to-2015_files/figure-html/unnamed-chunk-5-1.png" width="960" /></p>
+<p><img src="/post/2019-06-01-global-suicides-1995-to-2015_files/figure-html/unnamed-chunk-5-1.png" width="1152" /></p>
 <p>Age group of 15 to 24 years has been a consistant marker for suicides. To Explore this further, we can look at
-a scatter plot of that age group over time.</p>
+a scatter plot ages over time. Will also remove the 5 to 14 years age group.</p>
 <pre class="r"><code># line graph by age group
 
 
@@ -183,6 +180,7 @@ ggplot(all_age_group) +
 </div>
 <div id="regression-model" class="section level4">
 <h4>Regression model</h4>
+<p>We can use a regression model to see which age group is most likely to attempt suicide.</p>
 <pre class="r"><code>model &lt;- suicide_df %&gt;% 
   lm(No_of_Suicides ~ GDP_per_year + age + sex + generation, data = .) 
 
@@ -231,7 +229,7 @@ model2 %&gt;%
 ## 2 age              4   460837808.  115209452.      163.  3.10e-138 0.0206
 ## 3 sex              1   561837996.  561837996.      797.  1.87e-172 0.0252
 ## 4 Residuals    23203 16354227025.     704832.       NA  NA         0.732</code></pre>
-<p>Interestly, men aged between 35 - 54 years old have the strongest effect on the number of suicides followed by older generation then young adults.</p>
+<p>Interestly, men aged between 35 - 54 years old have the strongest effect on the number of suicides followed by the 55 to 74 year old age group then young adults.</p>
 </div>
 <div id="take-a-look-at-suicide-rate-in-australia" class="section level4">
 <h4>Take a look at Suicide Rate in Australia</h4>
@@ -251,7 +249,7 @@ model2 %&gt;%
   ggplot(aes(estimate, term)) +
   geom_point() +
   geom_errorbarh(aes(xmin = conf.low, xmax = conf.high))</code></pre>
-<p><img src="/post/2019-06-01-global-suicides-1995-to-2015_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
+<p><img src="/post/2019-06-01-global-suicides-1995-to-2015_files/figure-html/unnamed-chunk-9-1.png" width="960" /></p>
 <pre class="r"><code>tidy(anova(model2)) %&gt;% 
   mutate(Unique = sumsq / sum(sumsq))</code></pre>
 <pre><code>## # A tibble: 4 x 7
@@ -261,7 +259,7 @@ model2 %&gt;%
 ## 2 age              4 4108872. 1027218.     147.   9.14e-69 0.361  
 ## 3 sex              1 5167969. 5167969.     739.   4.05e-82 0.453  
 ## 4 Residuals      293 2047900.    6989.      NA   NA        0.180</code></pre>
-<p>Similar pattern in Australia. Men aged 35 - 54 years old have the highest suicide rate. This is a concern as there are plenty of mental health networks available to people for access however, either these arent accessed enough or men arent simply seeking the help in the first place.</p>
+<p>Similar pattern in Australia. Men aged 35 - 54 years old have the highest suicide rate.</p>
 <pre class="r"><code>age_group_35_54 &lt;- suicide_df %&gt;% 
   group_by(country, year, age) %&gt;% 
  filter(age %in% &quot;35-54 years&quot;) %&gt;% 

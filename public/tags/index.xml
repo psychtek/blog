@@ -6,24 +6,24 @@
     <description>Recent content in Tags on PsychTek - Aaron Willcox</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Fri, 09 Aug 2019 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Fri, 16 Aug 2019 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/tags/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
-      <title>PCA</title>
-      <link>/tags/pca/</link>
-      <pubDate>Fri, 09 Aug 2019 00:00:00 +0000</pubDate>
+      <title>Emotion</title>
+      <link>/tags/emotion/</link>
+      <pubDate>Fri, 16 Aug 2019 00:00:00 +0000</pubDate>
       
-      <guid>/tags/pca/</guid>
+      <guid>/tags/emotion/</guid>
       <description></description>
     </item>
     
     <item>
       <title>R Markdown</title>
       <link>/tags/r-markdown/</link>
-      <pubDate>Fri, 09 Aug 2019 00:00:00 +0000</pubDate>
+      <pubDate>Fri, 16 Aug 2019 00:00:00 +0000</pubDate>
       
       <guid>/tags/r-markdown/</guid>
       <description></description>
@@ -32,9 +32,18 @@
     <item>
       <title>research</title>
       <link>/tags/research/</link>
-      <pubDate>Tue, 16 Jul 2019 00:00:00 +0000</pubDate>
+      <pubDate>Fri, 16 Aug 2019 00:00:00 +0000</pubDate>
       
       <guid>/tags/research/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>PCA</title>
+      <link>/tags/pca/</link>
+      <pubDate>Fri, 09 Aug 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/pca/</guid>
       <description></description>
     </item>
     
