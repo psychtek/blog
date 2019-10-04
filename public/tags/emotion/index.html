@@ -374,8 +374,9 @@
     <h2><a href="/post/emotional-impact-on-memory-part-2/">Emotional Impact on Memory Part 2</a></h2>
     <div class="article-style">
       
-      LibraryImportRaw CSV files with all IAPS database and images to be used in each task imported into an object.
-raw_df &lt;- read_csv(&quot;data/ret_task.csv&quot;, col_types = cols(CR = col_factor(levels = c(&quot;same&quot;, &quot;different&quot;)), Emotion = col_factor(levels = c(&quot;negative&quot;, &quot;neutral&quot;)), Sex = col_factor(levels = c(&quot;male&quot;, &quot;female&quot;))))raw_df$CorrectAnswer &lt;- recode(raw_df$CorrectAnswer, a = &quot;l&quot;, l = &quot;a&quot;)raw_df$Stimulus1.RESP &lt;- recode(raw_df$Stimulus1.RESP, a = &quot;l&quot;, l = &quot;a&quot;)# import tables RET_SEEN &lt;- read_csv(&quot;data/RET_SEEN.
+      This is the second part of the expriment on Pattern Separation. This processes the participants hits and misses into the induced negative or neutral group and displays some results.
+ImportRaw CSV files with all IAPS database and images to be used in each task imported into an object.
+raw_df &lt;- read_csv(&quot;data/ret_task.csv&quot;, col_types = cols(CR = col_factor(levels = c(&quot;same&quot;, &quot;different&quot;)), Emotion = col_factor(levels = c(&quot;negative&quot;, &quot;neutral&quot;)), Sex = col_factor(levels = c(&quot;male&quot;, &quot;female&quot;))))raw_df$CorrectAnswer &lt;- recode(raw_df$CorrectAnswer, a = &quot;l&quot;, l = &quot;a&quot;)raw_df$Stimulus1.
       
     </div>
   </div>

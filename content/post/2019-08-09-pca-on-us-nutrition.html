@@ -23,11 +23,14 @@ fig_width: 12
 
 
 
+<p>A quick walk through of running a PCA on US nutrition and the use of a couple of different packages in R, to display
+information graphically.</p>
 <pre class="r"><code>library(tidyverse)
 library(corrplot)
-library(cowplot)</code></pre>
-<div id="data" class="section level4">
-<h4>Data</h4>
+library(cowplot)
+library(hrbrthemes)</code></pre>
+<div id="information" class="section level4">
+<h4>Information</h4>
 <p>The following dataset froms from the Nutrient database in the United States</p>
 <p>This is from the now outdated SR27. It is also created from the full database. The “abbreviated file” in SR28 is more up to date than this data and contains more nutrients than we provide here. See <a href="https://data.world/awram/food-nutritional-values" class="uri">https://data.world/awram/food-nutritional-values</a></p>
 <p>The columns in US RDA are created using data from Dietary Reference Intakes: The Essential Guide to Nutrient Requirements available from the National Academies Press at <a href="http://www.nap.edu/catalog/11537.html" class="uri">http://www.nap.edu/catalog/11537.html</a></p>
@@ -67,15 +70,19 @@ ggplot(Foodgroup_cat) +
   labs(title = &quot;Toal Amount of Food Products&quot;,
        subtitle = &quot;USDRA&quot;,
        x = &quot;Products&quot;, 
-       y = &quot;Frequency&quot;)</code></pre>
+       y = &quot;Frequency&quot;) +
+  theme_ft_rc()</code></pre>
 <p><img src="/post/2019-08-09-pca-on-us-nutrition_files/figure-html/unnamed-chunk-4-1.png" width="960" /></p>
+</div>
+<div id="amount-of-sugar-in-grams-associated-with-total-energy-kcals-for-each-food-group" class="section level4">
+<h4>Amount of sugar in grams associated with total energy (k/cals) for each food group</h4>
 <pre class="r"><code>ggplot(data_df) +
  aes(x = Sugar_g, y = Energy_kcal, fill = FoodGroup, colour = FoodGroup) +
  geom_point(size = 1L) +
  scale_fill_hue() +
  scale_color_hue() +
- labs(x = &quot;Sugar in gram&quot;, y = &quot;Energy in k/cals&quot;, title = &quot;Energy as a Function of Sugar&quot;, subtitle = &quot;Food Groups&quot;) +
- theme_bw() +
+ labs(x = &quot;Sugar in gram&quot;, y = &quot;Energy in k/cals&quot;, title = &quot;Amount of Energy from Sugar for each Food Group&quot;, subtitle = &quot;Food Groups&quot;) +
+  theme_ft_rc() +
  theme(legend.position = &quot;none&quot;) +
  facet_wrap(vars(FoodGroup), scales = &quot;free_x&quot;)</code></pre>
 <p><img src="/post/2019-08-09-pca-on-us-nutrition_files/figure-html/unnamed-chunk-5-1.png" width="960" />
@@ -95,7 +102,7 @@ data_corrr &lt;- cor(data_df_corr)
  
 corrplot(as.matrix(data_corrr), is.corr = FALSE, method = &quot;square&quot;, type = &quot;full&quot;)</code></pre>
 <p><img src="/post/2019-08-09-pca-on-us-nutrition_files/figure-html/unnamed-chunk-6-1.png" width="960" /></p>
-<p>Run a PCA with the default prcomp function in R and run a summary on the object</p>
+<p>Run a PCA with the default prcomp function in R and run a summary on the object then display a scree plot with eigen vectors:</p>
 <pre class="r"><code>data_PCA &lt;- prcomp(data_df_rescale)
 
 # print(data_PCA) # Full PCA matrix
@@ -125,7 +132,7 @@ summary(data_PCA) </code></pre>
 <p>From the plot we can see that factors load the most on PC1 and PC2. The Scree plot also shows us visualy where the components fall off after PC1 and PC2. Use the FactorMineR package to extract more detailed data howver, will use the first 5 components as these tend to load the most on the components (69%).</p>
 <pre class="r"><code>library(FactoMineR)
 
-data_PCA_all &lt;- PCA(data_df_rescale, ncp  = 5, graph = TRUE)</code></pre>
+data_PCA_all &lt;- PCA(data_df_rescale, ncp  = 2, graph = TRUE)</code></pre>
 <p><img src="/post/2019-08-09-pca-on-us-nutrition_files/figure-html/unnamed-chunk-8-1.png" width="672" /><img src="/post/2019-08-09-pca-on-us-nutrition_files/figure-html/unnamed-chunk-8-2.png" width="672" /></p>
 <pre class="r"><code>data_PCA_all$eig #eigen values, percent of varaince and cumulative percentage</code></pre>
 <pre><code>##         eigenvalue percentage of variance
@@ -177,55 +184,32 @@ data_PCA_all &lt;- PCA(data_df_rescale, ncp  = 5, graph = TRUE)</code></pre>
 ## comp 22                          99.84323
 ## comp 23                         100.00000</code></pre>
 <pre class="r"><code>data_PCA_all$var$coord # correlations betwewen variables and PCs</code></pre>
-<pre><code>##                      Dim.1       Dim.2        Dim.3       Dim.4
-## Energy_kcal    0.448057415  0.15136222  0.808067668  0.16772215
-## Protein_g      0.652364089 -0.58221037  0.124039889 -0.16411006
-## Fat_g          0.249819599 -0.18205001  0.813080220  0.15622913
-## Carb_g         0.158105970  0.85394168  0.195511126  0.06445781
-## Sugar_g       -0.004775929  0.65028120  0.172872424  0.36288014
-## Fiber_g        0.251606686  0.74499520  0.045907352 -0.23053244
-## VitA_mcg       0.307971932  0.13860307 -0.308581696  0.31485897
-## VitB6_mg       0.772433885 -0.09606918 -0.236507341  0.20721361
-## VitB12_mcg     0.547003966 -0.50985668 -0.200519292  0.30785702
-## VitC_mg        0.043794729  0.40875652 -0.503931530  0.19986213
-## VitE_mg        0.267686499  0.19364742  0.269780804  0.14840941
-## Folate_mcg     0.591668201  0.39794955 -0.221871329  0.10321999
-## Niacin_mg      0.807997717 -0.19436594 -0.066602377  0.23071896
-## Riboflavin_mg  0.812785526  0.02361212 -0.142305653  0.32300213
-## Thiamin_mg     0.716976586  0.23537745  0.008749311  0.21906736
-## Calcium_mg     0.413959708  0.36642193 -0.004481602 -0.13478594
-## Copper_mcg     0.601837302  0.10344439 -0.129714882 -0.42446934
-## Iron_mg        0.743808829  0.24374640 -0.055160770  0.09259546
-## Magnesium_mg   0.716083740  0.27292863  0.017770484 -0.47697037
-## Manganese_mg   0.376447365  0.37623498 -0.069298805 -0.48799125
-## Phosphorus_mg  0.780578918 -0.20048927  0.122022777 -0.27082988
-## Selenium_mcg   0.584192531 -0.52000769  0.002238510 -0.12737572
-## Zinc_mg        0.773393089 -0.33565448 -0.023589433 -0.05833394
-##                     Dim.5
-## Energy_kcal    0.05331007
-## Protein_g     -0.14302629
-## Fat_g          0.29635979
-## Carb_g        -0.22750655
-## Sugar_g       -0.07082780
-## Fiber_g       -0.15841592
-## VitA_mcg       0.58759000
-## VitB6_mg      -0.06650393
-## VitB12_mcg     0.17677269
-## VitC_mg        0.25893427
-## VitE_mg        0.59164427
-## Folate_mcg     0.01808910
-## Niacin_mg     -0.23391280
-## Riboflavin_mg -0.10035345
-## Thiamin_mg    -0.32081330
-## Calcium_mg     0.13514353
-## Copper_mcg     0.31309347
-## Iron_mg       -0.19128621
-## Magnesium_mg   0.00518765
-## Manganese_mg   0.25307917
-## Phosphorus_mg -0.05061221
-## Selenium_mcg   0.04733105
-## Zinc_mg       -0.03164408</code></pre>
-<p>When variables correlate strongly together they all converge on the same component. A simple method to extract the results, for variables, from a PCA output is to use the function get_pca_var() [factoextra package]. This function provides a list of matrices containing all the results for the active variables (coordinates, correlation between variables and axes, squared cosine and contributions)</p>
+<pre><code>##                      Dim.1       Dim.2
+## Energy_kcal    0.448057415  0.15136222
+## Protein_g      0.652364089 -0.58221037
+## Fat_g          0.249819599 -0.18205001
+## Carb_g         0.158105970  0.85394168
+## Sugar_g       -0.004775929  0.65028120
+## Fiber_g        0.251606686  0.74499520
+## VitA_mcg       0.307971932  0.13860307
+## VitB6_mg       0.772433885 -0.09606918
+## VitB12_mcg     0.547003966 -0.50985668
+## VitC_mg        0.043794729  0.40875652
+## VitE_mg        0.267686499  0.19364742
+## Folate_mcg     0.591668201  0.39794955
+## Niacin_mg      0.807997717 -0.19436594
+## Riboflavin_mg  0.812785526  0.02361212
+## Thiamin_mg     0.716976586  0.23537745
+## Calcium_mg     0.413959708  0.36642193
+## Copper_mcg     0.601837302  0.10344439
+## Iron_mg        0.743808829  0.24374640
+## Magnesium_mg   0.716083740  0.27292863
+## Manganese_mg   0.376447365  0.37623498
+## Phosphorus_mg  0.780578918 -0.20048927
+## Selenium_mcg   0.584192531 -0.52000769
+## Zinc_mg        0.773393089 -0.33565448</code></pre>
+<p>When variables correlate strongly together they all converge on the same component. A simple method to extract the results, for variables, from a PCA output is to use the function get_pca_var() <strong>[factoextra package]</strong>. This function provides a list of matrices containing all the results for the active variables (coordinates, correlation between variables and axes, squared cosine and contributions)</p>
+<p>This provides a nicer toolset to work with and display the PCA data:</p>
 <pre class="r"><code>library(factoextra)
 
 # a more colourful visual representation of the variables and where they converge on a component. 
@@ -234,26 +218,37 @@ fviz_pca_var(data_PCA_all
              , gradient.cols = c(&quot;#00AFBB&quot;, &quot;#E7B800&quot;, &quot;#FC4E07&quot;)
              , repel = TRUE) # Avoid text overlapping)</code></pre>
 <p><img src="/post/2019-08-09-pca-on-us-nutrition_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
-<pre class="r"><code>corrplot(data_PCA_all$var$cor, is.corr=FALSE) </code></pre>
+<pre class="r"><code>get_eig(data_PCA_all) # display the eigen values, dimensions and variance</code></pre>
+<pre><code>##        eigenvalue variance.percent cumulative.variance.percent
+## Dim.1  7.30899804       31.7782524                    31.77825
+## Dim.2  3.69088747       16.0473368                    47.82559
+## Dim.3  2.03221880        8.8357339                    56.66132
+## Dim.4  1.54900652        6.7348110                    63.39613
+## Dim.5  1.38181755        6.0079024                    69.40404
+## Dim.6  0.93411330        4.0613622                    73.46540
+## Dim.7  0.85472741        3.7162061                    77.18160
+## Dim.8  0.66087037        2.8733494                    80.05495
+## Dim.9  0.59551138        2.5891799                    82.64413
+## Dim.10 0.53323222        2.3184010                    84.96254
+## Dim.11 0.50743683        2.2062471                    87.16878
+## Dim.12 0.47491477        2.0648468                    89.23363
+## Dim.13 0.38384585        1.6688950                    90.90252
+## Dim.14 0.36094051        1.5693065                    92.47183
+## Dim.15 0.30306178        1.3176599                    93.78949
+## Dim.16 0.26167535        1.1377189                    94.92721
+## Dim.17 0.23475988        1.0206951                    95.94790
+## Dim.18 0.21904338        0.9523625                    96.90027
+## Dim.19 0.20433782        0.8884253                    97.78869
+## Dim.20 0.18634147        0.8101803                    98.59887
+## Dim.21 0.14834034        0.6449580                    99.24383
+## Dim.22 0.13786150        0.5993978                    99.84323
+## Dim.23 0.03605747        0.1567716                   100.00000</code></pre>
+<pre class="r"><code>fviz_eig(data_PCA_all) # screeplot</code></pre>
 <p><img src="/post/2019-08-09-pca-on-us-nutrition_files/figure-html/unnamed-chunk-9-2.png" width="672" /></p>
-<pre class="r"><code>fviz_contrib(data_PCA_all, choice = &quot;var&quot;, axes = 1:2, top = 10)</code></pre>
+<pre class="r"><code>corrplot(data_PCA_all$var$cor, is.corr=FALSE) </code></pre>
 <p><img src="/post/2019-08-09-pca-on-us-nutrition_files/figure-html/unnamed-chunk-9-3.png" width="672" /></p>
-<p>Biplot package also allows for more detail plots however, points are limited to 10 and we have 25.</p>
-<pre class="r"><code>fviz_pca_biplot(data_PCA_all, 
-                # Individuals
-                geom.ind = &quot;point&quot;,
-                fill.ind = data_df$FoodGroup, col.ind = &quot;black&quot;,
-                pointshape = 21, pointsize = 2,
-                palette = &quot;jco&quot;,
-                addEllipses = TRUE,
-                # Variables
-                alpha.var =&quot;contrib&quot;, col.var = &quot;contrib&quot;,
-                gradient.cols = &quot;RdYlBu&quot;,
-                
-                legend.title = list(fill = &quot;Species&quot;, color = &quot;Contrib&quot;,
-                                    alpha = &quot;Contrib&quot;)
-                )</code></pre>
-<p><img src="/post/2019-08-09-pca-on-us-nutrition_files/figure-html/unnamed-chunk-10-1.png" width="960" /></p>
+<pre class="r"><code>fviz_contrib(data_PCA_all, choice = &quot;var&quot;, axes = 1:2, top = 10)</code></pre>
+<p><img src="/post/2019-08-09-pca-on-us-nutrition_files/figure-html/unnamed-chunk-9-4.png" width="672" /></p>
 <p>Finally, with the Ggforce package we are able to plot multiple components from a PCA analysis against each other component:</p>
 <pre class="r"><code>library(ggforce)
 
@@ -270,5 +265,5 @@ ggplot(pca_grid[,1:7], aes(x = .panel_x, y = .panel_y)) +
   geom_density2d() +
   facet_matrix(vars(everything()), layer.diag = 2, layer.upper = 3, 
                grid.y.diag = FALSE)</code></pre>
-<p><img src="/post/2019-08-09-pca-on-us-nutrition_files/figure-html/unnamed-chunk-11-1.png" width="960" /></p>
+<p><img src="/post/2019-08-09-pca-on-us-nutrition_files/figure-html/unnamed-chunk-10-1.png" width="960" /></p>
 </div>

@@ -21,13 +21,18 @@ projects: []
 fig_width: 12
 ---
 
+A quick walk through of running a PCA on US nutrition and the use of a couple of different packages in R, to display
+information graphically. 
+
 ```{r message=FALSE, warning=FALSE}
 library(tidyverse)
 library(corrplot)
 library(cowplot)
+library(hrbrthemes)
 ```
 
-#### Data
+#### Information
+
 The following dataset froms from the Nutrient database in the United States
 
 This is from the now outdated SR27. It is also created from the full database. The "abbreviated file" in SR28 is more up to date than this data and contains more nutrients than we provide here. See https://data.world/awram/food-nutritional-values
@@ -85,22 +90,24 @@ ggplot(Foodgroup_cat) +
   labs(title = "Toal Amount of Food Products",
        subtitle = "USDRA",
        x = "Products", 
-       y = "Frequency")
+       y = "Frequency") +
+  theme_ft_rc()
 
 
 
 ```
 
+#### Amount of sugar in grams associated with total energy (k/cals) for each food group
 
-```{r, fig.width=10, fig.height=12}
+```{r fig.height=12, fig.width=10, message=FALSE, warning=FALSE}
 
 ggplot(data_df) +
  aes(x = Sugar_g, y = Energy_kcal, fill = FoodGroup, colour = FoodGroup) +
  geom_point(size = 1L) +
  scale_fill_hue() +
  scale_color_hue() +
- labs(x = "Sugar in gram", y = "Energy in k/cals", title = "Energy as a Function of Sugar", subtitle = "Food Groups") +
- theme_bw() +
+ labs(x = "Sugar in gram", y = "Energy in k/cals", title = "Amount of Energy from Sugar for each Food Group", subtitle = "Food Groups") +
+  theme_ft_rc() +
  theme(legend.position = "none") +
  facet_wrap(vars(FoodGroup), scales = "free_x")
 
@@ -127,7 +134,7 @@ data_corrr <- cor(data_df_corr)
 corrplot(as.matrix(data_corrr), is.corr = FALSE, method = "square", type = "full")
 ```
 
-Run a PCA with the default prcomp function in R and run a summary on the object
+Run a PCA with the default prcomp function in R and run a summary on the object then display a scree plot with eigen vectors:
 
 ```{r}
 
@@ -137,6 +144,8 @@ data_PCA <- prcomp(data_df_rescale)
 # print(data_PCA) # Full PCA matrix
 
 summary(data_PCA) 
+
+
 
 plot(data_PCA, type = "l")
 
@@ -151,7 +160,7 @@ From the plot we can see that factors load the most on PC1 and PC2. The Scree pl
 ```{r message=FALSE, warning=FALSE}
 library(FactoMineR)
 
-data_PCA_all <- PCA(data_df_rescale, ncp  = 5, graph = TRUE)
+data_PCA_all <- PCA(data_df_rescale, ncp  = 2, graph = TRUE)
 
 data_PCA_all$eig #eigen values, percent of varaince and cumulative percentage
 
@@ -161,7 +170,9 @@ data_PCA_all$var$coord # correlations betwewen variables and PCs
 
 
 
-When variables correlate strongly together they all converge on the same component. A simple method to extract the results, for variables, from a PCA output is to use the function get_pca_var() [factoextra package]. This function provides a list of matrices containing all the results for the active variables (coordinates, correlation between variables and axes, squared cosine and contributions)
+When variables correlate strongly together they all converge on the same component. A simple method to extract the results, for variables, from a PCA output is to use the function get_pca_var() __[factoextra package]__. This function provides a list of matrices containing all the results for the active variables (coordinates, correlation between variables and axes, squared cosine and contributions)
+
+This provides a nicer toolset to work with and display the PCA data:
 
 ```{r message=FALSE, warning=FALSE}
 library(factoextra)
@@ -173,29 +184,15 @@ fviz_pca_var(data_PCA_all
              , repel = TRUE) # Avoid text overlapping)
 
 
+get_eig(data_PCA_all) # display the eigen values, dimensions and variance
+
+fviz_eig(data_PCA_all) # screeplot
+
 corrplot(data_PCA_all$var$cor, is.corr=FALSE) 
 
 fviz_contrib(data_PCA_all, choice = "var", axes = 1:2, top = 10)
-```
 
 
-Biplot package also allows for more detail plots however, points are limited to 10 and we have 25. 
-
-```{r message=FALSE, warning=FALSE, fig.width=10, fig.height=12}
-fviz_pca_biplot(data_PCA_all, 
-                # Individuals
-                geom.ind = "point",
-                fill.ind = data_df$FoodGroup, col.ind = "black",
-                pointshape = 21, pointsize = 2,
-                palette = "jco",
-                addEllipses = TRUE,
-                # Variables
-                alpha.var ="contrib", col.var = "contrib",
-                gradient.cols = "RdYlBu",
-                
-                legend.title = list(fill = "Species", color = "Contrib",
-                                    alpha = "Contrib")
-                )
 ```
 
 

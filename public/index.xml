@@ -108,6 +108,184 @@
     </item>
     
     <item>
+      <title>Global Mortality Rates</title>
+      <link>/post/global-mortality-rates/</link>
+      <pubDate>Wed, 21 Aug 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/post/global-mortality-rates/</guid>
+      <description>
+
+
+&lt;div id=&#34;global-mortality-rates&#34; class=&#34;section level4&#34;&gt;
+&lt;h4&gt;Global Mortality Rates&lt;/h4&gt;
+&lt;p&gt;The following dataset is from the Tidy Tuesday &lt;a href=&#34;Dataset&#34;&gt;https://github.com/rfordatascience/tidytuesday/tree/master/data/2018/2018-04-16&lt;/a&gt;.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(tidyverse)
+library(hrbrthemes) # custom dark theme from hrbrpackage&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;global_mort &amp;lt;- read_csv(file = &amp;quot;data/global_mortality.csv&amp;quot;, col_names = TRUE) # import dataset into object
+
+global_mort$country &amp;lt;- as.factor(global_mort$country) # Change character to factors
+
+global_mort$country_code &amp;lt;- as.factor(global_mort$country_code)
+
+global_mort$year &amp;lt;- as.factor(global_mort$year)&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;graphical-display-of-mortality-rates-in-australia-from-1990-to-2016&#34; class=&#34;section level4&#34;&gt;
+&lt;h4&gt;Graphical Display of mortality rates in Australia from 1990 to 2016&lt;/h4&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;df &amp;lt;- global_mort %&amp;gt;% 
+  group_by(country, year) %&amp;gt;% 
+  pivot_longer(cols = c(4:35)) 
+
+df$name &amp;lt;- factor(df$name)
+
+
+df %&amp;gt;% 
+  filter(&amp;quot;Australia&amp;quot; %in% country) %&amp;gt;% 
+  #filter(&amp;quot;Alcohol disorders (%)&amp;quot; == name) %&amp;gt;% 
+  #top_n(-15) %&amp;gt;% 
+ggplot(aes(x = year, y = value, group = name)) +
+ geom_line(aes(color = name), size = 1) +
+ labs(x = &amp;quot;Year&amp;quot;, y = &amp;quot;Percentage (%)&amp;quot;, title = &amp;quot;Australian Mortality Rates&amp;quot;, subtitle = &amp;quot;1990 to 2016&amp;quot;) +
+  theme_ft_rc() +
+  theme(axis.text.x = element_text(size=10, angle=45)) +
+  scale_y_percent()&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2019-08-21-global-mortality-rates_files/figure-html/unnamed-chunk-3-1.png&#34; width=&#34;1152&#34; /&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;# ggplotly(p)
+
+df %&amp;gt;% 
+  filter(&amp;quot;Australia&amp;quot; %in% country) %&amp;gt;% 
+  group_by(year, name) %&amp;gt;% 
+  filter(name == &amp;quot;Alcohol disorders (%)&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## # A tibble: 27 x 5
+## # Groups:   year, name [27]
+##    country   country_code year  name                  value
+##    &amp;lt;fct&amp;gt;     &amp;lt;fct&amp;gt;        &amp;lt;fct&amp;gt; &amp;lt;fct&amp;gt;                 &amp;lt;dbl&amp;gt;
+##  1 Australia AUS          1990  Alcohol disorders (%) 0.216
+##  2 Australia AUS          1991  Alcohol disorders (%) 0.215
+##  3 Australia AUS          1992  Alcohol disorders (%) 0.213
+##  4 Australia AUS          1993  Alcohol disorders (%) 0.216
+##  5 Australia AUS          1994  Alcohol disorders (%) 0.218
+##  6 Australia AUS          1995  Alcohol disorders (%) 0.225
+##  7 Australia AUS          1996  Alcohol disorders (%) 0.225
+##  8 Australia AUS          1997  Alcohol disorders (%) 0.232
+##  9 Australia AUS          1998  Alcohol disorders (%) 0.234
+## 10 Australia AUS          1999  Alcohol disorders (%) 0.244
+## # ... with 17 more rows&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;Australia &amp;lt;- global_mort %&amp;gt;% 
+  group_by(country, year) %&amp;gt;% 
+  arrange(year) %&amp;gt;% 
+  filter(country == &amp;quot;Australia&amp;quot;)
+
+ggplot(Australia) +
+ aes(x = year, weight = `Cardiovascular diseases (%)`) +
+ geom_bar(fill = ft_cols$blue) +
+ labs(x = &amp;quot;&amp;quot;, y = &amp;quot;Amount %&amp;quot;, title = &amp;quot;Cardiovascular Disease in Australia&amp;quot;, subtitle = &amp;quot;1990 to 2016&amp;quot;) +
+ theme_ft_rc()&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2019-08-21-global-mortality-rates_files/figure-html/unnamed-chunk-4-1.png&#34; width=&#34;1152&#34; /&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;# Drug Related Deaths in Australia
+ggplot(Australia) +
+  aes(x = year, weight = `Drug disorders (%)`) +
+ geom_bar(fill = ft_cols$blue) +
+ labs(x = &amp;quot;&amp;quot;, y = &amp;quot;Amount %&amp;quot;, title = &amp;quot;Drug Related Deaths in Australia&amp;quot;, subtitle = &amp;quot;1990 to 2016&amp;quot;) +
+ theme_ft_rc()&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2019-08-21-global-mortality-rates_files/figure-html/unnamed-chunk-4-2.png&#34; width=&#34;1152&#34; /&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;ggplot(Australia) +
+  aes(x = year, weight = `Suicide (%)`) +
+ geom_bar(fill = ft_cols$blue) +
+ labs(x = &amp;quot;&amp;quot;, y = &amp;quot;Amount %&amp;quot;, title = &amp;quot;Suicides in Australia&amp;quot;, subtitle = &amp;quot;1990 to 2016&amp;quot;) +
+ theme_ft_rc()&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2019-08-21-global-mortality-rates_files/figure-html/unnamed-chunk-4-3.png&#34; width=&#34;1152&#34; /&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;ggplot(Australia) +
+  aes(x = year, weight = `Alcohol disorders (%)` ) +
+  geom_bar(fill = ft_cols$blue) +
+ labs(x = &amp;quot;&amp;quot;, y = &amp;quot;Amount %&amp;quot;, title = &amp;quot;Alochol Use in Australia&amp;quot;, subtitle = &amp;quot;1990 to 2016&amp;quot;) +
+ theme_ft_rc()&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2019-08-21-global-mortality-rates_files/figure-html/unnamed-chunk-4-4.png&#34; width=&#34;1152&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Oceanographic Wave Measuring </title>
+      <link>/post/oceanographic-wave-measuring/</link>
+      <pubDate>Sun, 18 Aug 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/post/oceanographic-wave-measuring/</guid>
+      <description>
+
+
+&lt;p&gt;This is a simple graphical display of a dataset with wave data from Queensland Australia.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(tidyverse)
+library(lubridate)
+library(hrbrthemes)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;This dataset contains Measured/Calculated wave parameters. Measured and derived wave data from data collected by oceanographic wave measuring buoys anchored at Mooloolaba. Coverage period: 30 months.&lt;/p&gt;
+&lt;p&gt;Acknowledgements
+This data comes from Queensland Government Data - &lt;a href=&#34;Link&#34;&gt;https://data.qld.gov.au/dataset&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;Date/TimeDate&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Hs Significant wave height, an average of the highest third of the waves in a record&lt;/li&gt;
+&lt;li&gt;Hmax The maximum wave height in the record&lt;/li&gt;
+&lt;li&gt;Tz The zero upcrossing wave period&lt;/li&gt;
+&lt;li&gt;Tp The peak energy wave period&lt;/li&gt;
+&lt;li&gt;Peak Direction Direction (related to true north) from which the peak period waves are coming from&lt;/li&gt;
+&lt;li&gt;SST Approximation of sea surface temperature&lt;/li&gt;
+&lt;/ul&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;waves_df &amp;lt;-  read_csv(&amp;quot;data/Coastal Data System - Waves (Mooloolaba) 01-2017 to 06 - 2019.csv&amp;quot;)
+
+# The date format is mixed so some are mdy and other dmy
+# Which we will separate out below 
+waves_df$`Date/Time` &amp;lt;- parse_date_time(waves_df$`Date/Time`, c(&amp;quot;dmyHMS&amp;quot;, &amp;quot;mdyHMS&amp;quot;), truncated = 3) # Change the date format
+
+
+waves_df &amp;lt;- separate(waves_df, &amp;#39;Date/Time&amp;#39;, into = c(&amp;quot;year&amp;quot;, &amp;quot;month&amp;quot;, &amp;quot;day&amp;quot;), sep = &amp;quot;-&amp;quot;) # Separate out the year month and day
+
+
+waves_df &amp;lt;- separate(waves_df, &amp;#39;day&amp;#39;, into = c(&amp;quot;day&amp;quot;, &amp;quot;time&amp;quot;), sep = &amp;quot; &amp;quot;) # separate out the day and time
+
+head(waves_df)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## # A tibble: 6 x 10
+##   year  month day   time       Hs   Hmax     Tz     Tp `Peak Direction`
+##   &amp;lt;chr&amp;gt; &amp;lt;chr&amp;gt; &amp;lt;chr&amp;gt; &amp;lt;chr&amp;gt;   &amp;lt;dbl&amp;gt;  &amp;lt;dbl&amp;gt;  &amp;lt;dbl&amp;gt;  &amp;lt;dbl&amp;gt;            &amp;lt;dbl&amp;gt;
+## 1 2017  01    01    00:0~ -99.9   -99.9  -99.9  -99.9             -99.9
+## 2 2017  01    01    00:3~   0.875   1.39   4.42   4.51            -99.9
+## 3 2017  01    01    01:0~   0.763   1.15   4.52   5.51             49  
+## 4 2017  01    01    01:3~   0.77    1.41   4.58   5.65             75  
+## 5 2017  01    01    02:0~   0.747   1.16   4.51   5.08             91  
+## 6 2017  01    01    02:3~   0.718   1.61   4.61   6.18             68  
+## # ... with 1 more variable: SST &amp;lt;dbl&amp;gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;div id=&#34;average-wave-height-for-2017-to-2019-for-each-month&#34; class=&#34;section level4&#34;&gt;
+&lt;h4&gt;Average Wave Height for 2017 to 2019 for each month&lt;/h4&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;waves_df %&amp;gt;% 
+  group_by(year, month) %&amp;gt;% 
+  summarise(Ave_wave_height = mean(Hs)) %&amp;gt;% 
+  ggplot(aes(x = month, y = Ave_wave_height)) +
+  geom_point(size = 2.2) +
+  geom_line(aes(x = month, y = Ave_wave_height)) +
+  facet_wrap(~year) +
+  theme_bw()+ 
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2019-08-18-oceanographic-wave-measuring_files/figure-html/unnamed-chunk-2-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;waves_df %&amp;gt;% 
+  group_by(year, month) %&amp;gt;% 
+  summarise(Mean = mean(Hs)) %&amp;gt;% 
+ggplot(aes(x = month, y = Mean, group = year)) + 
+  geom_line(aes(color = year), size = 1) +
+  theme_ft_rc() +
+  xlab(&amp;quot;Month&amp;quot;) + 
+  ylab(&amp;quot;Mean Wave Height&amp;quot;) +
+  ggtitle(&amp;quot;Average Wave Height 2017 to 2019&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2019-08-18-oceanographic-wave-measuring_files/figure-html/unnamed-chunk-2-2.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;Correlations between variables&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;waves_cor &amp;lt;- waves_df %&amp;gt;% select(5:10)
+
+waves_cor &amp;lt;- cor(waves_cor)
+
+corrplot::corrplot(waves_cor, is.corr = FALSE)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2019-08-18-oceanographic-wave-measuring_files/figure-html/unnamed-chunk-3-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+</description>
+    </item>
+    
+    <item>
       <title>Emotional Impact on Memory Part 2</title>
       <link>/post/emotional-impact-on-memory-part-2/</link>
       <pubDate>Fri, 16 Aug 2019 00:00:00 +0000</pubDate>
@@ -126,9 +304,7 @@
 &lt;script src=&#34;/rmarkdown-libs/kePrint/kePrint.js&#34;&gt;&lt;/script&gt;
 
 
-&lt;div id=&#34;library&#34; class=&#34;section level4&#34;&gt;
-&lt;h4&gt;Library&lt;/h4&gt;
-&lt;/div&gt;
+&lt;p&gt;This is the second part of the expriment on Pattern Separation. This processes the participants hits and misses into the induced negative or neutral group and displays some results.&lt;/p&gt;
 &lt;div id=&#34;import&#34; class=&#34;section level4&#34;&gt;
 &lt;h4&gt;Import&lt;/h4&gt;
 &lt;p&gt;Raw CSV files with all IAPS database and images to be used in each task imported into an object.&lt;/p&gt;
@@ -695,11 +871,14 @@ comparison&lt;/code&gt;&lt;/pre&gt;
       <description>
 
 
+&lt;p&gt;A quick walk through of running a PCA on US nutrition and the use of a couple of different packages in R, to display
+information graphically.&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(tidyverse)
 library(corrplot)
-library(cowplot)&lt;/code&gt;&lt;/pre&gt;
-&lt;div id=&#34;data&#34; class=&#34;section level4&#34;&gt;
-&lt;h4&gt;Data&lt;/h4&gt;
+library(cowplot)
+library(hrbrthemes)&lt;/code&gt;&lt;/pre&gt;
+&lt;div id=&#34;information&#34; class=&#34;section level4&#34;&gt;
+&lt;h4&gt;Information&lt;/h4&gt;
 &lt;p&gt;The following dataset froms from the Nutrient database in the United States&lt;/p&gt;
 &lt;p&gt;This is from the now outdated SR27. It is also created from the full database. The “abbreviated file” in SR28 is more up to date than this data and contains more nutrients than we provide here. See &lt;a href=&#34;https://data.world/awram/food-nutritional-values&#34; class=&#34;uri&#34;&gt;https://data.world/awram/food-nutritional-values&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;The columns in US RDA are created using data from Dietary Reference Intakes: The Essential Guide to Nutrient Requirements available from the National Academies Press at &lt;a href=&#34;http://www.nap.edu/catalog/11537.html&#34; class=&#34;uri&#34;&gt;http://www.nap.edu/catalog/11537.html&lt;/a&gt;&lt;/p&gt;
@@ -739,15 +918,19 @@ ggplot(Foodgroup_cat) +
   labs(title = &amp;quot;Toal Amount of Food Products&amp;quot;,
        subtitle = &amp;quot;USDRA&amp;quot;,
        x = &amp;quot;Products&amp;quot;, 
-       y = &amp;quot;Frequency&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+       y = &amp;quot;Frequency&amp;quot;) +
+  theme_ft_rc()&lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;&lt;img src=&#34;/post/2019-08-09-pca-on-us-nutrition_files/figure-html/unnamed-chunk-4-1.png&#34; width=&#34;960&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;amount-of-sugar-in-grams-associated-with-total-energy-kcals-for-each-food-group&#34; class=&#34;section level4&#34;&gt;
+&lt;h4&gt;Amount of sugar in grams associated with total energy (k/cals) for each food group&lt;/h4&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;ggplot(data_df) +
  aes(x = Sugar_g, y = Energy_kcal, fill = FoodGroup, colour = FoodGroup) +
  geom_point(size = 1L) +
  scale_fill_hue() +
  scale_color_hue() +
- labs(x = &amp;quot;Sugar in gram&amp;quot;, y = &amp;quot;Energy in k/cals&amp;quot;, title = &amp;quot;Energy as a Function of Sugar&amp;quot;, subtitle = &amp;quot;Food Groups&amp;quot;) +
- theme_bw() +
+ labs(x = &amp;quot;Sugar in gram&amp;quot;, y = &amp;quot;Energy in k/cals&amp;quot;, title = &amp;quot;Amount of Energy from Sugar for each Food Group&amp;quot;, subtitle = &amp;quot;Food Groups&amp;quot;) +
+  theme_ft_rc() +
  theme(legend.position = &amp;quot;none&amp;quot;) +
  facet_wrap(vars(FoodGroup), scales = &amp;quot;free_x&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;&lt;img src=&#34;/post/2019-08-09-pca-on-us-nutrition_files/figure-html/unnamed-chunk-5-1.png&#34; width=&#34;960&#34; /&gt;
@@ -767,7 +950,7 @@ data_corrr &amp;lt;- cor(data_df_corr)
  
 corrplot(as.matrix(data_corrr), is.corr = FALSE, method = &amp;quot;square&amp;quot;, type = &amp;quot;full&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;&lt;img src=&#34;/post/2019-08-09-pca-on-us-nutrition_files/figure-html/unnamed-chunk-6-1.png&#34; width=&#34;960&#34; /&gt;&lt;/p&gt;
-&lt;p&gt;Run a PCA with the default prcomp function in R and run a summary on the object&lt;/p&gt;
+&lt;p&gt;Run a PCA with the default prcomp function in R and run a summary on the object then display a scree plot with eigen vectors:&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;data_PCA &amp;lt;- prcomp(data_df_rescale)
 
 # print(data_PCA) # Full PCA matrix
@@ -797,7 +980,7 @@ summary(data_PCA) &lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;From the plot we can see that factors load the most on PC1 and PC2. The Scree plot also shows us visualy where the components fall off after PC1 and PC2. Use the FactorMineR package to extract more detailed data howver, will use the first 5 components as these tend to load the most on the components (69%).&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(FactoMineR)
 
-data_PCA_all &amp;lt;- PCA(data_df_rescale, ncp  = 5, graph = TRUE)&lt;/code&gt;&lt;/pre&gt;
+data_PCA_all &amp;lt;- PCA(data_df_rescale, ncp  = 2, graph = TRUE)&lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;&lt;img src=&#34;/post/2019-08-09-pca-on-us-nutrition_files/figure-html/unnamed-chunk-8-1.png&#34; width=&#34;672&#34; /&gt;&lt;img src=&#34;/post/2019-08-09-pca-on-us-nutrition_files/figure-html/unnamed-chunk-8-2.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;data_PCA_all$eig #eigen values, percent of varaince and cumulative percentage&lt;/code&gt;&lt;/pre&gt;
 &lt;pre&gt;&lt;code&gt;##         eigenvalue percentage of variance
@@ -849,55 +1032,32 @@ data_PCA_all &amp;lt;- PCA(data_df_rescale, ncp  = 5, graph = TRUE)&lt;/code&gt;
 ## comp 22                          99.84323
 ## comp 23                         100.00000&lt;/code&gt;&lt;/pre&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;data_PCA_all$var$coord # correlations betwewen variables and PCs&lt;/code&gt;&lt;/pre&gt;
-&lt;pre&gt;&lt;code&gt;##                      Dim.1       Dim.2        Dim.3       Dim.4
-## Energy_kcal    0.448057415  0.15136222  0.808067668  0.16772215
-## Protein_g      0.652364089 -0.58221037  0.124039889 -0.16411006
-## Fat_g          0.249819599 -0.18205001  0.813080220  0.15622913
-## Carb_g         0.158105970  0.85394168  0.195511126  0.06445781
-## Sugar_g       -0.004775929  0.65028120  0.172872424  0.36288014
-## Fiber_g        0.251606686  0.74499520  0.045907352 -0.23053244
-## VitA_mcg       0.307971932  0.13860307 -0.308581696  0.31485897
-## VitB6_mg       0.772433885 -0.09606918 -0.236507341  0.20721361
-## VitB12_mcg     0.547003966 -0.50985668 -0.200519292  0.30785702
-## VitC_mg        0.043794729  0.40875652 -0.503931530  0.19986213
-## VitE_mg        0.267686499  0.19364742  0.269780804  0.14840941
-## Folate_mcg     0.591668201  0.39794955 -0.221871329  0.10321999
-## Niacin_mg      0.807997717 -0.19436594 -0.066602377  0.23071896
-## Riboflavin_mg  0.812785526  0.02361212 -0.142305653  0.32300213
-## Thiamin_mg     0.716976586  0.23537745  0.008749311  0.21906736
-## Calcium_mg     0.413959708  0.36642193 -0.004481602 -0.13478594
-## Copper_mcg     0.601837302  0.10344439 -0.129714882 -0.42446934
-## Iron_mg        0.743808829  0.24374640 -0.055160770  0.09259546
-## Magnesium_mg   0.716083740  0.27292863  0.017770484 -0.47697037
-## Manganese_mg   0.376447365  0.37623498 -0.069298805 -0.48799125
-## Phosphorus_mg  0.780578918 -0.20048927  0.122022777 -0.27082988
-## Selenium_mcg   0.584192531 -0.52000769  0.002238510 -0.12737572
-## Zinc_mg        0.773393089 -0.33565448 -0.023589433 -0.05833394
-##                     Dim.5
-## Energy_kcal    0.05331007
-## Protein_g     -0.14302629
-## Fat_g          0.29635979
-## Carb_g        -0.22750655
-## Sugar_g       -0.07082780
-## Fiber_g       -0.15841592
-## VitA_mcg       0.58759000
-## VitB6_mg      -0.06650393
-## VitB12_mcg     0.17677269
-## VitC_mg        0.25893427
-## VitE_mg        0.59164427
-## Folate_mcg     0.01808910
-## Niacin_mg     -0.23391280
-## Riboflavin_mg -0.10035345
-## Thiamin_mg    -0.32081330
-## Calcium_mg     0.13514353
-## Copper_mcg     0.31309347
-## Iron_mg       -0.19128621
-## Magnesium_mg   0.00518765
-## Manganese_mg   0.25307917
-## Phosphorus_mg -0.05061221
-## Selenium_mcg   0.04733105
-## Zinc_mg       -0.03164408&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;When variables correlate strongly together they all converge on the same component. A simple method to extract the results, for variables, from a PCA output is to use the function get_pca_var() [factoextra package]. This function provides a list of matrices containing all the results for the active variables (coordinates, correlation between variables and axes, squared cosine and contributions)&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;##                      Dim.1       Dim.2
+## Energy_kcal    0.448057415  0.15136222
+## Protein_g      0.652364089 -0.58221037
+## Fat_g          0.249819599 -0.18205001
+## Carb_g         0.158105970  0.85394168
+## Sugar_g       -0.004775929  0.65028120
+## Fiber_g        0.251606686  0.74499520
+## VitA_mcg       0.307971932  0.13860307
+## VitB6_mg       0.772433885 -0.09606918
+## VitB12_mcg     0.547003966 -0.50985668
+## VitC_mg        0.043794729  0.40875652
+## VitE_mg        0.267686499  0.19364742
+## Folate_mcg     0.591668201  0.39794955
+## Niacin_mg      0.807997717 -0.19436594
+## Riboflavin_mg  0.812785526  0.02361212
+## Thiamin_mg     0.716976586  0.23537745
+## Calcium_mg     0.413959708  0.36642193
+## Copper_mcg     0.601837302  0.10344439
+## Iron_mg        0.743808829  0.24374640
+## Magnesium_mg   0.716083740  0.27292863
+## Manganese_mg   0.376447365  0.37623498
+## Phosphorus_mg  0.780578918 -0.20048927
+## Selenium_mcg   0.584192531 -0.52000769
+## Zinc_mg        0.773393089 -0.33565448&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;When variables correlate strongly together they all converge on the same component. A simple method to extract the results, for variables, from a PCA output is to use the function get_pca_var() &lt;strong&gt;[factoextra package]&lt;/strong&gt;. This function provides a list of matrices containing all the results for the active variables (coordinates, correlation between variables and axes, squared cosine and contributions)&lt;/p&gt;
+&lt;p&gt;This provides a nicer toolset to work with and display the PCA data:&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(factoextra)
 
 # a more colourful visual representation of the variables and where they converge on a component. 
@@ -906,26 +1066,37 @@ fviz_pca_var(data_PCA_all
              , gradient.cols = c(&amp;quot;#00AFBB&amp;quot;, &amp;quot;#E7B800&amp;quot;, &amp;quot;#FC4E07&amp;quot;)
              , repel = TRUE) # Avoid text overlapping)&lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;&lt;img src=&#34;/post/2019-08-09-pca-on-us-nutrition_files/figure-html/unnamed-chunk-9-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
-&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;corrplot(data_PCA_all$var$cor, is.corr=FALSE) &lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;get_eig(data_PCA_all) # display the eigen values, dimensions and variance&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;##        eigenvalue variance.percent cumulative.variance.percent
+## Dim.1  7.30899804       31.7782524                    31.77825
+## Dim.2  3.69088747       16.0473368                    47.82559
+## Dim.3  2.03221880        8.8357339                    56.66132
+## Dim.4  1.54900652        6.7348110                    63.39613
+## Dim.5  1.38181755        6.0079024                    69.40404
+## Dim.6  0.93411330        4.0613622                    73.46540
+## Dim.7  0.85472741        3.7162061                    77.18160
+## Dim.8  0.66087037        2.8733494                    80.05495
+## Dim.9  0.59551138        2.5891799                    82.64413
+## Dim.10 0.53323222        2.3184010                    84.96254
+## Dim.11 0.50743683        2.2062471                    87.16878
+## Dim.12 0.47491477        2.0648468                    89.23363
+## Dim.13 0.38384585        1.6688950                    90.90252
+## Dim.14 0.36094051        1.5693065                    92.47183
+## Dim.15 0.30306178        1.3176599                    93.78949
+## Dim.16 0.26167535        1.1377189                    94.92721
+## Dim.17 0.23475988        1.0206951                    95.94790
+## Dim.18 0.21904338        0.9523625                    96.90027
+## Dim.19 0.20433782        0.8884253                    97.78869
+## Dim.20 0.18634147        0.8101803                    98.59887
+## Dim.21 0.14834034        0.6449580                    99.24383
+## Dim.22 0.13786150        0.5993978                    99.84323
+## Dim.23 0.03605747        0.1567716                   100.00000&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;fviz_eig(data_PCA_all) # screeplot&lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;&lt;img src=&#34;/post/2019-08-09-pca-on-us-nutrition_files/figure-html/unnamed-chunk-9-2.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
-&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;fviz_contrib(data_PCA_all, choice = &amp;quot;var&amp;quot;, axes = 1:2, top = 10)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;corrplot(data_PCA_all$var$cor, is.corr=FALSE) &lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;&lt;img src=&#34;/post/2019-08-09-pca-on-us-nutrition_files/figure-html/unnamed-chunk-9-3.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
-&lt;p&gt;Biplot package also allows for more detail plots however, points are limited to 10 and we have 25.&lt;/p&gt;
-&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;fviz_pca_biplot(data_PCA_all, 
-                # Individuals
-                geom.ind = &amp;quot;point&amp;quot;,
-                fill.ind = data_df$FoodGroup, col.ind = &amp;quot;black&amp;quot;,
-                pointshape = 21, pointsize = 2,
-                palette = &amp;quot;jco&amp;quot;,
-                addEllipses = TRUE,
-                # Variables
-                alpha.var =&amp;quot;contrib&amp;quot;, col.var = &amp;quot;contrib&amp;quot;,
-                gradient.cols = &amp;quot;RdYlBu&amp;quot;,
-                
-                legend.title = list(fill = &amp;quot;Species&amp;quot;, color = &amp;quot;Contrib&amp;quot;,
-                                    alpha = &amp;quot;Contrib&amp;quot;)
-                )&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/post/2019-08-09-pca-on-us-nutrition_files/figure-html/unnamed-chunk-10-1.png&#34; width=&#34;960&#34; /&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;fviz_contrib(data_PCA_all, choice = &amp;quot;var&amp;quot;, axes = 1:2, top = 10)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2019-08-09-pca-on-us-nutrition_files/figure-html/unnamed-chunk-9-4.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;p&gt;Finally, with the Ggforce package we are able to plot multiple components from a PCA analysis against each other component:&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(ggforce)
 
@@ -942,7 +1113,7 @@ ggplot(pca_grid[,1:7], aes(x = .panel_x, y = .panel_y)) +
   geom_density2d() +
   facet_matrix(vars(everything()), layer.diag = 2, layer.upper = 3, 
                grid.y.diag = FALSE)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/post/2019-08-09-pca-on-us-nutrition_files/figure-html/unnamed-chunk-11-1.png&#34; width=&#34;960&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2019-08-09-pca-on-us-nutrition_files/figure-html/unnamed-chunk-10-1.png&#34; width=&#34;960&#34; /&gt;&lt;/p&gt;
 &lt;/div&gt;
 </description>
     </item>
@@ -978,6 +1149,7 @@ ggplot(pca_grid[,1:7], aes(x = .panel_x, y = .panel_y)) +
 &lt;script src=&#34;/rmarkdown-libs/plotly-main/plotly-latest.min.js&#34;&gt;&lt;/script&gt;
 
 
+&lt;p&gt;Processing an image database for use in a experiment to induce an emotional state in particpants.&lt;/p&gt;
 &lt;div id=&#34;research-protocol&#34; class=&#34;section level3&#34;&gt;
 &lt;h3&gt;Research Protocol&lt;/h3&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(tidyverse)
@@ -1234,7 +1406,7 @@ kable(core_images_df %&amp;gt;%
 
 p&lt;/code&gt;&lt;/pre&gt;
 &lt;div id=&#34;htmlwidget-2&#34; style=&#34;width:672px;height:480px;&#34; class=&#34;plotly html-widget&#34;&gt;&lt;/div&gt;
-&lt;script type=&#34;application/json&#34; data-for=&#34;htmlwidget-2&#34;&gt;{&#34;x&#34;:{&#34;data&#34;:[{&#34;x&#34;:[&#34;Parrots&#34;,&#34;Gannet&#34;,&#34;Grouper&#34;,&#34;NeuWoman&#34;,&#34;Fingerprint&#34;,&#34;Girl&#34;,&#34;Kiss&#34;,&#34;Factoryworker&#34;,&#34;Chess&#34;,&#34;War&#34;,&#34;NativeBoy&#34;,&#34;DeerHead&#34;,&#34;Mutilation&#34;,&#34;Gold&#34;,&#34;Mutilation&#34;,&#34;Accident&#34;,&#34;Mutilation&#34;,&#34;Mutilation&#34;,&#34;Mutilation&#34;,&#34;Mutilation&#34;,&#34;Mutilation&#34;,&#34;Injury&#34;,&#34;DeadBody&#34;,&#34;Mutilation&#34;,&#34;Mutilation&#34;,&#34;Mutilation&#34;,&#34;Stitches&#34;,&#34;Surgery&#34;,&#34;Surgery&#34;,&#34;Tumor&#34;,&#34;Attack&#34;,&#34;Attack&#34;,&#34;Rocks&#34;,&#34;Satellite&#34;,&#34;Field&#34;,&#34;Farmland&#34;,&#34;Field&#34;,&#34;Nature&#34;,&#34;Leaves&#34;,&#34;Soldier&#34;,&#34;Attack&#34;,&#34;DeadTiger&#34;,&#34;Attack&#34;,&#34;Attack&#34;,&#34;Gang&#34;,&#34;Guns&#34;,&#34;Police&#34;,&#34;Police&#34;,&#34;Buttons&#34;,&#34;Disk&#34;,&#34;GasCan&#34;,&#34;Rubberbands&#34;,&#34;Scissors&#34;,&#34;Razor&#34;,&#34;Video&#34;,&#34;Fan&#34;,&#34;Iron&#34;,&#34;Shoes&#34;,&#34;Mug&#34;,&#34;Train&#34;,&#34;Baskets&#34;,&#34;Zipper&#34;,&#34;HairDryer&#34;,&#34;Clothespins&#34;,&#34;Lightbulb&#34;,&#34;Tool&#34;,&#34;TrashCan&#34;,&#34;FireHydrant&#34;,&#34;Bus&#34;,&#34;Umbrella&#34;,&#34;Fabric&#34;,&#34;Pole&#34;,&#34;Rug&#34;,&#34;AbstractArt&#34;,&#34;AbstractArt&#34;,&#34;Scarves&#34;,&#34;ClothesRack&#34;,&#34;Building&#34;,&#34;Building&#34;,&#34;Bridge&#34;,&#34;Office&#34;,&#34;Boxer&#34;,&#34;PlaneCrash&#34;,&#34;HurtDog&#34;,&#34;InjuredDog&#34;,&#34;Rain&#34;,&#34;WarVictim&#34;,&#34;DeadBody&#34;,&#34;Vomit&#34;,&#34;EmptyPool&#34;,&#34;DeadMan&#34;,&#34;Hanging&#34;,&#34;Assault&#34;,&#34;DeadMan&#34;,&#34;Porpoises&#34;,&#34;Skinhead&#34;,&#34;KKKrally&#34;,&#34;CarAccident&#34;,&#34;CarAccident&#34;,&#34;Fire&#34;,&#34;AttackDog&#34;,&#34;Woman&#34;,&#34;Tourist&#34;,&#34;Shadow&#34;,&#34;HeadlessBody&#34;,&#34;Mutilation&#34;,&#34;Organs&#34;,&#34;BurnVictim&#34;,&#34;Mutilation&#34;,&#34;Mutilation&#34;,&#34;Mutilation&#34;,&#34;Mutilation&#34;,&#34;BurnVictim&#34;,&#34;BurnVictim&#34;,&#34;Mutilation&#34;,&#34;BabyTumor&#34;,&#34;SeveredHand&#34;,&#34;Boat&#34;,&#34;Mushroom&#34;,&#34;Plant&#34;,&#34;Clouds&#34;,&#34;Assault&#34;,&#34;AimedGun&#34;,&#34;BeatenFem&#34;,&#34;Attack&#34;,&#34;Suicide&#34;,&#34;RollingPin&#34;,&#34;Towel&#34;,&#34;Spoon&#34;,&#34;Bowl&#34;,&#34;Mug&#34;,&#34;Basket&#34;,&#34;PicnicTable&#34;,&#34;Hammer&#34;,&#34;Shoes&#34;,&#34;DustPan&#34;,&#34;Barbells&#34;,&#34;Fork&#34;,&#34;Book&#34;,&#34;Lamp&#34;,&#34;Man&#34;,&#34;Office&#34;,&#34;Cabinet&#34;,&#34;Tissue&#34;,&#34;Fire&#34;,&#34;Soldiers&#34;,&#34;Dirty&#34;,&#34;Soldier&#34;,&#34;Execution&#34;,&#34;Dog&#34;],&#34;y&#34;:[3.17,2.83,3.29,2.94,3.71,2.9,4.99,2.93,2.79,6.21,6.8,5.97,7.26,4.84,7.16,5.9,6.76,6.41,6.77,7.03,7.22,6.06,6.84,6.97,6.61,6,6.36,6.57,6.82,5.75,6.99,6.82,2.51,3.26,3.03,2.79,3.55,3.14,2.51,6.01,6.44,6.2,6.96,6.59,6.29,6.21,6.28,5.8,3.2,3.07,3.81,3,3.25,3.4,3.12,2.17,2.99,2.03,2.66,3.29,2.6,3.32,2.75,3.01,3.02,3.07,2.55,2.89,2.92,2.61,3.07,2.98,2.88,2.3,4.28,2.93,2.43,2.39,3.26,3.18,2.95,5.91,6.36,6.58,6.45,3.08,6.6,6.64,6.24,2.63,6.72,6.81,5.92,5.89,5.82,6.05,6.62,6.08,6.63,6.52,6.51,3.24,3,2.96,6.64,5.82,6.3,6.91,6.48,5.78,6.35,6.86,6.49,6.7,6.55,7.21,6.91,2.88,3,2.59,3.1,6.06,7.35,6.38,7.09,6.24,2.42,3.16,2,2.33,3.01,1.76,2.63,3.06,3.01,2.69,4.02,2.32,2.61,1.72,3.39,3.95,2.65,2.28,6.46,6.53,6,7.07,6.49,6.14],&#34;type&#34;:&#34;scatter&#34;,&#34;mode&#34;:&#34;markers&#34;,&#34;marker&#34;:{&#34;color&#34;:&#34;rgba(31,119,180,1)&#34;,&#34;line&#34;:{&#34;color&#34;:&#34;rgba(31,119,180,1)&#34;}},&#34;error_y&#34;:{&#34;color&#34;:&#34;rgba(31,119,180,1)&#34;},&#34;error_x&#34;:{&#34;color&#34;:&#34;rgba(31,119,180,1)&#34;},&#34;line&#34;:{&#34;color&#34;:&#34;rgba(31,119,180,1)&#34;},&#34;xaxis&#34;:&#34;x&#34;,&#34;yaxis&#34;:&#34;y&#34;,&#34;frame&#34;:null},{&#34;x&#34;:[&#34;Parrots&#34;,&#34;Gannet&#34;,&#34;Grouper&#34;,&#34;NeuWoman&#34;,&#34;Fingerprint&#34;,&#34;Girl&#34;,&#34;Kiss&#34;,&#34;Factoryworker&#34;,&#34;Chess&#34;,&#34;War&#34;,&#34;NativeBoy&#34;,&#34;DeerHead&#34;,&#34;Mutilation&#34;,&#34;Gold&#34;,&#34;Mutilation&#34;,&#34;Accident&#34;,&#34;Mutilation&#34;,&#34;Mutilation&#34;,&#34;Mutilation&#34;,&#34;Mutilation&#34;,&#34;Mutilation&#34;,&#34;Injury&#34;,&#34;DeadBody&#34;,&#34;Mutilation&#34;,&#34;Mutilation&#34;,&#34;Mutilation&#34;,&#34;Stitches&#34;,&#34;Surgery&#34;,&#34;Surgery&#34;,&#34;Tumor&#34;,&#34;Attack&#34;,&#34;Attack&#34;,&#34;Rocks&#34;,&#34;Satellite&#34;,&#34;Field&#34;,&#34;Farmland&#34;,&#34;Field&#34;,&#34;Nature&#34;,&#34;Leaves&#34;,&#34;Soldier&#34;,&#34;Attack&#34;,&#34;DeadTiger&#34;,&#34;Attack&#34;,&#34;Attack&#34;,&#34;Gang&#34;,&#34;Guns&#34;,&#34;Police&#34;,&#34;Police&#34;,&#34;Buttons&#34;,&#34;Disk&#34;,&#34;GasCan&#34;,&#34;Rubberbands&#34;,&#34;Scissors&#34;,&#34;Razor&#34;,&#34;Video&#34;,&#34;Fan&#34;,&#34;Iron&#34;,&#34;Shoes&#34;,&#34;Mug&#34;,&#34;Train&#34;,&#34;Baskets&#34;,&#34;Zipper&#34;,&#34;HairDryer&#34;,&#34;Clothespins&#34;,&#34;Lightbulb&#34;,&#34;Tool&#34;,&#34;TrashCan&#34;,&#34;FireHydrant&#34;,&#34;Bus&#34;,&#34;Umbrella&#34;,&#34;Fabric&#34;,&#34;Pole&#34;,&#34;Rug&#34;,&#34;AbstractArt&#34;,&#34;AbstractArt&#34;,&#34;Scarves&#34;,&#34;ClothesRack&#34;,&#34;Building&#34;,&#34;Building&#34;,&#34;Bridge&#34;,&#34;Office&#34;,&#34;Boxer&#34;,&#34;PlaneCrash&#34;,&#34;HurtDog&#34;,&#34;InjuredDog&#34;,&#34;Rain&#34;,&#34;WarVictim&#34;,&#34;DeadBody&#34;,&#34;Vomit&#34;,&#34;EmptyPool&#34;,&#34;DeadMan&#34;,&#34;Hanging&#34;,&#34;Assault&#34;,&#34;DeadMan&#34;,&#34;Porpoises&#34;,&#34;Skinhead&#34;,&#34;KKKrally&#34;,&#34;CarAccident&#34;,&#34;CarAccident&#34;,&#34;Fire&#34;,&#34;AttackDog&#34;,&#34;Woman&#34;,&#34;Tourist&#34;,&#34;Shadow&#34;,&#34;HeadlessBody&#34;,&#34;Mutilation&#34;,&#34;Organs&#34;,&#34;BurnVictim&#34;,&#34;Mutilation&#34;,&#34;Mutilation&#34;,&#34;Mutilation&#34;,&#34;Mutilation&#34;,&#34;BurnVictim&#34;,&#34;BurnVictim&#34;,&#34;Mutilation&#34;,&#34;BabyTumor&#34;,&#34;SeveredHand&#34;,&#34;Boat&#34;,&#34;Mushroom&#34;,&#34;Plant&#34;,&#34;Clouds&#34;,&#34;Assault&#34;,&#34;AimedGun&#34;,&#34;BeatenFem&#34;,&#34;Attack&#34;,&#34;Suicide&#34;,&#34;RollingPin&#34;,&#34;Towel&#34;,&#34;Spoon&#34;,&#34;Bowl&#34;,&#34;Mug&#34;,&#34;Basket&#34;,&#34;PicnicTable&#34;,&#34;Hammer&#34;,&#34;Shoes&#34;,&#34;DustPan&#34;,&#34;Barbells&#34;,&#34;Fork&#34;,&#34;Book&#34;,&#34;Lamp&#34;,&#34;Man&#34;,&#34;Office&#34;,&#34;Cabinet&#34;,&#34;Tissue&#34;,&#34;Fire&#34;,&#34;Soldiers&#34;,&#34;Dirty&#34;,&#34;Soldier&#34;,&#34;Execution&#34;,&#34;Dog&#34;],&#34;y&#34;:[3.17,2.83,3.29,2.94,3.71,2.9,4.99,2.93,2.79,6.21,6.8,5.97,7.26,4.84,7.16,5.9,6.76,6.41,6.77,7.03,7.22,6.06,6.84,6.97,6.61,6,6.36,6.57,6.82,5.75,6.99,6.82,2.51,3.26,3.03,2.79,3.55,3.14,2.51,6.01,6.44,6.2,6.96,6.59,6.29,6.21,6.28,5.8,3.2,3.07,3.81,3,3.25,3.4,3.12,2.17,2.99,2.03,2.66,3.29,2.6,3.32,2.75,3.01,3.02,3.07,2.55,2.89,2.92,2.61,3.07,2.98,2.88,2.3,4.28,2.93,2.43,2.39,3.26,3.18,2.95,5.91,6.36,6.58,6.45,3.08,6.6,6.64,6.24,2.63,6.72,6.81,5.92,5.89,5.82,6.05,6.62,6.08,6.63,6.52,6.51,3.24,3,2.96,6.64,5.82,6.3,6.91,6.48,5.78,6.35,6.86,6.49,6.7,6.55,7.21,6.91,2.88,3,2.59,3.1,6.06,7.35,6.38,7.09,6.24,2.42,3.16,2,2.33,3.01,1.76,2.63,3.06,3.01,2.69,4.02,2.32,2.61,1.72,3.39,3.95,2.65,2.28,6.46,6.53,6,7.07,6.49,6.14],&#34;type&#34;:&#34;scatter&#34;,&#34;mode&#34;:&#34;markers&#34;,&#34;marker&#34;:{&#34;color&#34;:&#34;rgba(255,127,14,1)&#34;,&#34;line&#34;:{&#34;color&#34;:&#34;rgba(255,127,14,1)&#34;}},&#34;error_y&#34;:{&#34;color&#34;:&#34;rgba(255,127,14,1)&#34;},&#34;error_x&#34;:{&#34;color&#34;:&#34;rgba(255,127,14,1)&#34;},&#34;line&#34;:{&#34;color&#34;:&#34;rgba(255,127,14,1)&#34;},&#34;xaxis&#34;:&#34;x&#34;,&#34;yaxis&#34;:&#34;y&#34;,&#34;frame&#34;:null},{&#34;x&#34;:[&#34;Parrots&#34;,&#34;Gannet&#34;,&#34;Grouper&#34;,&#34;NeuWoman&#34;,&#34;Fingerprint&#34;,&#34;Girl&#34;,&#34;Kiss&#34;,&#34;Factoryworker&#34;,&#34;Chess&#34;,&#34;War&#34;,&#34;NativeBoy&#34;,&#34;DeerHead&#34;,&#34;Mutilation&#34;,&#34;Gold&#34;,&#34;Mutilation&#34;,&#34;Accident&#34;,&#34;Mutilation&#34;,&#34;Mutilation&#34;,&#34;Mutilation&#34;,&#34;Mutilation&#34;,&#34;Mutilation&#34;,&#34;Injury&#34;,&#34;DeadBody&#34;,&#34;Mutilation&#34;,&#34;Mutilation&#34;,&#34;Mutilation&#34;,&#34;Stitches&#34;,&#34;Surgery&#34;,&#34;Surgery&#34;,&#34;Tumor&#34;,&#34;Attack&#34;,&#34;Attack&#34;,&#34;Rocks&#34;,&#34;Satellite&#34;,&#34;Field&#34;,&#34;Farmland&#34;,&#34;Field&#34;,&#34;Nature&#34;,&#34;Leaves&#34;,&#34;Soldier&#34;,&#34;Attack&#34;,&#34;DeadTiger&#34;,&#34;Attack&#34;,&#34;Attack&#34;,&#34;Gang&#34;,&#34;Guns&#34;,&#34;Police&#34;,&#34;Police&#34;,&#34;Buttons&#34;,&#34;Disk&#34;,&#34;GasCan&#34;,&#34;Rubberbands&#34;,&#34;Scissors&#34;,&#34;Razor&#34;,&#34;Video&#34;,&#34;Fan&#34;,&#34;Iron&#34;,&#34;Shoes&#34;,&#34;Mug&#34;,&#34;Train&#34;,&#34;Baskets&#34;,&#34;Zipper&#34;,&#34;HairDryer&#34;,&#34;Clothespins&#34;,&#34;Lightbulb&#34;,&#34;Tool&#34;,&#34;TrashCan&#34;,&#34;FireHydrant&#34;,&#34;Bus&#34;,&#34;Umbrella&#34;,&#34;Fabric&#34;,&#34;Pole&#34;,&#34;Rug&#34;,&#34;AbstractArt&#34;,&#34;AbstractArt&#34;,&#34;Scarves&#34;,&#34;ClothesRack&#34;,&#34;Building&#34;,&#34;Building&#34;,&#34;Bridge&#34;,&#34;Office&#34;,&#34;Boxer&#34;,&#34;PlaneCrash&#34;,&#34;HurtDog&#34;,&#34;InjuredDog&#34;,&#34;Rain&#34;,&#34;WarVictim&#34;,&#34;DeadBody&#34;,&#34;Vomit&#34;,&#34;EmptyPool&#34;,&#34;DeadMan&#34;,&#34;Hanging&#34;,&#34;Assault&#34;,&#34;DeadMan&#34;,&#34;Porpoises&#34;,&#34;Skinhead&#34;,&#34;KKKrally&#34;,&#34;CarAccident&#34;,&#34;CarAccident&#34;,&#34;Fire&#34;,&#34;AttackDog&#34;,&#34;Woman&#34;,&#34;Tourist&#34;,&#34;Shadow&#34;,&#34;HeadlessBody&#34;,&#34;Mutilation&#34;,&#34;Organs&#34;,&#34;BurnVictim&#34;,&#34;Mutilation&#34;,&#34;Mutilation&#34;,&#34;Mutilation&#34;,&#34;Mutilation&#34;,&#34;BurnVictim&#34;,&#34;BurnVictim&#34;,&#34;Mutilation&#34;,&#34;BabyTumor&#34;,&#34;SeveredHand&#34;,&#34;Boat&#34;,&#34;Mushroom&#34;,&#34;Plant&#34;,&#34;Clouds&#34;,&#34;Assault&#34;,&#34;AimedGun&#34;,&#34;BeatenFem&#34;,&#34;Attack&#34;,&#34;Suicide&#34;,&#34;RollingPin&#34;,&#34;Towel&#34;,&#34;Spoon&#34;,&#34;Bowl&#34;,&#34;Mug&#34;,&#34;Basket&#34;,&#34;PicnicTable&#34;,&#34;Hammer&#34;,&#34;Shoes&#34;,&#34;DustPan&#34;,&#34;Barbells&#34;,&#34;Fork&#34;,&#34;Book&#34;,&#34;Lamp&#34;,&#34;Man&#34;,&#34;Office&#34;,&#34;Cabinet&#34;,&#34;Tissue&#34;,&#34;Fire&#34;,&#34;Soldiers&#34;,&#34;Dirty&#34;,&#34;Soldier&#34;,&#34;Execution&#34;,&#34;Dog&#34;],&#34;y&#34;:[6.11,6.37,6.71,5.09,4.06,6.17,6.94,4.87,5.71,2.62,2.45,2.76,1.45,5.98,1.71,1.52,1.91,1.45,1.8,1.7,1.48,2.07,1.56,1.58,1.51,1.56,2.06,2.79,2.96,1.82,2.21,1.8,4.45,5.21,6.62,6.31,7.09,6.6,6.36,2.19,2.7,2.21,2.46,1.94,2.38,2.82,2.91,2.45,5.32,5,4.52,4.98,5.15,4.76,5.18,4.97,4.69,4.52,4.98,5.93,4.99,4.97,4.93,5.33,4.9,5.07,4.43,5.24,5.5,4.72,5.02,4.98,5.06,5.07,5.5,5.56,4.82,4.82,5.33,5.21,4.25,2.95,2.43,1.69,1.81,4.53,2.57,1.98,2.81,4.03,1.83,1.76,2.67,1.84,2.42,2.04,2.09,2.39,2.34,2.04,3.09,5.8,5.22,5.18,1.62,1.9,2.99,1.31,1.81,1.87,1.49,1.88,1.6,1.79,2.26,1.46,2.35,5.59,5.42,5.21,6.78,2.21,2.37,2.31,2.73,2.19,5,4.97,5.04,4.88,4.93,4.94,5.38,4.95,4.82,4.69,5.55,5.27,5.19,4.87,5.35,5.27,4.77,4.94,2.73,2.1,2.26,1.51,2.06,1.68],&#34;type&#34;:&#34;scatter&#34;,&#34;mode&#34;:&#34;markers&#34;,&#34;marker&#34;:{&#34;color&#34;:&#34;rgba(44,160,44,1)&#34;,&#34;line&#34;:{&#34;color&#34;:&#34;rgba(44,160,44,1)&#34;}},&#34;error_y&#34;:{&#34;color&#34;:&#34;rgba(44,160,44,1)&#34;},&#34;error_x&#34;:{&#34;color&#34;:&#34;rgba(44,160,44,1)&#34;},&#34;line&#34;:{&#34;color&#34;:&#34;rgba(44,160,44,1)&#34;},&#34;xaxis&#34;:&#34;x&#34;,&#34;yaxis&#34;:&#34;y2&#34;,&#34;frame&#34;:null},{&#34;x&#34;:[&#34;Parrots&#34;,&#34;Gannet&#34;,&#34;Grouper&#34;,&#34;NeuWoman&#34;,&#34;Fingerprint&#34;,&#34;Girl&#34;,&#34;Kiss&#34;,&#34;Factoryworker&#34;,&#34;Chess&#34;,&#34;War&#34;,&#34;NativeBoy&#34;,&#34;DeerHead&#34;,&#34;Mutilation&#34;,&#34;Gold&#34;,&#34;Mutilation&#34;,&#34;Accident&#34;,&#34;Mutilation&#34;,&#34;Mutilation&#34;,&#34;Mutilation&#34;,&#34;Mutilation&#34;,&#34;Mutilation&#34;,&#34;Injury&#34;,&#34;DeadBody&#34;,&#34;Mutilation&#34;,&#34;Mutilation&#34;,&#34;Mutilation&#34;,&#34;Stitches&#34;,&#34;Surgery&#34;,&#34;Surgery&#34;,&#34;Tumor&#34;,&#34;Attack&#34;,&#34;Attack&#34;,&#34;Rocks&#34;,&#34;Satellite&#34;,&#34;Field&#34;,&#34;Farmland&#34;,&#34;Field&#34;,&#34;Nature&#34;,&#34;Leaves&#34;,&#34;Soldier&#34;,&#34;Attack&#34;,&#34;DeadTiger&#34;,&#34;Attack&#34;,&#34;Attack&#34;,&#34;Gang&#34;,&#34;Guns&#34;,&#34;Police&#34;,&#34;Police&#34;,&#34;Buttons&#34;,&#34;Disk&#34;,&#34;GasCan&#34;,&#34;Rubberbands&#34;,&#34;Scissors&#34;,&#34;Razor&#34;,&#34;Video&#34;,&#34;Fan&#34;,&#34;Iron&#34;,&#34;Shoes&#34;,&#34;Mug&#34;,&#34;Train&#34;,&#34;Baskets&#34;,&#34;Zipper&#34;,&#34;HairDryer&#34;,&#34;Clothespins&#34;,&#34;Lightbulb&#34;,&#34;Tool&#34;,&#34;TrashCan&#34;,&#34;FireHydrant&#34;,&#34;Bus&#34;,&#34;Umbrella&#34;,&#34;Fabric&#34;,&#34;Pole&#34;,&#34;Rug&#34;,&#34;AbstractArt&#34;,&#34;AbstractArt&#34;,&#34;Scarves&#34;,&#34;ClothesRack&#34;,&#34;Building&#34;,&#34;Building&#34;,&#34;Bridge&#34;,&#34;Office&#34;,&#34;Boxer&#34;,&#34;PlaneCrash&#34;,&#34;HurtDog&#34;,&#34;InjuredDog&#34;,&#34;Rain&#34;,&#34;WarVictim&#34;,&#34;DeadBody&#34;,&#34;Vomit&#34;,&#34;EmptyPool&#34;,&#34;DeadMan&#34;,&#34;Hanging&#34;,&#34;Assault&#34;,&#34;DeadMan&#34;,&#34;Porpoises&#34;,&#34;Skinhead&#34;,&#34;KKKrally&#34;,&#34;CarAccident&#34;,&#34;CarAccident&#34;,&#34;Fire&#34;,&#34;AttackDog&#34;,&#34;Woman&#34;,&#34;Tourist&#34;,&#34;Shadow&#34;,&#34;HeadlessBody&#34;,&#34;Mutilation&#34;,&#34;Organs&#34;,&#34;BurnVictim&#34;,&#34;Mutilation&#34;,&#34;Mutilation&#34;,&#34;Mutilation&#34;,&#34;Mutilation&#34;,&#34;BurnVictim&#34;,&#34;BurnVictim&#34;,&#34;Mutilation&#34;,&#34;BabyTumor&#34;,&#34;SeveredHand&#34;,&#34;Boat&#34;,&#34;Mushroom&#34;,&#34;Plant&#34;,&#34;Clouds&#34;,&#34;Assault&#34;,&#34;AimedGun&#34;,&#34;BeatenFem&#34;,&#34;Attack&#34;,&#34;Suicide&#34;,&#34;RollingPin&#34;,&#34;Towel&#34;,&#34;Spoon&#34;,&#34;Bowl&#34;,&#34;Mug&#34;,&#34;Basket&#34;,&#34;PicnicTable&#34;,&#34;Hammer&#34;,&#34;Shoes&#34;,&#34;DustPan&#34;,&#34;Barbells&#34;,&#34;Fork&#34;,&#34;Book&#34;,&#34;Lamp&#34;,&#34;Man&#34;,&#34;Office&#34;,&#34;Cabinet&#34;,&#34;Tissue&#34;,&#34;Fire&#34;,&#34;Soldiers&#34;,&#34;Dirty&#34;,&#34;Soldier&#34;,&#34;Execution&#34;,&#34;Dog&#34;],&#34;y&#34;:[6.11,6.37,6.71,5.09,4.06,6.17,6.94,4.87,5.71,2.62,2.45,2.76,1.45,5.98,1.71,1.52,1.91,1.45,1.8,1.7,1.48,2.07,1.56,1.58,1.51,1.56,2.06,2.79,2.96,1.82,2.21,1.8,4.45,5.21,6.62,6.31,7.09,6.6,6.36,2.19,2.7,2.21,2.46,1.94,2.38,2.82,2.91,2.45,5.32,5,4.52,4.98,5.15,4.76,5.18,4.97,4.69,4.52,4.98,5.93,4.99,4.97,4.93,5.33,4.9,5.07,4.43,5.24,5.5,4.72,5.02,4.98,5.06,5.07,5.5,5.56,4.82,4.82,5.33,5.21,4.25,2.95,2.43,1.69,1.81,4.53,2.57,1.98,2.81,4.03,1.83,1.76,2.67,1.84,2.42,2.04,2.09,2.39,2.34,2.04,3.09,5.8,5.22,5.18,1.62,1.9,2.99,1.31,1.81,1.87,1.49,1.88,1.6,1.79,2.26,1.46,2.35,5.59,5.42,5.21,6.78,2.21,2.37,2.31,2.73,2.19,5,4.97,5.04,4.88,4.93,4.94,5.38,4.95,4.82,4.69,5.55,5.27,5.19,4.87,5.35,5.27,4.77,4.94,2.73,2.1,2.26,1.51,2.06,1.68],&#34;type&#34;:&#34;scatter&#34;,&#34;mode&#34;:&#34;markers&#34;,&#34;marker&#34;:{&#34;color&#34;:&#34;rgba(214,39,40,1)&#34;,&#34;line&#34;:{&#34;color&#34;:&#34;rgba(214,39,40,1)&#34;}},&#34;error_y&#34;:{&#34;color&#34;:&#34;rgba(214,39,40,1)&#34;},&#34;error_x&#34;:{&#34;color&#34;:&#34;rgba(214,39,40,1)&#34;},&#34;line&#34;:{&#34;color&#34;:&#34;rgba(214,39,40,1)&#34;},&#34;xaxis&#34;:&#34;x&#34;,&#34;yaxis&#34;:&#34;y2&#34;,&#34;frame&#34;:null},{&#34;x&#34;:[&#34;Gannet&#34;,&#34;Grouper&#34;,&#34;Fingerprint&#34;,&#34;Girl&#34;,&#34;Kiss&#34;,&#34;Chess&#34;,&#34;NativeBoy&#34;,&#34;Mutilation&#34;,&#34;Mutilation&#34;,&#34;Accident&#34;,&#34;Mutilation&#34;,&#34;Mutilation&#34;,&#34;Mutilation&#34;,&#34;Injury&#34;,&#34;DeadBody&#34;,&#34;Mutilation&#34;,&#34;Mutilation&#34;,&#34;Mutilation&#34;,&#34;Stitches&#34;,&#34;Surgery&#34;,&#34;Surgery&#34;,&#34;Tumor&#34;,&#34;Attack&#34;,&#34;Attack&#34;,&#34;Rocks&#34;,&#34;Farmland&#34;,&#34;Field&#34;,&#34;Nature&#34;,&#34;Leaves&#34;,&#34;Soldier&#34;,&#34;Attack&#34;,&#34;Attack&#34;,&#34;Attack&#34;,&#34;Gang&#34;,&#34;Guns&#34;,&#34;Police&#34;,&#34;Police&#34;,&#34;Buttons&#34;,&#34;Disk&#34;,&#34;GasCan&#34;,&#34;Rubberbands&#34;,&#34;Scissors&#34;,&#34;Razor&#34;,&#34;Video&#34;,&#34;Fan&#34;,&#34;Iron&#34;,&#34;Shoes&#34;,&#34;Mug&#34;,&#34;Zipper&#34;,&#34;HairDryer&#34;,&#34;TrashCan&#34;,&#34;FireHydrant&#34;,&#34;Bus&#34;,&#34;Umbrella&#34;,&#34;Fabric&#34;,&#34;AbstractArt&#34;,&#34;Scarves&#34;,&#34;ClothesRack&#34;,&#34;Building&#34;,&#34;Building&#34;,&#34;Office&#34;,&#34;Boxer&#34;,&#34;PlaneCrash&#34;,&#34;HurtDog&#34;,&#34;InjuredDog&#34;,&#34;Rain&#34;,&#34;WarVictim&#34;,&#34;DeadBody&#34;,&#34;Vomit&#34;,&#34;EmptyPool&#34;,&#34;DeadMan&#34;,&#34;Hanging&#34;,&#34;DeadMan&#34;,&#34;Porpoises&#34;,&#34;Skinhead&#34;,&#34;KKKrally&#34;,&#34;CarAccident&#34;,&#34;CarAccident&#34;,&#34;Fire&#34;,&#34;Woman&#34;,&#34;Tourist&#34;,&#34;Shadow&#34;,&#34;HeadlessBody&#34;,&#34;Organs&#34;,&#34;BurnVictim&#34;,&#34;Mutilation&#34;,&#34;Mutilation&#34;,&#34;Mutilation&#34;,&#34;Mutilation&#34;,&#34;BurnVictim&#34;,&#34;BurnVictim&#34;,&#34;Mutilation&#34;,&#34;BabyTumor&#34;,&#34;SeveredHand&#34;,&#34;Boat&#34;,&#34;Mushroom&#34;,&#34;Plant&#34;,&#34;Clouds&#34;,&#34;AimedGun&#34;,&#34;Attack&#34;,&#34;Suicide&#34;,&#34;RollingPin&#34;,&#34;Towel&#34;,&#34;Spoon&#34;,&#34;Bowl&#34;,&#34;Mug&#34;,&#34;Basket&#34;,&#34;PicnicTable&#34;,&#34;Hammer&#34;,&#34;DustPan&#34;,&#34;Fork&#34;,&#34;Book&#34;,&#34;Lamp&#34;,&#34;Office&#34;,&#34;Cabinet&#34;,&#34;Tissue&#34;,&#34;Soldiers&#34;,&#34;Dirty&#34;,&#34;Soldier&#34;,&#34;Execution&#34;,&#34;Dog&#34;],&#34;y&#34;:[6.75,6.44,4.46,6.66,6.32,5.88,3.94,2.99,2.88,2.84,3.69,2.63,2.85,3.37,3.32,3.46,2.73,3.24,3.55,4.07,3.92,3.57,2.4,2.81,5.84,5.58,6.23,6.82,5.72,3.45,3,2.81,2.88,3.29,3.67,3.9,3.79,5.82,6.02,4.99,6.06,6.21,5.74,5.93,6.16,5.73,6.14,6.39,6.28,5.82,5.85,5.92,5.45,5.55,5.8,6.1,6.39,6.25,5.93,5.17,5.13,4.05,3.27,2.96,3.17,4.55,3.73,2.92,3.9,5.34,3,2.75,3.37,3.42,4.92,3.95,3.4,2.79,3.57,6.1,5.87,6.01,2.66,4.25,2.33,2.88,3.73,2.7,3.28,3,3.04,3.39,2.7,3.65,6.33,6.45,6.27,5.2,2.15,3.01,4.03,6.14,6.25,6.74,6.18,6.33,6.7,6.19,6.48,5.46,7.04,6.65,6.47,5.22,6.39,6.3,3.04,4.12,2.81,3.11,3.37],&#34;type&#34;:&#34;scatter&#34;,&#34;mode&#34;:&#34;markers&#34;,&#34;marker&#34;:{&#34;color&#34;:&#34;rgba(148,103,189,1)&#34;,&#34;line&#34;:{&#34;color&#34;:&#34;rgba(148,103,189,1)&#34;}},&#34;error_y&#34;:{&#34;color&#34;:&#34;rgba(148,103,189,1)&#34;},&#34;error_x&#34;:{&#34;color&#34;:&#34;rgba(148,103,189,1)&#34;},&#34;line&#34;:{&#34;color&#34;:&#34;rgba(148,103,189,1)&#34;},&#34;xaxis&#34;:&#34;x&#34;,&#34;yaxis&#34;:&#34;y3&#34;,&#34;frame&#34;:null},{&#34;x&#34;:[&#34;Gannet&#34;,&#34;Grouper&#34;,&#34;Fingerprint&#34;,&#34;Girl&#34;,&#34;Kiss&#34;,&#34;Chess&#34;,&#34;NativeBoy&#34;,&#34;Mutilation&#34;,&#34;Mutilation&#34;,&#34;Accident&#34;,&#34;Mutilation&#34;,&#34;Mutilation&#34;,&#34;Mutilation&#34;,&#34;Injury&#34;,&#34;DeadBody&#34;,&#34;Mutilation&#34;,&#34;Mutilation&#34;,&#34;Mutilation&#34;,&#34;Stitches&#34;,&#34;Surgery&#34;,&#34;Surgery&#34;,&#34;Tumor&#34;,&#34;Attack&#34;,&#34;Attack&#34;,&#34;Rocks&#34;,&#34;Farmland&#34;,&#34;Field&#34;,&#34;Nature&#34;,&#34;Leaves&#34;,&#34;Soldier&#34;,&#34;Attack&#34;,&#34;Attack&#34;,&#34;Attack&#34;,&#34;Gang&#34;,&#34;Guns&#34;,&#34;Police&#34;,&#34;Police&#34;,&#34;Buttons&#34;,&#34;Disk&#34;,&#34;GasCan&#34;,&#34;Rubberbands&#34;,&#34;Scissors&#34;,&#34;Razor&#34;,&#34;Video&#34;,&#34;Fan&#34;,&#34;Iron&#34;,&#34;Shoes&#34;,&#34;Mug&#34;,&#34;Zipper&#34;,&#34;HairDryer&#34;,&#34;TrashCan&#34;,&#34;FireHydrant&#34;,&#34;Bus&#34;,&#34;Umbrella&#34;,&#34;Fabric&#34;,&#34;AbstractArt&#34;,&#34;Scarves&#34;,&#34;ClothesRack&#34;,&#34;Building&#34;,&#34;Building&#34;,&#34;Office&#34;,&#34;Boxer&#34;,&#34;PlaneCrash&#34;,&#34;HurtDog&#34;,&#34;InjuredDog&#34;,&#34;Rain&#34;,&#34;WarVictim&#34;,&#34;DeadBody&#34;,&#34;Vomit&#34;,&#34;EmptyPool&#34;,&#34;DeadMan&#34;,&#34;Hanging&#34;,&#34;DeadMan&#34;,&#34;Porpoises&#34;,&#34;Skinhead&#34;,&#34;KKKrally&#34;,&#34;CarAccident&#34;,&#34;CarAccident&#34;,&#34;Fire&#34;,&#34;Woman&#34;,&#34;Tourist&#34;,&#34;Shadow&#34;,&#34;HeadlessBody&#34;,&#34;Organs&#34;,&#34;BurnVictim&#34;,&#34;Mutilation&#34;,&#34;Mutilation&#34;,&#34;Mutilation&#34;,&#34;Mutilation&#34;,&#34;BurnVictim&#34;,&#34;BurnVictim&#34;,&#34;Mutilation&#34;,&#34;BabyTumor&#34;,&#34;SeveredHand&#34;,&#34;Boat&#34;,&#34;Mushroom&#34;,&#34;Plant&#34;,&#34;Clouds&#34;,&#34;AimedGun&#34;,&#34;Attack&#34;,&#34;Suicide&#34;,&#34;RollingPin&#34;,&#34;Towel&#34;,&#34;Spoon&#34;,&#34;Bowl&#34;,&#34;Mug&#34;,&#34;Basket&#34;,&#34;PicnicTable&#34;,&#34;Hammer&#34;,&#34;DustPan&#34;,&#34;Fork&#34;,&#34;Book&#34;,&#34;Lamp&#34;,&#34;Office&#34;,&#34;Cabinet&#34;,&#34;Tissue&#34;,&#34;Soldiers&#34;,&#34;Dirty&#34;,&#34;Soldier&#34;,&#34;Execution&#34;,&#34;Dog&#34;],&#34;y&#34;:[6.75,6.44,4.46,6.66,6.32,5.88,3.94,2.99,2.88,2.84,3.69,2.63,2.85,3.37,3.32,3.46,2.73,3.24,3.55,4.07,3.92,3.57,2.4,2.81,5.84,5.58,6.23,6.82,5.72,3.45,3,2.81,2.88,3.29,3.67,3.9,3.79,5.82,6.02,4.99,6.06,6.21,5.74,5.93,6.16,5.73,6.14,6.39,6.28,5.82,5.85,5.92,5.45,5.55,5.8,6.1,6.39,6.25,5.93,5.17,5.13,4.05,3.27,2.96,3.17,4.55,3.73,2.92,3.9,5.34,3,2.75,3.37,3.42,4.92,3.95,3.4,2.79,3.57,6.1,5.87,6.01,2.66,4.25,2.33,2.88,3.73,2.7,3.28,3,3.04,3.39,2.7,3.65,6.33,6.45,6.27,5.2,2.15,3.01,4.03,6.14,6.25,6.74,6.18,6.33,6.7,6.19,6.48,5.46,7.04,6.65,6.47,5.22,6.39,6.3,3.04,4.12,2.81,3.11,3.37],&#34;type&#34;:&#34;scatter&#34;,&#34;mode&#34;:&#34;markers&#34;,&#34;marker&#34;:{&#34;color&#34;:&#34;rgba(140,86,75,1)&#34;,&#34;line&#34;:{&#34;color&#34;:&#34;rgba(140,86,75,1)&#34;}},&#34;error_y&#34;:{&#34;color&#34;:&#34;rgba(140,86,75,1)&#34;},&#34;error_x&#34;:{&#34;color&#34;:&#34;rgba(140,86,75,1)&#34;},&#34;line&#34;:{&#34;color&#34;:&#34;rgba(140,86,75,1)&#34;},&#34;xaxis&#34;:&#34;x&#34;,&#34;yaxis&#34;:&#34;y3&#34;,&#34;frame&#34;:null}],&#34;layout&#34;:{&#34;xaxis&#34;:{&#34;domain&#34;:[0,1],&#34;automargin&#34;:true,&#34;title&#34;:&#34;Content&#34;,&#34;type&#34;:&#34;category&#34;,&#34;categoryorder&#34;:&#34;array&#34;,&#34;categoryarray&#34;:[&#34;AbstractArt&#34;,&#34;Accident&#34;,&#34;AimedGun&#34;,&#34;Attack&#34;,&#34;BabyTumor&#34;,&#34;Basket&#34;,&#34;Boat&#34;,&#34;Book&#34;,&#34;Bowl&#34;,&#34;Boxer&#34;,&#34;Building&#34;,&#34;BurnVictim&#34;,&#34;Bus&#34;,&#34;Buttons&#34;,&#34;Cabinet&#34;,&#34;CarAccident&#34;,&#34;Chess&#34;,&#34;ClothesRack&#34;,&#34;Clouds&#34;,&#34;DeadBody&#34;,&#34;DeadMan&#34;,&#34;Dirty&#34;,&#34;Disk&#34;,&#34;Dog&#34;,&#34;DustPan&#34;,&#34;EmptyPool&#34;,&#34;Execution&#34;,&#34;Fabric&#34;,&#34;Fan&#34;,&#34;Farmland&#34;,&#34;Field&#34;,&#34;Fingerprint&#34;,&#34;Fire&#34;,&#34;FireHydrant&#34;,&#34;Fork&#34;,&#34;Gang&#34;,&#34;Gannet&#34;,&#34;GasCan&#34;,&#34;Girl&#34;,&#34;Grouper&#34;,&#34;Guns&#34;,&#34;HairDryer&#34;,&#34;Hammer&#34;,&#34;Hanging&#34;,&#34;HeadlessBody&#34;,&#34;HurtDog&#34;,&#34;InjuredDog&#34;,&#34;Injury&#34;,&#34;Iron&#34;,&#34;Kiss&#34;,&#34;KKKrally&#34;,&#34;Lamp&#34;,&#34;Leaves&#34;,&#34;Mug&#34;,&#34;Mushroom&#34;,&#34;Mutilation&#34;,&#34;NativeBoy&#34;,&#34;Nature&#34;,&#34;Office&#34;,&#34;Organs&#34;,&#34;PicnicTable&#34;,&#34;PlaneCrash&#34;,&#34;Plant&#34;,&#34;Police&#34;,&#34;Porpoises&#34;,&#34;Rain&#34;,&#34;Razor&#34;,&#34;Rocks&#34;,&#34;RollingPin&#34;,&#34;Rubberbands&#34;,&#34;Scarves&#34;,&#34;Scissors&#34;,&#34;SeveredHand&#34;,&#34;Shadow&#34;,&#34;Shoes&#34;,&#34;Skinhead&#34;,&#34;Soldier&#34;,&#34;Soldiers&#34;,&#34;Spoon&#34;,&#34;Stitches&#34;,&#34;Suicide&#34;,&#34;Surgery&#34;,&#34;Tissue&#34;,&#34;Tourist&#34;,&#34;Towel&#34;,&#34;TrashCan&#34;,&#34;Tumor&#34;,&#34;Umbrella&#34;,&#34;Video&#34;,&#34;Vomit&#34;,&#34;WarVictim&#34;,&#34;Woman&#34;,&#34;Zipper&#34;],&#34;anchor&#34;:&#34;y3&#34;},&#34;yaxis3&#34;:{&#34;domain&#34;:[0,0.313333333333333],&#34;automargin&#34;:true,&#34;title&#34;:&#34;Dominance&#34;,&#34;anchor&#34;:&#34;x&#34;},&#34;yaxis2&#34;:{&#34;domain&#34;:[0.353333333333333,0.646666666666667],&#34;automargin&#34;:true,&#34;title&#34;:&#34;Valence&#34;,&#34;anchor&#34;:&#34;x&#34;},&#34;yaxis&#34;:{&#34;domain&#34;:[0.686666666666667,1],&#34;automargin&#34;:true,&#34;title&#34;:&#34;Arousal&#34;,&#34;anchor&#34;:&#34;x&#34;},&#34;annotations&#34;:[],&#34;shapes&#34;:[],&#34;images&#34;:[],&#34;margin&#34;:{&#34;b&#34;:40,&#34;l&#34;:60,&#34;t&#34;:25,&#34;r&#34;:10},&#34;hovermode&#34;:&#34;closest&#34;,&#34;showlegend&#34;:false},&#34;attrs&#34;:{&#34;53f06e0a59d5&#34;:{&#34;x&#34;:{},&#34;y&#34;:{},&#34;alpha_stroke&#34;:1,&#34;sizes&#34;:[10,100],&#34;spans&#34;:[1,20],&#34;type&#34;:&#34;scatter&#34;},&#34;53f06e0a59d5.1&#34;:{&#34;x&#34;:{},&#34;y&#34;:{},&#34;alpha_stroke&#34;:1,&#34;sizes&#34;:[10,100],&#34;spans&#34;:[1,20],&#34;type&#34;:&#34;scatter&#34;,&#34;inherit&#34;:true},&#34;53f06916364b&#34;:{&#34;x&#34;:{},&#34;y&#34;:{},&#34;alpha_stroke&#34;:1,&#34;sizes&#34;:[10,100],&#34;spans&#34;:[1,20],&#34;type&#34;:&#34;scatter&#34;},&#34;53f06916364b.1&#34;:{&#34;x&#34;:{},&#34;y&#34;:{},&#34;alpha_stroke&#34;:1,&#34;sizes&#34;:[10,100],&#34;spans&#34;:[1,20],&#34;type&#34;:&#34;scatter&#34;,&#34;inherit&#34;:true},&#34;53f07ba31f7d&#34;:{&#34;x&#34;:{},&#34;y&#34;:{},&#34;alpha_stroke&#34;:1,&#34;sizes&#34;:[10,100],&#34;spans&#34;:[1,20],&#34;type&#34;:&#34;scatter&#34;},&#34;53f07ba31f7d.1&#34;:{&#34;x&#34;:{},&#34;y&#34;:{},&#34;alpha_stroke&#34;:1,&#34;sizes&#34;:[10,100],&#34;spans&#34;:[1,20],&#34;type&#34;:&#34;scatter&#34;,&#34;inherit&#34;:true}},&#34;source&#34;:&#34;A&#34;,&#34;config&#34;:{&#34;showSendToCloud&#34;:false},&#34;highlight&#34;:{&#34;on&#34;:&#34;plotly_click&#34;,&#34;persistent&#34;:false,&#34;dynamic&#34;:false,&#34;selectize&#34;:false,&#34;opacityDim&#34;:0.2,&#34;selected&#34;:{&#34;opacity&#34;:1},&#34;debounce&#34;:0},&#34;subplot&#34;:true,&#34;.hideLegend&#34;:true,&#34;shinyEvents&#34;:[&#34;plotly_hover&#34;,&#34;plotly_click&#34;,&#34;plotly_selected&#34;,&#34;plotly_relayout&#34;,&#34;plotly_brushed&#34;,&#34;plotly_brushing&#34;,&#34;plotly_clickannotation&#34;,&#34;plotly_doubleclick&#34;,&#34;plotly_deselect&#34;,&#34;plotly_afterplot&#34;],&#34;base_url&#34;:&#34;https://plot.ly&#34;},&#34;evals&#34;:[],&#34;jsHooks&#34;:[]}&lt;/script&gt;
+&lt;script type=&#34;application/json&#34; data-for=&#34;htmlwidget-2&#34;&gt;{&#34;x&#34;:{&#34;data&#34;:[{&#34;x&#34;:[&#34;Parrots&#34;,&#34;Gannet&#34;,&#34;Grouper&#34;,&#34;NeuWoman&#34;,&#34;Fingerprint&#34;,&#34;Girl&#34;,&#34;Kiss&#34;,&#34;Factoryworker&#34;,&#34;Chess&#34;,&#34;War&#34;,&#34;NativeBoy&#34;,&#34;DeerHead&#34;,&#34;Mutilation&#34;,&#34;Gold&#34;,&#34;Mutilation&#34;,&#34;Accident&#34;,&#34;Mutilation&#34;,&#34;Mutilation&#34;,&#34;Mutilation&#34;,&#34;Mutilation&#34;,&#34;Mutilation&#34;,&#34;Injury&#34;,&#34;DeadBody&#34;,&#34;Mutilation&#34;,&#34;Mutilation&#34;,&#34;Mutilation&#34;,&#34;Stitches&#34;,&#34;Surgery&#34;,&#34;Surgery&#34;,&#34;Tumor&#34;,&#34;Attack&#34;,&#34;Attack&#34;,&#34;Rocks&#34;,&#34;Satellite&#34;,&#34;Field&#34;,&#34;Farmland&#34;,&#34;Field&#34;,&#34;Nature&#34;,&#34;Leaves&#34;,&#34;Soldier&#34;,&#34;Attack&#34;,&#34;DeadTiger&#34;,&#34;Attack&#34;,&#34;Attack&#34;,&#34;Gang&#34;,&#34;Guns&#34;,&#34;Police&#34;,&#34;Police&#34;,&#34;Buttons&#34;,&#34;Disk&#34;,&#34;GasCan&#34;,&#34;Rubberbands&#34;,&#34;Scissors&#34;,&#34;Razor&#34;,&#34;Video&#34;,&#34;Fan&#34;,&#34;Iron&#34;,&#34;Shoes&#34;,&#34;Mug&#34;,&#34;Train&#34;,&#34;Baskets&#34;,&#34;Zipper&#34;,&#34;HairDryer&#34;,&#34;Clothespins&#34;,&#34;Lightbulb&#34;,&#34;Tool&#34;,&#34;TrashCan&#34;,&#34;FireHydrant&#34;,&#34;Bus&#34;,&#34;Umbrella&#34;,&#34;Fabric&#34;,&#34;Pole&#34;,&#34;Rug&#34;,&#34;AbstractArt&#34;,&#34;AbstractArt&#34;,&#34;Scarves&#34;,&#34;ClothesRack&#34;,&#34;Building&#34;,&#34;Building&#34;,&#34;Bridge&#34;,&#34;Office&#34;,&#34;Boxer&#34;,&#34;PlaneCrash&#34;,&#34;HurtDog&#34;,&#34;InjuredDog&#34;,&#34;Rain&#34;,&#34;WarVictim&#34;,&#34;DeadBody&#34;,&#34;Vomit&#34;,&#34;EmptyPool&#34;,&#34;DeadMan&#34;,&#34;Hanging&#34;,&#34;Assault&#34;,&#34;DeadMan&#34;,&#34;Porpoises&#34;,&#34;Skinhead&#34;,&#34;KKKrally&#34;,&#34;CarAccident&#34;,&#34;CarAccident&#34;,&#34;Fire&#34;,&#34;AttackDog&#34;,&#34;Woman&#34;,&#34;Tourist&#34;,&#34;Shadow&#34;,&#34;HeadlessBody&#34;,&#34;Mutilation&#34;,&#34;Organs&#34;,&#34;BurnVictim&#34;,&#34;Mutilation&#34;,&#34;Mutilation&#34;,&#34;Mutilation&#34;,&#34;Mutilation&#34;,&#34;BurnVictim&#34;,&#34;BurnVictim&#34;,&#34;Mutilation&#34;,&#34;BabyTumor&#34;,&#34;SeveredHand&#34;,&#34;Boat&#34;,&#34;Mushroom&#34;,&#34;Plant&#34;,&#34;Clouds&#34;,&#34;Assault&#34;,&#34;AimedGun&#34;,&#34;BeatenFem&#34;,&#34;Attack&#34;,&#34;Suicide&#34;,&#34;RollingPin&#34;,&#34;Towel&#34;,&#34;Spoon&#34;,&#34;Bowl&#34;,&#34;Mug&#34;,&#34;Basket&#34;,&#34;PicnicTable&#34;,&#34;Hammer&#34;,&#34;Shoes&#34;,&#34;DustPan&#34;,&#34;Barbells&#34;,&#34;Fork&#34;,&#34;Book&#34;,&#34;Lamp&#34;,&#34;Man&#34;,&#34;Office&#34;,&#34;Cabinet&#34;,&#34;Tissue&#34;,&#34;Fire&#34;,&#34;Soldiers&#34;,&#34;Dirty&#34;,&#34;Soldier&#34;,&#34;Execution&#34;,&#34;Dog&#34;],&#34;y&#34;:[3.17,2.83,3.29,2.94,3.71,2.9,4.99,2.93,2.79,6.21,6.8,5.97,7.26,4.84,7.16,5.9,6.76,6.41,6.77,7.03,7.22,6.06,6.84,6.97,6.61,6,6.36,6.57,6.82,5.75,6.99,6.82,2.51,3.26,3.03,2.79,3.55,3.14,2.51,6.01,6.44,6.2,6.96,6.59,6.29,6.21,6.28,5.8,3.2,3.07,3.81,3,3.25,3.4,3.12,2.17,2.99,2.03,2.66,3.29,2.6,3.32,2.75,3.01,3.02,3.07,2.55,2.89,2.92,2.61,3.07,2.98,2.88,2.3,4.28,2.93,2.43,2.39,3.26,3.18,2.95,5.91,6.36,6.58,6.45,3.08,6.6,6.64,6.24,2.63,6.72,6.81,5.92,5.89,5.82,6.05,6.62,6.08,6.63,6.52,6.51,3.24,3,2.96,6.64,5.82,6.3,6.91,6.48,5.78,6.35,6.86,6.49,6.7,6.55,7.21,6.91,2.88,3,2.59,3.1,6.06,7.35,6.38,7.09,6.24,2.42,3.16,2,2.33,3.01,1.76,2.63,3.06,3.01,2.69,4.02,2.32,2.61,1.72,3.39,3.95,2.65,2.28,6.46,6.53,6,7.07,6.49,6.14],&#34;type&#34;:&#34;scatter&#34;,&#34;mode&#34;:&#34;markers&#34;,&#34;marker&#34;:{&#34;color&#34;:&#34;rgba(31,119,180,1)&#34;,&#34;line&#34;:{&#34;color&#34;:&#34;rgba(31,119,180,1)&#34;}},&#34;error_y&#34;:{&#34;color&#34;:&#34;rgba(31,119,180,1)&#34;},&#34;error_x&#34;:{&#34;color&#34;:&#34;rgba(31,119,180,1)&#34;},&#34;line&#34;:{&#34;color&#34;:&#34;rgba(31,119,180,1)&#34;},&#34;xaxis&#34;:&#34;x&#34;,&#34;yaxis&#34;:&#34;y&#34;,&#34;frame&#34;:null},{&#34;x&#34;:[&#34;Parrots&#34;,&#34;Gannet&#34;,&#34;Grouper&#34;,&#34;NeuWoman&#34;,&#34;Fingerprint&#34;,&#34;Girl&#34;,&#34;Kiss&#34;,&#34;Factoryworker&#34;,&#34;Chess&#34;,&#34;War&#34;,&#34;NativeBoy&#34;,&#34;DeerHead&#34;,&#34;Mutilation&#34;,&#34;Gold&#34;,&#34;Mutilation&#34;,&#34;Accident&#34;,&#34;Mutilation&#34;,&#34;Mutilation&#34;,&#34;Mutilation&#34;,&#34;Mutilation&#34;,&#34;Mutilation&#34;,&#34;Injury&#34;,&#34;DeadBody&#34;,&#34;Mutilation&#34;,&#34;Mutilation&#34;,&#34;Mutilation&#34;,&#34;Stitches&#34;,&#34;Surgery&#34;,&#34;Surgery&#34;,&#34;Tumor&#34;,&#34;Attack&#34;,&#34;Attack&#34;,&#34;Rocks&#34;,&#34;Satellite&#34;,&#34;Field&#34;,&#34;Farmland&#34;,&#34;Field&#34;,&#34;Nature&#34;,&#34;Leaves&#34;,&#34;Soldier&#34;,&#34;Attack&#34;,&#34;DeadTiger&#34;,&#34;Attack&#34;,&#34;Attack&#34;,&#34;Gang&#34;,&#34;Guns&#34;,&#34;Police&#34;,&#34;Police&#34;,&#34;Buttons&#34;,&#34;Disk&#34;,&#34;GasCan&#34;,&#34;Rubberbands&#34;,&#34;Scissors&#34;,&#34;Razor&#34;,&#34;Video&#34;,&#34;Fan&#34;,&#34;Iron&#34;,&#34;Shoes&#34;,&#34;Mug&#34;,&#34;Train&#34;,&#34;Baskets&#34;,&#34;Zipper&#34;,&#34;HairDryer&#34;,&#34;Clothespins&#34;,&#34;Lightbulb&#34;,&#34;Tool&#34;,&#34;TrashCan&#34;,&#34;FireHydrant&#34;,&#34;Bus&#34;,&#34;Umbrella&#34;,&#34;Fabric&#34;,&#34;Pole&#34;,&#34;Rug&#34;,&#34;AbstractArt&#34;,&#34;AbstractArt&#34;,&#34;Scarves&#34;,&#34;ClothesRack&#34;,&#34;Building&#34;,&#34;Building&#34;,&#34;Bridge&#34;,&#34;Office&#34;,&#34;Boxer&#34;,&#34;PlaneCrash&#34;,&#34;HurtDog&#34;,&#34;InjuredDog&#34;,&#34;Rain&#34;,&#34;WarVictim&#34;,&#34;DeadBody&#34;,&#34;Vomit&#34;,&#34;EmptyPool&#34;,&#34;DeadMan&#34;,&#34;Hanging&#34;,&#34;Assault&#34;,&#34;DeadMan&#34;,&#34;Porpoises&#34;,&#34;Skinhead&#34;,&#34;KKKrally&#34;,&#34;CarAccident&#34;,&#34;CarAccident&#34;,&#34;Fire&#34;,&#34;AttackDog&#34;,&#34;Woman&#34;,&#34;Tourist&#34;,&#34;Shadow&#34;,&#34;HeadlessBody&#34;,&#34;Mutilation&#34;,&#34;Organs&#34;,&#34;BurnVictim&#34;,&#34;Mutilation&#34;,&#34;Mutilation&#34;,&#34;Mutilation&#34;,&#34;Mutilation&#34;,&#34;BurnVictim&#34;,&#34;BurnVictim&#34;,&#34;Mutilation&#34;,&#34;BabyTumor&#34;,&#34;SeveredHand&#34;,&#34;Boat&#34;,&#34;Mushroom&#34;,&#34;Plant&#34;,&#34;Clouds&#34;,&#34;Assault&#34;,&#34;AimedGun&#34;,&#34;BeatenFem&#34;,&#34;Attack&#34;,&#34;Suicide&#34;,&#34;RollingPin&#34;,&#34;Towel&#34;,&#34;Spoon&#34;,&#34;Bowl&#34;,&#34;Mug&#34;,&#34;Basket&#34;,&#34;PicnicTable&#34;,&#34;Hammer&#34;,&#34;Shoes&#34;,&#34;DustPan&#34;,&#34;Barbells&#34;,&#34;Fork&#34;,&#34;Book&#34;,&#34;Lamp&#34;,&#34;Man&#34;,&#34;Office&#34;,&#34;Cabinet&#34;,&#34;Tissue&#34;,&#34;Fire&#34;,&#34;Soldiers&#34;,&#34;Dirty&#34;,&#34;Soldier&#34;,&#34;Execution&#34;,&#34;Dog&#34;],&#34;y&#34;:[3.17,2.83,3.29,2.94,3.71,2.9,4.99,2.93,2.79,6.21,6.8,5.97,7.26,4.84,7.16,5.9,6.76,6.41,6.77,7.03,7.22,6.06,6.84,6.97,6.61,6,6.36,6.57,6.82,5.75,6.99,6.82,2.51,3.26,3.03,2.79,3.55,3.14,2.51,6.01,6.44,6.2,6.96,6.59,6.29,6.21,6.28,5.8,3.2,3.07,3.81,3,3.25,3.4,3.12,2.17,2.99,2.03,2.66,3.29,2.6,3.32,2.75,3.01,3.02,3.07,2.55,2.89,2.92,2.61,3.07,2.98,2.88,2.3,4.28,2.93,2.43,2.39,3.26,3.18,2.95,5.91,6.36,6.58,6.45,3.08,6.6,6.64,6.24,2.63,6.72,6.81,5.92,5.89,5.82,6.05,6.62,6.08,6.63,6.52,6.51,3.24,3,2.96,6.64,5.82,6.3,6.91,6.48,5.78,6.35,6.86,6.49,6.7,6.55,7.21,6.91,2.88,3,2.59,3.1,6.06,7.35,6.38,7.09,6.24,2.42,3.16,2,2.33,3.01,1.76,2.63,3.06,3.01,2.69,4.02,2.32,2.61,1.72,3.39,3.95,2.65,2.28,6.46,6.53,6,7.07,6.49,6.14],&#34;type&#34;:&#34;scatter&#34;,&#34;mode&#34;:&#34;markers&#34;,&#34;marker&#34;:{&#34;color&#34;:&#34;rgba(255,127,14,1)&#34;,&#34;line&#34;:{&#34;color&#34;:&#34;rgba(255,127,14,1)&#34;}},&#34;error_y&#34;:{&#34;color&#34;:&#34;rgba(255,127,14,1)&#34;},&#34;error_x&#34;:{&#34;color&#34;:&#34;rgba(255,127,14,1)&#34;},&#34;line&#34;:{&#34;color&#34;:&#34;rgba(255,127,14,1)&#34;},&#34;xaxis&#34;:&#34;x&#34;,&#34;yaxis&#34;:&#34;y&#34;,&#34;frame&#34;:null},{&#34;x&#34;:[&#34;Parrots&#34;,&#34;Gannet&#34;,&#34;Grouper&#34;,&#34;NeuWoman&#34;,&#34;Fingerprint&#34;,&#34;Girl&#34;,&#34;Kiss&#34;,&#34;Factoryworker&#34;,&#34;Chess&#34;,&#34;War&#34;,&#34;NativeBoy&#34;,&#34;DeerHead&#34;,&#34;Mutilation&#34;,&#34;Gold&#34;,&#34;Mutilation&#34;,&#34;Accident&#34;,&#34;Mutilation&#34;,&#34;Mutilation&#34;,&#34;Mutilation&#34;,&#34;Mutilation&#34;,&#34;Mutilation&#34;,&#34;Injury&#34;,&#34;DeadBody&#34;,&#34;Mutilation&#34;,&#34;Mutilation&#34;,&#34;Mutilation&#34;,&#34;Stitches&#34;,&#34;Surgery&#34;,&#34;Surgery&#34;,&#34;Tumor&#34;,&#34;Attack&#34;,&#34;Attack&#34;,&#34;Rocks&#34;,&#34;Satellite&#34;,&#34;Field&#34;,&#34;Farmland&#34;,&#34;Field&#34;,&#34;Nature&#34;,&#34;Leaves&#34;,&#34;Soldier&#34;,&#34;Attack&#34;,&#34;DeadTiger&#34;,&#34;Attack&#34;,&#34;Attack&#34;,&#34;Gang&#34;,&#34;Guns&#34;,&#34;Police&#34;,&#34;Police&#34;,&#34;Buttons&#34;,&#34;Disk&#34;,&#34;GasCan&#34;,&#34;Rubberbands&#34;,&#34;Scissors&#34;,&#34;Razor&#34;,&#34;Video&#34;,&#34;Fan&#34;,&#34;Iron&#34;,&#34;Shoes&#34;,&#34;Mug&#34;,&#34;Train&#34;,&#34;Baskets&#34;,&#34;Zipper&#34;,&#34;HairDryer&#34;,&#34;Clothespins&#34;,&#34;Lightbulb&#34;,&#34;Tool&#34;,&#34;TrashCan&#34;,&#34;FireHydrant&#34;,&#34;Bus&#34;,&#34;Umbrella&#34;,&#34;Fabric&#34;,&#34;Pole&#34;,&#34;Rug&#34;,&#34;AbstractArt&#34;,&#34;AbstractArt&#34;,&#34;Scarves&#34;,&#34;ClothesRack&#34;,&#34;Building&#34;,&#34;Building&#34;,&#34;Bridge&#34;,&#34;Office&#34;,&#34;Boxer&#34;,&#34;PlaneCrash&#34;,&#34;HurtDog&#34;,&#34;InjuredDog&#34;,&#34;Rain&#34;,&#34;WarVictim&#34;,&#34;DeadBody&#34;,&#34;Vomit&#34;,&#34;EmptyPool&#34;,&#34;DeadMan&#34;,&#34;Hanging&#34;,&#34;Assault&#34;,&#34;DeadMan&#34;,&#34;Porpoises&#34;,&#34;Skinhead&#34;,&#34;KKKrally&#34;,&#34;CarAccident&#34;,&#34;CarAccident&#34;,&#34;Fire&#34;,&#34;AttackDog&#34;,&#34;Woman&#34;,&#34;Tourist&#34;,&#34;Shadow&#34;,&#34;HeadlessBody&#34;,&#34;Mutilation&#34;,&#34;Organs&#34;,&#34;BurnVictim&#34;,&#34;Mutilation&#34;,&#34;Mutilation&#34;,&#34;Mutilation&#34;,&#34;Mutilation&#34;,&#34;BurnVictim&#34;,&#34;BurnVictim&#34;,&#34;Mutilation&#34;,&#34;BabyTumor&#34;,&#34;SeveredHand&#34;,&#34;Boat&#34;,&#34;Mushroom&#34;,&#34;Plant&#34;,&#34;Clouds&#34;,&#34;Assault&#34;,&#34;AimedGun&#34;,&#34;BeatenFem&#34;,&#34;Attack&#34;,&#34;Suicide&#34;,&#34;RollingPin&#34;,&#34;Towel&#34;,&#34;Spoon&#34;,&#34;Bowl&#34;,&#34;Mug&#34;,&#34;Basket&#34;,&#34;PicnicTable&#34;,&#34;Hammer&#34;,&#34;Shoes&#34;,&#34;DustPan&#34;,&#34;Barbells&#34;,&#34;Fork&#34;,&#34;Book&#34;,&#34;Lamp&#34;,&#34;Man&#34;,&#34;Office&#34;,&#34;Cabinet&#34;,&#34;Tissue&#34;,&#34;Fire&#34;,&#34;Soldiers&#34;,&#34;Dirty&#34;,&#34;Soldier&#34;,&#34;Execution&#34;,&#34;Dog&#34;],&#34;y&#34;:[6.11,6.37,6.71,5.09,4.06,6.17,6.94,4.87,5.71,2.62,2.45,2.76,1.45,5.98,1.71,1.52,1.91,1.45,1.8,1.7,1.48,2.07,1.56,1.58,1.51,1.56,2.06,2.79,2.96,1.82,2.21,1.8,4.45,5.21,6.62,6.31,7.09,6.6,6.36,2.19,2.7,2.21,2.46,1.94,2.38,2.82,2.91,2.45,5.32,5,4.52,4.98,5.15,4.76,5.18,4.97,4.69,4.52,4.98,5.93,4.99,4.97,4.93,5.33,4.9,5.07,4.43,5.24,5.5,4.72,5.02,4.98,5.06,5.07,5.5,5.56,4.82,4.82,5.33,5.21,4.25,2.95,2.43,1.69,1.81,4.53,2.57,1.98,2.81,4.03,1.83,1.76,2.67,1.84,2.42,2.04,2.09,2.39,2.34,2.04,3.09,5.8,5.22,5.18,1.62,1.9,2.99,1.31,1.81,1.87,1.49,1.88,1.6,1.79,2.26,1.46,2.35,5.59,5.42,5.21,6.78,2.21,2.37,2.31,2.73,2.19,5,4.97,5.04,4.88,4.93,4.94,5.38,4.95,4.82,4.69,5.55,5.27,5.19,4.87,5.35,5.27,4.77,4.94,2.73,2.1,2.26,1.51,2.06,1.68],&#34;type&#34;:&#34;scatter&#34;,&#34;mode&#34;:&#34;markers&#34;,&#34;marker&#34;:{&#34;color&#34;:&#34;rgba(44,160,44,1)&#34;,&#34;line&#34;:{&#34;color&#34;:&#34;rgba(44,160,44,1)&#34;}},&#34;error_y&#34;:{&#34;color&#34;:&#34;rgba(44,160,44,1)&#34;},&#34;error_x&#34;:{&#34;color&#34;:&#34;rgba(44,160,44,1)&#34;},&#34;line&#34;:{&#34;color&#34;:&#34;rgba(44,160,44,1)&#34;},&#34;xaxis&#34;:&#34;x&#34;,&#34;yaxis&#34;:&#34;y2&#34;,&#34;frame&#34;:null},{&#34;x&#34;:[&#34;Parrots&#34;,&#34;Gannet&#34;,&#34;Grouper&#34;,&#34;NeuWoman&#34;,&#34;Fingerprint&#34;,&#34;Girl&#34;,&#34;Kiss&#34;,&#34;Factoryworker&#34;,&#34;Chess&#34;,&#34;War&#34;,&#34;NativeBoy&#34;,&#34;DeerHead&#34;,&#34;Mutilation&#34;,&#34;Gold&#34;,&#34;Mutilation&#34;,&#34;Accident&#34;,&#34;Mutilation&#34;,&#34;Mutilation&#34;,&#34;Mutilation&#34;,&#34;Mutilation&#34;,&#34;Mutilation&#34;,&#34;Injury&#34;,&#34;DeadBody&#34;,&#34;Mutilation&#34;,&#34;Mutilation&#34;,&#34;Mutilation&#34;,&#34;Stitches&#34;,&#34;Surgery&#34;,&#34;Surgery&#34;,&#34;Tumor&#34;,&#34;Attack&#34;,&#34;Attack&#34;,&#34;Rocks&#34;,&#34;Satellite&#34;,&#34;Field&#34;,&#34;Farmland&#34;,&#34;Field&#34;,&#34;Nature&#34;,&#34;Leaves&#34;,&#34;Soldier&#34;,&#34;Attack&#34;,&#34;DeadTiger&#34;,&#34;Attack&#34;,&#34;Attack&#34;,&#34;Gang&#34;,&#34;Guns&#34;,&#34;Police&#34;,&#34;Police&#34;,&#34;Buttons&#34;,&#34;Disk&#34;,&#34;GasCan&#34;,&#34;Rubberbands&#34;,&#34;Scissors&#34;,&#34;Razor&#34;,&#34;Video&#34;,&#34;Fan&#34;,&#34;Iron&#34;,&#34;Shoes&#34;,&#34;Mug&#34;,&#34;Train&#34;,&#34;Baskets&#34;,&#34;Zipper&#34;,&#34;HairDryer&#34;,&#34;Clothespins&#34;,&#34;Lightbulb&#34;,&#34;Tool&#34;,&#34;TrashCan&#34;,&#34;FireHydrant&#34;,&#34;Bus&#34;,&#34;Umbrella&#34;,&#34;Fabric&#34;,&#34;Pole&#34;,&#34;Rug&#34;,&#34;AbstractArt&#34;,&#34;AbstractArt&#34;,&#34;Scarves&#34;,&#34;ClothesRack&#34;,&#34;Building&#34;,&#34;Building&#34;,&#34;Bridge&#34;,&#34;Office&#34;,&#34;Boxer&#34;,&#34;PlaneCrash&#34;,&#34;HurtDog&#34;,&#34;InjuredDog&#34;,&#34;Rain&#34;,&#34;WarVictim&#34;,&#34;DeadBody&#34;,&#34;Vomit&#34;,&#34;EmptyPool&#34;,&#34;DeadMan&#34;,&#34;Hanging&#34;,&#34;Assault&#34;,&#34;DeadMan&#34;,&#34;Porpoises&#34;,&#34;Skinhead&#34;,&#34;KKKrally&#34;,&#34;CarAccident&#34;,&#34;CarAccident&#34;,&#34;Fire&#34;,&#34;AttackDog&#34;,&#34;Woman&#34;,&#34;Tourist&#34;,&#34;Shadow&#34;,&#34;HeadlessBody&#34;,&#34;Mutilation&#34;,&#34;Organs&#34;,&#34;BurnVictim&#34;,&#34;Mutilation&#34;,&#34;Mutilation&#34;,&#34;Mutilation&#34;,&#34;Mutilation&#34;,&#34;BurnVictim&#34;,&#34;BurnVictim&#34;,&#34;Mutilation&#34;,&#34;BabyTumor&#34;,&#34;SeveredHand&#34;,&#34;Boat&#34;,&#34;Mushroom&#34;,&#34;Plant&#34;,&#34;Clouds&#34;,&#34;Assault&#34;,&#34;AimedGun&#34;,&#34;BeatenFem&#34;,&#34;Attack&#34;,&#34;Suicide&#34;,&#34;RollingPin&#34;,&#34;Towel&#34;,&#34;Spoon&#34;,&#34;Bowl&#34;,&#34;Mug&#34;,&#34;Basket&#34;,&#34;PicnicTable&#34;,&#34;Hammer&#34;,&#34;Shoes&#34;,&#34;DustPan&#34;,&#34;Barbells&#34;,&#34;Fork&#34;,&#34;Book&#34;,&#34;Lamp&#34;,&#34;Man&#34;,&#34;Office&#34;,&#34;Cabinet&#34;,&#34;Tissue&#34;,&#34;Fire&#34;,&#34;Soldiers&#34;,&#34;Dirty&#34;,&#34;Soldier&#34;,&#34;Execution&#34;,&#34;Dog&#34;],&#34;y&#34;:[6.11,6.37,6.71,5.09,4.06,6.17,6.94,4.87,5.71,2.62,2.45,2.76,1.45,5.98,1.71,1.52,1.91,1.45,1.8,1.7,1.48,2.07,1.56,1.58,1.51,1.56,2.06,2.79,2.96,1.82,2.21,1.8,4.45,5.21,6.62,6.31,7.09,6.6,6.36,2.19,2.7,2.21,2.46,1.94,2.38,2.82,2.91,2.45,5.32,5,4.52,4.98,5.15,4.76,5.18,4.97,4.69,4.52,4.98,5.93,4.99,4.97,4.93,5.33,4.9,5.07,4.43,5.24,5.5,4.72,5.02,4.98,5.06,5.07,5.5,5.56,4.82,4.82,5.33,5.21,4.25,2.95,2.43,1.69,1.81,4.53,2.57,1.98,2.81,4.03,1.83,1.76,2.67,1.84,2.42,2.04,2.09,2.39,2.34,2.04,3.09,5.8,5.22,5.18,1.62,1.9,2.99,1.31,1.81,1.87,1.49,1.88,1.6,1.79,2.26,1.46,2.35,5.59,5.42,5.21,6.78,2.21,2.37,2.31,2.73,2.19,5,4.97,5.04,4.88,4.93,4.94,5.38,4.95,4.82,4.69,5.55,5.27,5.19,4.87,5.35,5.27,4.77,4.94,2.73,2.1,2.26,1.51,2.06,1.68],&#34;type&#34;:&#34;scatter&#34;,&#34;mode&#34;:&#34;markers&#34;,&#34;marker&#34;:{&#34;color&#34;:&#34;rgba(214,39,40,1)&#34;,&#34;line&#34;:{&#34;color&#34;:&#34;rgba(214,39,40,1)&#34;}},&#34;error_y&#34;:{&#34;color&#34;:&#34;rgba(214,39,40,1)&#34;},&#34;error_x&#34;:{&#34;color&#34;:&#34;rgba(214,39,40,1)&#34;},&#34;line&#34;:{&#34;color&#34;:&#34;rgba(214,39,40,1)&#34;},&#34;xaxis&#34;:&#34;x&#34;,&#34;yaxis&#34;:&#34;y2&#34;,&#34;frame&#34;:null},{&#34;x&#34;:[&#34;Gannet&#34;,&#34;Grouper&#34;,&#34;Fingerprint&#34;,&#34;Girl&#34;,&#34;Kiss&#34;,&#34;Chess&#34;,&#34;NativeBoy&#34;,&#34;Mutilation&#34;,&#34;Mutilation&#34;,&#34;Accident&#34;,&#34;Mutilation&#34;,&#34;Mutilation&#34;,&#34;Mutilation&#34;,&#34;Injury&#34;,&#34;DeadBody&#34;,&#34;Mutilation&#34;,&#34;Mutilation&#34;,&#34;Mutilation&#34;,&#34;Stitches&#34;,&#34;Surgery&#34;,&#34;Surgery&#34;,&#34;Tumor&#34;,&#34;Attack&#34;,&#34;Attack&#34;,&#34;Rocks&#34;,&#34;Farmland&#34;,&#34;Field&#34;,&#34;Nature&#34;,&#34;Leaves&#34;,&#34;Soldier&#34;,&#34;Attack&#34;,&#34;Attack&#34;,&#34;Attack&#34;,&#34;Gang&#34;,&#34;Guns&#34;,&#34;Police&#34;,&#34;Police&#34;,&#34;Buttons&#34;,&#34;Disk&#34;,&#34;GasCan&#34;,&#34;Rubberbands&#34;,&#34;Scissors&#34;,&#34;Razor&#34;,&#34;Video&#34;,&#34;Fan&#34;,&#34;Iron&#34;,&#34;Shoes&#34;,&#34;Mug&#34;,&#34;Zipper&#34;,&#34;HairDryer&#34;,&#34;TrashCan&#34;,&#34;FireHydrant&#34;,&#34;Bus&#34;,&#34;Umbrella&#34;,&#34;Fabric&#34;,&#34;AbstractArt&#34;,&#34;Scarves&#34;,&#34;ClothesRack&#34;,&#34;Building&#34;,&#34;Building&#34;,&#34;Office&#34;,&#34;Boxer&#34;,&#34;PlaneCrash&#34;,&#34;HurtDog&#34;,&#34;InjuredDog&#34;,&#34;Rain&#34;,&#34;WarVictim&#34;,&#34;DeadBody&#34;,&#34;Vomit&#34;,&#34;EmptyPool&#34;,&#34;DeadMan&#34;,&#34;Hanging&#34;,&#34;DeadMan&#34;,&#34;Porpoises&#34;,&#34;Skinhead&#34;,&#34;KKKrally&#34;,&#34;CarAccident&#34;,&#34;CarAccident&#34;,&#34;Fire&#34;,&#34;Woman&#34;,&#34;Tourist&#34;,&#34;Shadow&#34;,&#34;HeadlessBody&#34;,&#34;Organs&#34;,&#34;BurnVictim&#34;,&#34;Mutilation&#34;,&#34;Mutilation&#34;,&#34;Mutilation&#34;,&#34;Mutilation&#34;,&#34;BurnVictim&#34;,&#34;BurnVictim&#34;,&#34;Mutilation&#34;,&#34;BabyTumor&#34;,&#34;SeveredHand&#34;,&#34;Boat&#34;,&#34;Mushroom&#34;,&#34;Plant&#34;,&#34;Clouds&#34;,&#34;AimedGun&#34;,&#34;Attack&#34;,&#34;Suicide&#34;,&#34;RollingPin&#34;,&#34;Towel&#34;,&#34;Spoon&#34;,&#34;Bowl&#34;,&#34;Mug&#34;,&#34;Basket&#34;,&#34;PicnicTable&#34;,&#34;Hammer&#34;,&#34;DustPan&#34;,&#34;Fork&#34;,&#34;Book&#34;,&#34;Lamp&#34;,&#34;Office&#34;,&#34;Cabinet&#34;,&#34;Tissue&#34;,&#34;Soldiers&#34;,&#34;Dirty&#34;,&#34;Soldier&#34;,&#34;Execution&#34;,&#34;Dog&#34;],&#34;y&#34;:[6.75,6.44,4.46,6.66,6.32,5.88,3.94,2.99,2.88,2.84,3.69,2.63,2.85,3.37,3.32,3.46,2.73,3.24,3.55,4.07,3.92,3.57,2.4,2.81,5.84,5.58,6.23,6.82,5.72,3.45,3,2.81,2.88,3.29,3.67,3.9,3.79,5.82,6.02,4.99,6.06,6.21,5.74,5.93,6.16,5.73,6.14,6.39,6.28,5.82,5.85,5.92,5.45,5.55,5.8,6.1,6.39,6.25,5.93,5.17,5.13,4.05,3.27,2.96,3.17,4.55,3.73,2.92,3.9,5.34,3,2.75,3.37,3.42,4.92,3.95,3.4,2.79,3.57,6.1,5.87,6.01,2.66,4.25,2.33,2.88,3.73,2.7,3.28,3,3.04,3.39,2.7,3.65,6.33,6.45,6.27,5.2,2.15,3.01,4.03,6.14,6.25,6.74,6.18,6.33,6.7,6.19,6.48,5.46,7.04,6.65,6.47,5.22,6.39,6.3,3.04,4.12,2.81,3.11,3.37],&#34;type&#34;:&#34;scatter&#34;,&#34;mode&#34;:&#34;markers&#34;,&#34;marker&#34;:{&#34;color&#34;:&#34;rgba(148,103,189,1)&#34;,&#34;line&#34;:{&#34;color&#34;:&#34;rgba(148,103,189,1)&#34;}},&#34;error_y&#34;:{&#34;color&#34;:&#34;rgba(148,103,189,1)&#34;},&#34;error_x&#34;:{&#34;color&#34;:&#34;rgba(148,103,189,1)&#34;},&#34;line&#34;:{&#34;color&#34;:&#34;rgba(148,103,189,1)&#34;},&#34;xaxis&#34;:&#34;x&#34;,&#34;yaxis&#34;:&#34;y3&#34;,&#34;frame&#34;:null},{&#34;x&#34;:[&#34;Gannet&#34;,&#34;Grouper&#34;,&#34;Fingerprint&#34;,&#34;Girl&#34;,&#34;Kiss&#34;,&#34;Chess&#34;,&#34;NativeBoy&#34;,&#34;Mutilation&#34;,&#34;Mutilation&#34;,&#34;Accident&#34;,&#34;Mutilation&#34;,&#34;Mutilation&#34;,&#34;Mutilation&#34;,&#34;Injury&#34;,&#34;DeadBody&#34;,&#34;Mutilation&#34;,&#34;Mutilation&#34;,&#34;Mutilation&#34;,&#34;Stitches&#34;,&#34;Surgery&#34;,&#34;Surgery&#34;,&#34;Tumor&#34;,&#34;Attack&#34;,&#34;Attack&#34;,&#34;Rocks&#34;,&#34;Farmland&#34;,&#34;Field&#34;,&#34;Nature&#34;,&#34;Leaves&#34;,&#34;Soldier&#34;,&#34;Attack&#34;,&#34;Attack&#34;,&#34;Attack&#34;,&#34;Gang&#34;,&#34;Guns&#34;,&#34;Police&#34;,&#34;Police&#34;,&#34;Buttons&#34;,&#34;Disk&#34;,&#34;GasCan&#34;,&#34;Rubberbands&#34;,&#34;Scissors&#34;,&#34;Razor&#34;,&#34;Video&#34;,&#34;Fan&#34;,&#34;Iron&#34;,&#34;Shoes&#34;,&#34;Mug&#34;,&#34;Zipper&#34;,&#34;HairDryer&#34;,&#34;TrashCan&#34;,&#34;FireHydrant&#34;,&#34;Bus&#34;,&#34;Umbrella&#34;,&#34;Fabric&#34;,&#34;AbstractArt&#34;,&#34;Scarves&#34;,&#34;ClothesRack&#34;,&#34;Building&#34;,&#34;Building&#34;,&#34;Office&#34;,&#34;Boxer&#34;,&#34;PlaneCrash&#34;,&#34;HurtDog&#34;,&#34;InjuredDog&#34;,&#34;Rain&#34;,&#34;WarVictim&#34;,&#34;DeadBody&#34;,&#34;Vomit&#34;,&#34;EmptyPool&#34;,&#34;DeadMan&#34;,&#34;Hanging&#34;,&#34;DeadMan&#34;,&#34;Porpoises&#34;,&#34;Skinhead&#34;,&#34;KKKrally&#34;,&#34;CarAccident&#34;,&#34;CarAccident&#34;,&#34;Fire&#34;,&#34;Woman&#34;,&#34;Tourist&#34;,&#34;Shadow&#34;,&#34;HeadlessBody&#34;,&#34;Organs&#34;,&#34;BurnVictim&#34;,&#34;Mutilation&#34;,&#34;Mutilation&#34;,&#34;Mutilation&#34;,&#34;Mutilation&#34;,&#34;BurnVictim&#34;,&#34;BurnVictim&#34;,&#34;Mutilation&#34;,&#34;BabyTumor&#34;,&#34;SeveredHand&#34;,&#34;Boat&#34;,&#34;Mushroom&#34;,&#34;Plant&#34;,&#34;Clouds&#34;,&#34;AimedGun&#34;,&#34;Attack&#34;,&#34;Suicide&#34;,&#34;RollingPin&#34;,&#34;Towel&#34;,&#34;Spoon&#34;,&#34;Bowl&#34;,&#34;Mug&#34;,&#34;Basket&#34;,&#34;PicnicTable&#34;,&#34;Hammer&#34;,&#34;DustPan&#34;,&#34;Fork&#34;,&#34;Book&#34;,&#34;Lamp&#34;,&#34;Office&#34;,&#34;Cabinet&#34;,&#34;Tissue&#34;,&#34;Soldiers&#34;,&#34;Dirty&#34;,&#34;Soldier&#34;,&#34;Execution&#34;,&#34;Dog&#34;],&#34;y&#34;:[6.75,6.44,4.46,6.66,6.32,5.88,3.94,2.99,2.88,2.84,3.69,2.63,2.85,3.37,3.32,3.46,2.73,3.24,3.55,4.07,3.92,3.57,2.4,2.81,5.84,5.58,6.23,6.82,5.72,3.45,3,2.81,2.88,3.29,3.67,3.9,3.79,5.82,6.02,4.99,6.06,6.21,5.74,5.93,6.16,5.73,6.14,6.39,6.28,5.82,5.85,5.92,5.45,5.55,5.8,6.1,6.39,6.25,5.93,5.17,5.13,4.05,3.27,2.96,3.17,4.55,3.73,2.92,3.9,5.34,3,2.75,3.37,3.42,4.92,3.95,3.4,2.79,3.57,6.1,5.87,6.01,2.66,4.25,2.33,2.88,3.73,2.7,3.28,3,3.04,3.39,2.7,3.65,6.33,6.45,6.27,5.2,2.15,3.01,4.03,6.14,6.25,6.74,6.18,6.33,6.7,6.19,6.48,5.46,7.04,6.65,6.47,5.22,6.39,6.3,3.04,4.12,2.81,3.11,3.37],&#34;type&#34;:&#34;scatter&#34;,&#34;mode&#34;:&#34;markers&#34;,&#34;marker&#34;:{&#34;color&#34;:&#34;rgba(140,86,75,1)&#34;,&#34;line&#34;:{&#34;color&#34;:&#34;rgba(140,86,75,1)&#34;}},&#34;error_y&#34;:{&#34;color&#34;:&#34;rgba(140,86,75,1)&#34;},&#34;error_x&#34;:{&#34;color&#34;:&#34;rgba(140,86,75,1)&#34;},&#34;line&#34;:{&#34;color&#34;:&#34;rgba(140,86,75,1)&#34;},&#34;xaxis&#34;:&#34;x&#34;,&#34;yaxis&#34;:&#34;y3&#34;,&#34;frame&#34;:null}],&#34;layout&#34;:{&#34;xaxis&#34;:{&#34;domain&#34;:[0,1],&#34;automargin&#34;:true,&#34;title&#34;:&#34;Content&#34;,&#34;type&#34;:&#34;category&#34;,&#34;categoryorder&#34;:&#34;array&#34;,&#34;categoryarray&#34;:[&#34;AbstractArt&#34;,&#34;Accident&#34;,&#34;AimedGun&#34;,&#34;Attack&#34;,&#34;BabyTumor&#34;,&#34;Basket&#34;,&#34;Boat&#34;,&#34;Book&#34;,&#34;Bowl&#34;,&#34;Boxer&#34;,&#34;Building&#34;,&#34;BurnVictim&#34;,&#34;Bus&#34;,&#34;Buttons&#34;,&#34;Cabinet&#34;,&#34;CarAccident&#34;,&#34;Chess&#34;,&#34;ClothesRack&#34;,&#34;Clouds&#34;,&#34;DeadBody&#34;,&#34;DeadMan&#34;,&#34;Dirty&#34;,&#34;Disk&#34;,&#34;Dog&#34;,&#34;DustPan&#34;,&#34;EmptyPool&#34;,&#34;Execution&#34;,&#34;Fabric&#34;,&#34;Fan&#34;,&#34;Farmland&#34;,&#34;Field&#34;,&#34;Fingerprint&#34;,&#34;Fire&#34;,&#34;FireHydrant&#34;,&#34;Fork&#34;,&#34;Gang&#34;,&#34;Gannet&#34;,&#34;GasCan&#34;,&#34;Girl&#34;,&#34;Grouper&#34;,&#34;Guns&#34;,&#34;HairDryer&#34;,&#34;Hammer&#34;,&#34;Hanging&#34;,&#34;HeadlessBody&#34;,&#34;HurtDog&#34;,&#34;InjuredDog&#34;,&#34;Injury&#34;,&#34;Iron&#34;,&#34;Kiss&#34;,&#34;KKKrally&#34;,&#34;Lamp&#34;,&#34;Leaves&#34;,&#34;Mug&#34;,&#34;Mushroom&#34;,&#34;Mutilation&#34;,&#34;NativeBoy&#34;,&#34;Nature&#34;,&#34;Office&#34;,&#34;Organs&#34;,&#34;PicnicTable&#34;,&#34;PlaneCrash&#34;,&#34;Plant&#34;,&#34;Police&#34;,&#34;Porpoises&#34;,&#34;Rain&#34;,&#34;Razor&#34;,&#34;Rocks&#34;,&#34;RollingPin&#34;,&#34;Rubberbands&#34;,&#34;Scarves&#34;,&#34;Scissors&#34;,&#34;SeveredHand&#34;,&#34;Shadow&#34;,&#34;Shoes&#34;,&#34;Skinhead&#34;,&#34;Soldier&#34;,&#34;Soldiers&#34;,&#34;Spoon&#34;,&#34;Stitches&#34;,&#34;Suicide&#34;,&#34;Surgery&#34;,&#34;Tissue&#34;,&#34;Tourist&#34;,&#34;Towel&#34;,&#34;TrashCan&#34;,&#34;Tumor&#34;,&#34;Umbrella&#34;,&#34;Video&#34;,&#34;Vomit&#34;,&#34;WarVictim&#34;,&#34;Woman&#34;,&#34;Zipper&#34;],&#34;anchor&#34;:&#34;y3&#34;},&#34;yaxis3&#34;:{&#34;domain&#34;:[0,0.313333333333333],&#34;automargin&#34;:true,&#34;title&#34;:&#34;Dominance&#34;,&#34;anchor&#34;:&#34;x&#34;},&#34;yaxis2&#34;:{&#34;domain&#34;:[0.353333333333333,0.646666666666667],&#34;automargin&#34;:true,&#34;title&#34;:&#34;Valence&#34;,&#34;anchor&#34;:&#34;x&#34;},&#34;yaxis&#34;:{&#34;domain&#34;:[0.686666666666667,1],&#34;automargin&#34;:true,&#34;title&#34;:&#34;Arousal&#34;,&#34;anchor&#34;:&#34;x&#34;},&#34;annotations&#34;:[],&#34;shapes&#34;:[],&#34;images&#34;:[],&#34;margin&#34;:{&#34;b&#34;:40,&#34;l&#34;:60,&#34;t&#34;:25,&#34;r&#34;:10},&#34;hovermode&#34;:&#34;closest&#34;,&#34;showlegend&#34;:false},&#34;attrs&#34;:{&#34;4cec6431346f&#34;:{&#34;x&#34;:{},&#34;y&#34;:{},&#34;alpha_stroke&#34;:1,&#34;sizes&#34;:[10,100],&#34;spans&#34;:[1,20],&#34;type&#34;:&#34;scatter&#34;},&#34;4cec6431346f.1&#34;:{&#34;x&#34;:{},&#34;y&#34;:{},&#34;alpha_stroke&#34;:1,&#34;sizes&#34;:[10,100],&#34;spans&#34;:[1,20],&#34;type&#34;:&#34;scatter&#34;,&#34;inherit&#34;:true},&#34;4cec3b02659a&#34;:{&#34;x&#34;:{},&#34;y&#34;:{},&#34;alpha_stroke&#34;:1,&#34;sizes&#34;:[10,100],&#34;spans&#34;:[1,20],&#34;type&#34;:&#34;scatter&#34;},&#34;4cec3b02659a.1&#34;:{&#34;x&#34;:{},&#34;y&#34;:{},&#34;alpha_stroke&#34;:1,&#34;sizes&#34;:[10,100],&#34;spans&#34;:[1,20],&#34;type&#34;:&#34;scatter&#34;,&#34;inherit&#34;:true},&#34;4cec547a4ad1&#34;:{&#34;x&#34;:{},&#34;y&#34;:{},&#34;alpha_stroke&#34;:1,&#34;sizes&#34;:[10,100],&#34;spans&#34;:[1,20],&#34;type&#34;:&#34;scatter&#34;},&#34;4cec547a4ad1.1&#34;:{&#34;x&#34;:{},&#34;y&#34;:{},&#34;alpha_stroke&#34;:1,&#34;sizes&#34;:[10,100],&#34;spans&#34;:[1,20],&#34;type&#34;:&#34;scatter&#34;,&#34;inherit&#34;:true}},&#34;source&#34;:&#34;A&#34;,&#34;config&#34;:{&#34;showSendToCloud&#34;:false},&#34;highlight&#34;:{&#34;on&#34;:&#34;plotly_click&#34;,&#34;persistent&#34;:false,&#34;dynamic&#34;:false,&#34;selectize&#34;:false,&#34;opacityDim&#34;:0.2,&#34;selected&#34;:{&#34;opacity&#34;:1},&#34;debounce&#34;:0},&#34;subplot&#34;:true,&#34;.hideLegend&#34;:true,&#34;shinyEvents&#34;:[&#34;plotly_hover&#34;,&#34;plotly_click&#34;,&#34;plotly_selected&#34;,&#34;plotly_relayout&#34;,&#34;plotly_brushed&#34;,&#34;plotly_brushing&#34;,&#34;plotly_clickannotation&#34;,&#34;plotly_doubleclick&#34;,&#34;plotly_deselect&#34;,&#34;plotly_afterplot&#34;],&#34;base_url&#34;:&#34;https://plot.ly&#34;},&#34;evals&#34;:[],&#34;jsHooks&#34;:[]}&lt;/script&gt;
 &lt;ul&gt;
 &lt;li&gt;Currently not rendering in Hugo&lt;/li&gt;
 &lt;/ul&gt;
@@ -2010,69 +2182,6 @@ bars that reflect the +/- 1 standard error of the mean.&lt;/p&gt;&lt;/li&gt;
     </item>
     
     <item>
-      <title>Display Jupyter Notebooks with Academic</title>
-      <link>/post/jupyter/</link>
-      <pubDate>Tue, 05 Feb 2019 00:00:00 +0000</pubDate>
-      
-      <guid>/post/jupyter/</guid>
-      <description>
-
-&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;from IPython.core.display import Image
-Image(&#39;https://www.python.org/static/community_logos/python-logo-master-v3-TM-flattened.png&#39;)
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;&lt;img src=&#34;./academic_0_0.png&#34; alt=&#34;png&#34; /&gt;&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;print(&amp;quot;Welcome to Academic!&amp;quot;)
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code&gt;Welcome to Academic!
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h2 id=&#34;install-python-and-jupyter&#34;&gt;Install Python and Jupyter&lt;/h2&gt;
-
-&lt;p&gt;&lt;a href=&#34;https://www.anaconda.com/distribution/#download-section&#34; target=&#34;_blank&#34;&gt;Install Anaconda&lt;/a&gt; which includes Python 3 and Jupyter notebook.&lt;/p&gt;
-
-&lt;p&gt;Otherwise, for advanced users, install Jupyter notebook with &lt;code&gt;pip3 install jupyter&lt;/code&gt;.&lt;/p&gt;
-
-&lt;h2 id=&#34;create-a-new-blog-post-as-usual-https-sourcethemes-com-academic-docs-managing-content-create-a-blog-post&#34;&gt;Create a new blog post &lt;a href=&#34;https://sourcethemes.com/academic/docs/managing-content/#create-a-blog-post&#34; target=&#34;_blank&#34;&gt;as usual&lt;/a&gt;&lt;/h2&gt;
-
-&lt;p&gt;Run the following commands in your Terminal, substituting &lt;code&gt;&amp;lt;MY_WEBSITE_FOLDER&amp;gt;&lt;/code&gt; and &lt;code&gt;my-post&lt;/code&gt; with the file path to your Academic website folder and a name for your blog post (without spaces), respectively:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;cd &amp;lt;MY_WEBSITE_FOLDER&amp;gt;
-hugo new  --kind post post/my-post
-cd &amp;lt;MY_WEBSITE_FOLDER&amp;gt;/content/post/my-post/
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h2 id=&#34;create-or-upload-a-jupyter-notebook&#34;&gt;Create or upload a Jupyter notebook&lt;/h2&gt;
-
-&lt;p&gt;Run the following command to start Jupyter within your new blog post folder. Then create a new Jupyter notebook (&lt;em&gt;New &amp;gt; Python Notebook&lt;/em&gt;) or upload a notebook.&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;jupyter notebook
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h2 id=&#34;convert-notebook-to-markdown&#34;&gt;Convert notebook to Markdown&lt;/h2&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;jupyter nbconvert Untitled.ipynb --to markdown --NbConvertApp.output_files_dir=.
-
-# Copy the contents of Untitled.md and append it to index.md:
-cat Untitled.md | tee -a index.md
-
-# Remove the temporary file:
-rm Untitled.md
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h2 id=&#34;edit-your-post-metadata&#34;&gt;Edit your post metadata&lt;/h2&gt;
-
-&lt;p&gt;Open &lt;code&gt;index.md&lt;/code&gt; in your text editor and edit the title etc. in the &lt;a href=&#34;https://sourcethemes.com/academic/docs/front-matter/&#34; target=&#34;_blank&#34;&gt;front matter&lt;/a&gt; according to your preference.&lt;/p&gt;
-
-&lt;p&gt;To set a &lt;a href=&#34;https://sourcethemes.com/academic/docs/managing-content/#featured-image&#34; target=&#34;_blank&#34;&gt;featured image&lt;/a&gt;, place an image named &lt;code&gt;featured&lt;/code&gt; into your post&amp;rsquo;s folder.&lt;/p&gt;
-
-&lt;p&gt;For other tips, such as using math, see the guide on &lt;a href=&#34;https://sourcethemes.com/academic/docs/writing-markdown-latex/&#34; target=&#34;_blank&#34;&gt;writing content with Academic&lt;/a&gt;.&lt;/p&gt;
-</description>
-    </item>
-    
-    <item>
       <title>Slides</title>
       <link>/slides/example/</link>
       <pubDate>Tue, 05 Feb 2019 00:00:00 +0000</pubDate>
@@ -2288,335 +2397,6 @@ $$&lt;/p&gt;
 &lt;p&gt;Suspendisse a tincidunt lacus. Curabitur at urna sagittis, dictum ante sit amet, euismod magna. Sed rutrum massa id tortor commodo, vitae elementum turpis tempus. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean purus turpis, venenatis a ullamcorper nec, tincidunt et massa. Integer posuere quam rutrum arcu vehicula imperdiet. Mauris ullamcorper quam vitae purus congue, quis euismod magna eleifend. Vestibulum semper vel augue eget tincidunt. Fusce eget justo sodales, dapibus odio eu, ultrices lorem. Duis condimentum lorem id eros commodo, in facilisis mauris scelerisque. Morbi sed auctor leo. Nullam volutpat a lacus quis pharetra. Nulla congue rutrum magna a ornare.&lt;/p&gt;
 
 &lt;p&gt;Aliquam in turpis accumsan, malesuada nibh ut, hendrerit justo. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Quisque sed erat nec justo posuere suscipit. Donec ut efficitur arcu, in malesuada neque. Nunc dignissim nisl massa, id vulputate nunc pretium nec. Quisque eget urna in risus suscipit ultricies. Pellentesque odio odio, tincidunt in eleifend sed, posuere a diam. Nam gravida nisl convallis semper elementum. Morbi vitae felis faucibus, vulputate orci placerat, aliquet nisi. Aliquam erat volutpat. Maecenas sagittis pulvinar purus, sed porta quam laoreet at.&lt;/p&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>Academic: the website builder for Hugo</title>
-      <link>/post/getting-started/</link>
-      <pubDate>Wed, 20 Apr 2016 00:00:00 +0000</pubDate>
-      
-      <guid>/post/getting-started/</guid>
-      <description>
-
-&lt;p&gt;&lt;strong&gt;Create a free website with Academic using Markdown, Jupyter, or RStudio. Choose a beautiful color theme and build anything with the Page Builder - over 40 &lt;em&gt;widgets&lt;/em&gt;, &lt;em&gt;themes&lt;/em&gt;, and &lt;em&gt;language packs&lt;/em&gt; included!&lt;/strong&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&#34;https://academic-demo.netlify.com/&#34; target=&#34;_blank&#34;&gt;Check out the latest &lt;strong&gt;demo&lt;/strong&gt;&lt;/a&gt; of what you&amp;rsquo;ll get in less than 10 minutes, or &lt;a href=&#34;https://sourcethemes.com/academic/#expo&#34; target=&#34;_blank&#34;&gt;view the &lt;strong&gt;showcase&lt;/strong&gt;&lt;/a&gt; of personal, project, and business sites.&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;&lt;a href=&#34;#install&#34;&gt;&lt;strong&gt;Setup Academic&lt;/strong&gt;&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;https://sourcethemes.com/academic/docs/get-started/&#34; target=&#34;_blank&#34;&gt;&lt;strong&gt;Get Started&lt;/strong&gt;&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;https://sourcethemes.com/academic/docs/&#34; target=&#34;_blank&#34;&gt;View the documentation&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;http://discuss.gohugo.io/&#34; target=&#34;_blank&#34;&gt;Ask a question&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;https://github.com/gcushen/hugo-academic/issues&#34; target=&#34;_blank&#34;&gt;Request a feature or report a bug&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;Updating? View the &lt;a href=&#34;https://sourcethemes.com/academic/docs/update/&#34; target=&#34;_blank&#34;&gt;Update Guide&lt;/a&gt; and &lt;a href=&#34;https://sourcethemes.com/academic/updates/&#34; target=&#34;_blank&#34;&gt;Release Notes&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;Support development of Academic:
-
-&lt;ul&gt;
-&lt;li&gt;&lt;a href=&#34;https://paypal.me/cushen&#34; target=&#34;_blank&#34;&gt;Donate a coffee&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;https://www.patreon.com/cushen&#34; target=&#34;_blank&#34;&gt;Become a backer on Patreon&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;https://www.redbubble.com/people/neutreno/works/34387919-academic&#34; target=&#34;_blank&#34;&gt;Decorate your laptop or journal with an Academic sticker&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;https://academic.threadless.com/&#34; target=&#34;_blank&#34;&gt;Wear the T-shirt&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;&lt;a href=&#34;https://github.com/gcushen/hugo-academic/&#34; target=&#34;_blank&#34;&gt;&lt;img src=&#34;https://raw.githubusercontent.com/gcushen/hugo-academic/master/academic.png&#34; alt=&#34;Screenshot&#34; /&gt;&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;Key features:&lt;/strong&gt;&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;&lt;strong&gt;Page builder&lt;/strong&gt; - Create &lt;em&gt;anything&lt;/em&gt; with &lt;a href=&#34;https://sourcethemes.com/academic/docs/page-builder/&#34; target=&#34;_blank&#34;&gt;&lt;strong&gt;widgets&lt;/strong&gt;&lt;/a&gt; and &lt;a href=&#34;https://sourcethemes.com/academic/docs/writing-markdown-latex/&#34; target=&#34;_blank&#34;&gt;&lt;strong&gt;elements&lt;/strong&gt;&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;Edit any type of content&lt;/strong&gt; - Blog posts, publications, talks, slides, projects, and more!&lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;Create content&lt;/strong&gt; in &lt;a href=&#34;https://sourcethemes.com/academic/docs/writing-markdown-latex/&#34; target=&#34;_blank&#34;&gt;&lt;strong&gt;Markdown&lt;/strong&gt;&lt;/a&gt;, &lt;a href=&#34;https://sourcethemes.com/academic/docs/jupyter/&#34; target=&#34;_blank&#34;&gt;&lt;strong&gt;Jupyter&lt;/strong&gt;&lt;/a&gt;, or &lt;a href=&#34;https://sourcethemes.com/academic/docs/install/#install-with-rstudio&#34; target=&#34;_blank&#34;&gt;&lt;strong&gt;RStudio&lt;/strong&gt;&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;Plugin System&lt;/strong&gt; - Fully customizable &lt;a href=&#34;https://sourcethemes.com/academic/themes/&#34; target=&#34;_blank&#34;&gt;&lt;strong&gt;color&lt;/strong&gt; and &lt;strong&gt;font themes&lt;/strong&gt;&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;Display Code and Math&lt;/strong&gt; - Code highlighting and &lt;a href=&#34;https://en.wikibooks.org/wiki/LaTeX/Mathematics&#34; target=&#34;_blank&#34;&gt;LaTeX math&lt;/a&gt; supported&lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;Integrations&lt;/strong&gt; - &lt;a href=&#34;https://analytics.google.com&#34; target=&#34;_blank&#34;&gt;Google Analytics&lt;/a&gt;, &lt;a href=&#34;https://disqus.com&#34; target=&#34;_blank&#34;&gt;Disqus commenting&lt;/a&gt;, Maps, Contact Forms, and more!&lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;Beautiful Site&lt;/strong&gt; - Simple and refreshing one page design&lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;Industry-Leading SEO&lt;/strong&gt; - Help get your website found on search engines and social media&lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;Media Galleries&lt;/strong&gt; - Display your images and videos with captions in a customizable gallery&lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;Mobile Friendly&lt;/strong&gt; - Look amazing on every screen with a mobile friendly version of your site&lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;Multi-language&lt;/strong&gt; - 15+ language packs including English, 中文, and Português&lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;Multi-user&lt;/strong&gt; - Each author gets their own profile page&lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;Privacy Pack&lt;/strong&gt; - Assists with GDPR&lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;Stand Out&lt;/strong&gt; - Bring your site to life with animation, parallax backgrounds, and scroll effects&lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;One-Click Deployment&lt;/strong&gt; - No servers. No databases. Only files.&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h2 id=&#34;color-themes&#34;&gt;Color Themes&lt;/h2&gt;
-
-&lt;p&gt;Academic comes with &lt;strong&gt;day (light) and night (dark) mode&lt;/strong&gt; built-in. Click the sun/moon icon in the top right of the &lt;a href=&#34;https://academic-demo.netlify.com/&#34; target=&#34;_blank&#34;&gt;Demo&lt;/a&gt; to see it in action!&lt;/p&gt;
-
-&lt;p&gt;Choose a stunning color and font theme for your site. Themes are fully customizable and include:&lt;/p&gt;
-
-
-
-
-
-
-
-
-
-  
-  
-
-
-&lt;div class=&#34;gallery&#34;&gt;
-
-  
-  
-  
-  
-    
-    
-    
-    
-    
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-    
-  &lt;a data-fancybox=&#34;gallery-gallery&#34; href=&#34;/post/getting-started/gallery/theme-1950s.png&#34; data-caption=&#34;1950s&#34;&gt;
-  &lt;img src=&#34;/post/getting-started/gallery/theme-1950s_huaf5482f8cea0c5a703a328640e3b7509_21614_0x190_resize_lanczos_2.png&#34; alt=&#34;&#34;&gt;
-  &lt;/a&gt;
-  
-    
-    
-    
-    
-    
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-    
-  &lt;a data-fancybox=&#34;gallery-gallery&#34; href=&#34;/post/getting-started/gallery/theme-apogee.png&#34; data-caption=&#34;Apogee&#34;&gt;
-  &lt;img src=&#34;/post/getting-started/gallery/theme-apogee_hu4b45d99db97150df01464c393bfd17d4_24119_0x190_resize_lanczos_2.png&#34; alt=&#34;&#34;&gt;
-  &lt;/a&gt;
-  
-    
-    
-    
-    
-    
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-    
-  &lt;a data-fancybox=&#34;gallery-gallery&#34; href=&#34;/post/getting-started/gallery/theme-coffee-playfair.png&#34; data-caption=&#34;Coffee theme with Playfair font&#34;&gt;
-  &lt;img src=&#34;/post/getting-started/gallery/theme-coffee-playfair_hu446a8f670cc5622adcc77b97ba95f6c5_22462_0x190_resize_lanczos_2.png&#34; alt=&#34;&#34;&gt;
-  &lt;/a&gt;
-  
-    
-    
-    
-    
-    
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-    
-  &lt;a data-fancybox=&#34;gallery-gallery&#34; href=&#34;/post/getting-started/gallery/theme-cupcake.png&#34; data-caption=&#34;Cupcake&#34;&gt;
-  &lt;img src=&#34;/post/getting-started/gallery/theme-cupcake_hueba8cfa8cfbc7543924fcbf387a99e92_23986_0x190_resize_lanczos_2.png&#34; alt=&#34;&#34;&gt;
-  &lt;/a&gt;
-  
-    
-    
-    
-    
-    
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-    
-  &lt;a data-fancybox=&#34;gallery-gallery&#34; href=&#34;/post/getting-started/gallery/theme-dark.png&#34; data-caption=&#34;Dark&#34;&gt;
-  &lt;img src=&#34;/post/getting-started/gallery/theme-dark_hu1e8601ecc47f58eada7743fdcd709d3d_21456_0x190_resize_lanczos_2.png&#34; alt=&#34;&#34;&gt;
-  &lt;/a&gt;
-  
-    
-    
-    
-    
-    
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-    
-  &lt;a data-fancybox=&#34;gallery-gallery&#34; href=&#34;/post/getting-started/gallery/theme-default.png&#34; data-caption=&#34;Default&#34;&gt;
-  &lt;img src=&#34;/post/getting-started/gallery/theme-default_huba6228b7bdf30e2f03f12ea91b2cba0d_21751_0x190_resize_lanczos_2.png&#34; alt=&#34;&#34;&gt;
-  &lt;/a&gt;
-  
-    
-    
-    
-    
-    
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-    
-  &lt;a data-fancybox=&#34;gallery-gallery&#34; href=&#34;/post/getting-started/gallery/theme-forest.png&#34; data-caption=&#34;Forest&#34;&gt;
-  &lt;img src=&#34;/post/getting-started/gallery/theme-forest_hu4f093a1c683134431456584193ea41ee_21797_0x190_resize_lanczos_2.png&#34; alt=&#34;&#34;&gt;
-  &lt;/a&gt;
-  
-    
-    
-    
-    
-    
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-      
-    
-    
-  &lt;a data-fancybox=&#34;gallery-gallery&#34; href=&#34;/post/getting-started/gallery/theme-ocean.png&#34; data-caption=&#34;Ocean&#34;&gt;
-  &lt;img src=&#34;/post/getting-started/gallery/theme-ocean_hu14831ccafc2219f30a7a096fa7617e01_21760_0x190_resize_lanczos_2.png&#34; alt=&#34;&#34;&gt;
-  &lt;/a&gt;
-  
-
-  
-&lt;/div&gt;
-
-&lt;h2 id=&#34;ecosystem&#34;&gt;Ecosystem&lt;/h2&gt;
-
-&lt;ul&gt;
-&lt;li&gt;&lt;strong&gt;&lt;a href=&#34;https://github.com/sourcethemes/academic-admin&#34; target=&#34;_blank&#34;&gt;Academic Admin&lt;/a&gt;:&lt;/strong&gt; An admin tool to import publications from BibTeX or import assets for an offline site&lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;&lt;a href=&#34;https://github.com/sourcethemes/academic-scripts&#34; target=&#34;_blank&#34;&gt;Academic Scripts&lt;/a&gt;:&lt;/strong&gt; Scripts to help migrate content to new versions of Academic&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h2 id=&#34;install&#34;&gt;Install&lt;/h2&gt;
-
-&lt;p&gt;You can choose from one of the following four methods to install:&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;&lt;a href=&#34;https://sourcethemes.com/academic/docs/install/#install-with-web-browser&#34; target=&#34;_blank&#34;&gt;&lt;strong&gt;one-click install using your web browser (recommended)&lt;/strong&gt;&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;https://sourcethemes.com/academic/docs/install/#install-with-git&#34; target=&#34;_blank&#34;&gt;install on your computer using &lt;strong&gt;Git&lt;/strong&gt; with the Command Prompt/Terminal app&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;https://sourcethemes.com/academic/docs/install/#install-with-zip&#34; target=&#34;_blank&#34;&gt;install on your computer by downloading the &lt;strong&gt;ZIP files&lt;/strong&gt;&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;https://sourcethemes.com/academic/docs/install/#install-with-rstudio&#34; target=&#34;_blank&#34;&gt;install on your computer with &lt;strong&gt;RStudio&lt;/strong&gt;&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;Then &lt;a href=&#34;https://sourcethemes.com/academic/docs/get-started/&#34; target=&#34;_blank&#34;&gt;personalize and deploy your new site&lt;/a&gt;.&lt;/p&gt;
-
-&lt;h2 id=&#34;updating&#34;&gt;Updating&lt;/h2&gt;
-
-&lt;p&gt;&lt;a href=&#34;https://sourcethemes.com/academic/docs/update/&#34; target=&#34;_blank&#34;&gt;View the Update Guide&lt;/a&gt;.&lt;/p&gt;
-
-&lt;p&gt;Feel free to &lt;em&gt;star&lt;/em&gt; the project on &lt;a href=&#34;https://github.com/gcushen/hugo-academic/&#34; target=&#34;_blank&#34;&gt;Github&lt;/a&gt; to help keep track of &lt;a href=&#34;https://sourcethemes.com/academic/updates&#34; target=&#34;_blank&#34;&gt;updates&lt;/a&gt;.&lt;/p&gt;
-
-&lt;h2 id=&#34;license&#34;&gt;License&lt;/h2&gt;
-
-&lt;p&gt;Copyright 2016-present &lt;a href=&#34;https://georgecushen.com&#34; target=&#34;_blank&#34;&gt;George Cushen&lt;/a&gt;.&lt;/p&gt;
-
-&lt;p&gt;Released under the &lt;a href=&#34;https://github.com/gcushen/hugo-academic/blob/master/LICENSE.md&#34; target=&#34;_blank&#34;&gt;MIT&lt;/a&gt; license.&lt;/p&gt;
 </description>
     </item>
     

@@ -1,7 +1,7 @@
 ---
 authors:
 - admin
-bio: My research interests include Adult ADHD, End of Life Anxiety and anything data related that need wrangling.
+bio: Interests include data wrangling with R and research into neurodevelopmental disorders particularly adult ADHD.
 education:
   courses:
   - course: Bachelor Psychology (Study Abroad)
@@ -23,7 +23,7 @@ email: ""
 interests:
 - Statistics
 - Data Analysis
-- Music Production 
+- Adult ADHD 
 - Open Science
 name: Aaron Willcox
 organizations:
@@ -52,6 +52,4 @@ user_groups:
 - Visitors
 ---
 
-Recently returning from studying abroad learning neuroscience at Maastricht University in the Netherlands. This has enable him to learn: Logistic regression, Principle Component Analysis & methods of cognitive neuroscience. He was also involved in a research practical involving a behavioural study on pattern separation. Whilst abroad, he is also attending SatRday events and attended the Society for Improving Psychological Science conference in Rottodam. 
-
-Interests include wrangling data to explore any patterns of interest, produce a model and conceptualise experiments, collect data and provide meaningful interpretation. 
+Recently returning from studying abroad at Maastricht University in the Netherlands. Currently finishing 3rd year Bachelor of Psychological Science with the view to do honors 2020. Competent critical thinking, problem solving, data and statistical analysis skills. Interests include data wrangling with R and research into neurodevelopmental disorders particularly adult ADHD. 

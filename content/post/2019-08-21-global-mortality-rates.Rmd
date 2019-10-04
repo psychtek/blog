@@ -1,0 +1,118 @@
+---
+title: Global Mortality Rates
+author: Aaron Willcox
+date: '2019-08-21'
+slug: global-mortality-rates
+categories:
+  - R
+tags:
+  - R Markdown
+subtitle: ''
+summary: ''
+authors: []
+lastmod: '2019-08-21T10:49:44+10:00'
+featured: no
+image:
+  caption: ''
+  focal_point: ''
+  preview_only: no
+projects: []
+---
+
+#### Global Mortality Rates
+
+The following dataset is from the Tidy Tuesday [https://github.com/rfordatascience/tidytuesday/tree/master/data/2018/2018-04-16](Dataset). 
+
+```{r message=FALSE, warning=FALSE}
+
+library(tidyverse)
+library(hrbrthemes) # custom dark theme from hrbrpackage
+```
+
+```{r message=FALSE, warning=FALSE}
+
+global_mort <- read_csv(file = "data/global_mortality.csv", col_names = TRUE) # import dataset into object
+
+global_mort$country <- as.factor(global_mort$country) # Change character to factors
+
+global_mort$country_code <- as.factor(global_mort$country_code)
+
+global_mort$year <- as.factor(global_mort$year)
+
+```
+
+
+#### Graphical Display of mortality rates in Australia from 1990 to 2016
+
+
+
+```{r fig.height=10, fig.width=12, message=FALSE, warning=FALSE}
+
+
+df <- global_mort %>% 
+  group_by(country, year) %>% 
+  pivot_longer(cols = c(4:35)) 
+
+df$name <- factor(df$name)
+
+
+df %>% 
+  filter("Australia" %in% country) %>% 
+  #filter("Alcohol disorders (%)" == name) %>% 
+  #top_n(-15) %>% 
+ggplot(aes(x = year, y = value, group = name)) +
+ geom_line(aes(color = name), size = 1) +
+ labs(x = "Year", y = "Percentage (%)", title = "Australian Mortality Rates", subtitle = "1990 to 2016") +
+  theme_ft_rc() +
+  theme(axis.text.x = element_text(size=10, angle=45)) +
+  scale_y_percent()
+ 
+# ggplotly(p)
+
+df %>% 
+  filter("Australia" %in% country) %>% 
+  group_by(year, name) %>% 
+  filter(name == "Alcohol disorders (%)")
+  
+
+
+```
+
+
+
+```{r fig.height=10, fig.width=12, message=FALSE, warning=FALSE}
+
+
+
+Australia <- global_mort %>% 
+  group_by(country, year) %>% 
+  arrange(year) %>% 
+  filter(country == "Australia")
+
+ggplot(Australia) +
+ aes(x = year, weight = `Cardiovascular diseases (%)`) +
+ geom_bar(fill = ft_cols$blue) +
+ labs(x = "", y = "Amount %", title = "Cardiovascular Disease in Australia", subtitle = "1990 to 2016") +
+ theme_ft_rc()
+
+# Drug Related Deaths in Australia
+ggplot(Australia) +
+  aes(x = year, weight = `Drug disorders (%)`) +
+ geom_bar(fill = ft_cols$blue) +
+ labs(x = "", y = "Amount %", title = "Drug Related Deaths in Australia", subtitle = "1990 to 2016") +
+ theme_ft_rc()
+
+
+ggplot(Australia) +
+  aes(x = year, weight = `Suicide (%)`) +
+ geom_bar(fill = ft_cols$blue) +
+ labs(x = "", y = "Amount %", title = "Suicides in Australia", subtitle = "1990 to 2016") +
+ theme_ft_rc()
+
+
+ggplot(Australia) +
+  aes(x = year, weight = `Alcohol disorders (%)` ) +
+  geom_bar(fill = ft_cols$blue) +
+ labs(x = "", y = "Amount %", title = "Alochol Use in Australia", subtitle = "1990 to 2016") +
+ theme_ft_rc()
+```

@@ -1,0 +1,108 @@
+---
+title: Global Mortality Rates
+author: Aaron Willcox
+date: '2019-08-21'
+slug: global-mortality-rates
+categories:
+  - R
+tags:
+  - R Markdown
+subtitle: ''
+summary: ''
+authors: []
+lastmod: '2019-08-21T10:49:44+10:00'
+featured: no
+image:
+  caption: ''
+  focal_point: ''
+  preview_only: no
+projects: []
+---
+
+
+
+<div id="global-mortality-rates" class="section level4">
+<h4>Global Mortality Rates</h4>
+<p>The following dataset is from the Tidy Tuesday <a href="Dataset">https://github.com/rfordatascience/tidytuesday/tree/master/data/2018/2018-04-16</a>.</p>
+<pre class="r"><code>library(tidyverse)
+library(hrbrthemes) # custom dark theme from hrbrpackage</code></pre>
+<pre class="r"><code>global_mort &lt;- read_csv(file = &quot;data/global_mortality.csv&quot;, col_names = TRUE) # import dataset into object
+
+global_mort$country &lt;- as.factor(global_mort$country) # Change character to factors
+
+global_mort$country_code &lt;- as.factor(global_mort$country_code)
+
+global_mort$year &lt;- as.factor(global_mort$year)</code></pre>
+</div>
+<div id="graphical-display-of-mortality-rates-in-australia-from-1990-to-2016" class="section level4">
+<h4>Graphical Display of mortality rates in Australia from 1990 to 2016</h4>
+<pre class="r"><code>df &lt;- global_mort %&gt;% 
+  group_by(country, year) %&gt;% 
+  pivot_longer(cols = c(4:35)) 
+
+df$name &lt;- factor(df$name)
+
+
+df %&gt;% 
+  filter(&quot;Australia&quot; %in% country) %&gt;% 
+  #filter(&quot;Alcohol disorders (%)&quot; == name) %&gt;% 
+  #top_n(-15) %&gt;% 
+ggplot(aes(x = year, y = value, group = name)) +
+ geom_line(aes(color = name), size = 1) +
+ labs(x = &quot;Year&quot;, y = &quot;Percentage (%)&quot;, title = &quot;Australian Mortality Rates&quot;, subtitle = &quot;1990 to 2016&quot;) +
+  theme_ft_rc() +
+  theme(axis.text.x = element_text(size=10, angle=45)) +
+  scale_y_percent()</code></pre>
+<p><img src="/post/2019-08-21-global-mortality-rates_files/figure-html/unnamed-chunk-3-1.png" width="1152" /></p>
+<pre class="r"><code># ggplotly(p)
+
+df %&gt;% 
+  filter(&quot;Australia&quot; %in% country) %&gt;% 
+  group_by(year, name) %&gt;% 
+  filter(name == &quot;Alcohol disorders (%)&quot;)</code></pre>
+<pre><code>## # A tibble: 27 x 5
+## # Groups:   year, name [27]
+##    country   country_code year  name                  value
+##    &lt;fct&gt;     &lt;fct&gt;        &lt;fct&gt; &lt;fct&gt;                 &lt;dbl&gt;
+##  1 Australia AUS          1990  Alcohol disorders (%) 0.216
+##  2 Australia AUS          1991  Alcohol disorders (%) 0.215
+##  3 Australia AUS          1992  Alcohol disorders (%) 0.213
+##  4 Australia AUS          1993  Alcohol disorders (%) 0.216
+##  5 Australia AUS          1994  Alcohol disorders (%) 0.218
+##  6 Australia AUS          1995  Alcohol disorders (%) 0.225
+##  7 Australia AUS          1996  Alcohol disorders (%) 0.225
+##  8 Australia AUS          1997  Alcohol disorders (%) 0.232
+##  9 Australia AUS          1998  Alcohol disorders (%) 0.234
+## 10 Australia AUS          1999  Alcohol disorders (%) 0.244
+## # ... with 17 more rows</code></pre>
+<pre class="r"><code>Australia &lt;- global_mort %&gt;% 
+  group_by(country, year) %&gt;% 
+  arrange(year) %&gt;% 
+  filter(country == &quot;Australia&quot;)
+
+ggplot(Australia) +
+ aes(x = year, weight = `Cardiovascular diseases (%)`) +
+ geom_bar(fill = ft_cols$blue) +
+ labs(x = &quot;&quot;, y = &quot;Amount %&quot;, title = &quot;Cardiovascular Disease in Australia&quot;, subtitle = &quot;1990 to 2016&quot;) +
+ theme_ft_rc()</code></pre>
+<p><img src="/post/2019-08-21-global-mortality-rates_files/figure-html/unnamed-chunk-4-1.png" width="1152" /></p>
+<pre class="r"><code># Drug Related Deaths in Australia
+ggplot(Australia) +
+  aes(x = year, weight = `Drug disorders (%)`) +
+ geom_bar(fill = ft_cols$blue) +
+ labs(x = &quot;&quot;, y = &quot;Amount %&quot;, title = &quot;Drug Related Deaths in Australia&quot;, subtitle = &quot;1990 to 2016&quot;) +
+ theme_ft_rc()</code></pre>
+<p><img src="/post/2019-08-21-global-mortality-rates_files/figure-html/unnamed-chunk-4-2.png" width="1152" /></p>
+<pre class="r"><code>ggplot(Australia) +
+  aes(x = year, weight = `Suicide (%)`) +
+ geom_bar(fill = ft_cols$blue) +
+ labs(x = &quot;&quot;, y = &quot;Amount %&quot;, title = &quot;Suicides in Australia&quot;, subtitle = &quot;1990 to 2016&quot;) +
+ theme_ft_rc()</code></pre>
+<p><img src="/post/2019-08-21-global-mortality-rates_files/figure-html/unnamed-chunk-4-3.png" width="1152" /></p>
+<pre class="r"><code>ggplot(Australia) +
+  aes(x = year, weight = `Alcohol disorders (%)` ) +
+  geom_bar(fill = ft_cols$blue) +
+ labs(x = &quot;&quot;, y = &quot;Amount %&quot;, title = &quot;Alochol Use in Australia&quot;, subtitle = &quot;1990 to 2016&quot;) +
+ theme_ft_rc()</code></pre>
+<p><img src="/post/2019-08-21-global-mortality-rates_files/figure-html/unnamed-chunk-4-4.png" width="1152" /></p>
+</div>

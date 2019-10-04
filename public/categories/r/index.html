@@ -118,7 +118,7 @@
   <meta property="og:description" content="Student"><meta property="og:image" content="/img/icon-192.png">
   <meta property="og:locale" content="en-us">
   
-  <meta property="og:updated_time" content="2019-08-16T00:00:00&#43;00:00">
+  <meta property="og:updated_time" content="2019-08-21T00:00:00&#43;00:00">
   
 
   
@@ -371,11 +371,35 @@
   
   
   <div>
+    <h2><a href="/post/global-mortality-rates/">Global Mortality Rates</a></h2>
+    <div class="article-style">
+      
+      Global Mortality RatesThe following dataset is from the Tidy Tuesday https://github.com/rfordatascience/tidytuesday/tree/master/data/2018/2018-04-16.
+library(tidyverse)library(hrbrthemes) # custom dark theme from hrbrpackageglobal_mort &lt;- read_csv(file = &quot;data/global_mortality.csv&quot;, col_names = TRUE) # import dataset into objectglobal_mort$country &lt;- as.factor(global_mort$country) # Change character to factorsglobal_mort$country_code &lt;- as.factor(global_mort$country_code)global_mort$year &lt;- as.factor(global_mort$year)Graphical Display of mortality rates in Australia from 1990 to 2016df &lt;- global_mort %&gt;% group_by(country, year) %&gt;% pivot_longer(cols = c(4:35)) df$name &lt;- factor(df$name)df %&gt;% filter(&quot;Australia&quot; %in% country) %&gt;% #filter(&quot;Alcohol disorders (%)&quot; == name) %&gt;% #top_n(-15) %&gt;% ggplot(aes(x = year, y = value, group = name)) +geom_line(aes(color = name), size = 1) +labs(x = &quot;Year&quot;, y = &quot;Percentage (%)&quot;, title = &quot;Australian Mortality Rates&quot;, subtitle = &quot;1990 to 2016&quot;) +theme_ft_rc() +theme(axis.
+      
+    </div>
+  </div>
+  
+  <div>
+    <h2><a href="/post/oceanographic-wave-measuring/">Oceanographic Wave Measuring </a></h2>
+    <div class="article-style">
+      
+      This is a simple graphical display of a dataset with wave data from Queensland Australia.
+library(tidyverse)library(lubridate)library(hrbrthemes)This dataset contains Measured/Calculated wave parameters. Measured and derived wave data from data collected by oceanographic wave measuring buoys anchored at Mooloolaba. Coverage period: 30 months.
+AcknowledgementsThis data comes from Queensland Government Data - https://data.qld.gov.au/dataset
+Date/TimeDate
+Hs Significant wave height, an average of the highest third of the waves in a recordHmax The maximum wave height in the recordTz The zero upcrossing wave periodTp The peak energy wave periodPeak Direction Direction (related to true north) from which the peak period waves are coming fromSST Approximation of sea surface temperaturewaves_df &lt;- read_csv(&quot;data/Coastal Data System - Waves (Mooloolaba) 01-2017 to 06 - 2019.
+      
+    </div>
+  </div>
+  
+  <div>
     <h2><a href="/post/emotional-impact-on-memory-part-2/">Emotional Impact on Memory Part 2</a></h2>
     <div class="article-style">
       
-      LibraryImportRaw CSV files with all IAPS database and images to be used in each task imported into an object.
-raw_df &lt;- read_csv(&quot;data/ret_task.csv&quot;, col_types = cols(CR = col_factor(levels = c(&quot;same&quot;, &quot;different&quot;)), Emotion = col_factor(levels = c(&quot;negative&quot;, &quot;neutral&quot;)), Sex = col_factor(levels = c(&quot;male&quot;, &quot;female&quot;))))raw_df$CorrectAnswer &lt;- recode(raw_df$CorrectAnswer, a = &quot;l&quot;, l = &quot;a&quot;)raw_df$Stimulus1.RESP &lt;- recode(raw_df$Stimulus1.RESP, a = &quot;l&quot;, l = &quot;a&quot;)# import tables RET_SEEN &lt;- read_csv(&quot;data/RET_SEEN.
+      This is the second part of the expriment on Pattern Separation. This processes the participants hits and misses into the induced negative or neutral group and displays some results.
+ImportRaw CSV files with all IAPS database and images to be used in each task imported into an object.
+raw_df &lt;- read_csv(&quot;data/ret_task.csv&quot;, col_types = cols(CR = col_factor(levels = c(&quot;same&quot;, &quot;different&quot;)), Emotion = col_factor(levels = c(&quot;negative&quot;, &quot;neutral&quot;)), Sex = col_factor(levels = c(&quot;male&quot;, &quot;female&quot;))))raw_df$CorrectAnswer &lt;- recode(raw_df$CorrectAnswer, a = &quot;l&quot;, l = &quot;a&quot;)raw_df$Stimulus1.
       
     </div>
   </div>
@@ -384,9 +408,9 @@ raw_df &lt;- read_csv(&quot;data/ret_task.csv&quot;, col_types = cols(CR = col_
     <h2><a href="/post/pca-on-us-nutrition/">PCA on US Nutrition</a></h2>
     <div class="article-style">
       
-      library(tidyverse)library(corrplot)library(cowplot)DataThe following dataset froms from the Nutrient database in the United States
-This is from the now outdated SR27. It is also created from the full database. The “abbreviated file” in SR28 is more up to date than this data and contains more nutrients than we provide here. See https://data.world/awram/food-nutritional-values
-The columns in US RDA are created using data from Dietary Reference Intakes: The Essential Guide to Nutrient Requirements available from the National Academies Press at http://www.
+      A quick walk through of running a PCA on US nutrition and the use of a couple of different packages in R, to displayinformation graphically.
+library(tidyverse)library(corrplot)library(cowplot)library(hrbrthemes)InformationThe following dataset froms from the Nutrient database in the United States
+This is from the now outdated SR27. It is also created from the full database. The “abbreviated file” in SR28 is more up to date than this data and contains more nutrients than we provide here.
       
     </div>
   </div>
@@ -395,7 +419,8 @@ The columns in US RDA are created using data from Dietary Reference Intakes: The
     <h2><a href="/post/emotional-impact-of-memory-part-one/">Emotional Impact of Memory Part One </a></h2>
     <div class="article-style">
       
-      Research Protocollibrary(tidyverse)library(stringr)library(knitr)library(plotly)library(gridExtra)library(inspectdf)library(DT)The following was the code used to prepare images from the IAPS database for a experiment on pattern separation. The participants were seated in front of a PC and went through three tasks: Encoding, retreival and validation. We were provided with a folder of approved images and a text file with unapproved images.
+      Processing an image database for use in a experiment to induce an emotional state in particpants.
+Research Protocollibrary(tidyverse)library(stringr)library(knitr)library(plotly)library(gridExtra)library(inspectdf)library(DT)The following was the code used to prepare images from the IAPS database for a experiment on pattern separation. The participants were seated in front of a PC and went through three tasks: Encoding, retreival and validation.
       
     </div>
   </div>

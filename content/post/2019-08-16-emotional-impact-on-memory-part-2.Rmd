@@ -21,7 +21,7 @@ image:
 projects: []
 ---
 
-#### Library
+This is the second part of the expriment on Pattern Separation. This processes the participants hits and misses into the induced negative or neutral group and displays some results. 
 
 ```{r Library, message=FALSE, warning=FALSE, include=FALSE}
 library(tidyverse)

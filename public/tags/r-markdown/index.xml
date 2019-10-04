@@ -6,10 +6,33 @@
     <description>Recent content in R Markdown on PsychTek - Aaron Willcox</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Fri, 16 Aug 2019 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Wed, 21 Aug 2019 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/tags/r-markdown/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Global Mortality Rates</title>
+      <link>/post/global-mortality-rates/</link>
+      <pubDate>Wed, 21 Aug 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/post/global-mortality-rates/</guid>
+      <description>Global Mortality RatesThe following dataset is from the Tidy Tuesday https://github.com/rfordatascience/tidytuesday/tree/master/data/2018/2018-04-16.
+library(tidyverse)library(hrbrthemes) # custom dark theme from hrbrpackageglobal_mort &amp;lt;- read_csv(file = &amp;quot;data/global_mortality.csv&amp;quot;, col_names = TRUE) # import dataset into objectglobal_mort$country &amp;lt;- as.factor(global_mort$country) # Change character to factorsglobal_mort$country_code &amp;lt;- as.factor(global_mort$country_code)global_mort$year &amp;lt;- as.factor(global_mort$year)Graphical Display of mortality rates in Australia from 1990 to 2016df &amp;lt;- global_mort %&amp;gt;% group_by(country, year) %&amp;gt;% pivot_longer(cols = c(4:35)) df$name &amp;lt;- factor(df$name)df %&amp;gt;% filter(&amp;quot;Australia&amp;quot; %in% country) %&amp;gt;% #filter(&amp;quot;Alcohol disorders (%)&amp;quot; == name) %&amp;gt;% #top_n(-15) %&amp;gt;% ggplot(aes(x = year, y = value, group = name)) +geom_line(aes(color = name), size = 1) +labs(x = &amp;quot;Year&amp;quot;, y = &amp;quot;Percentage (%)&amp;quot;, title = &amp;quot;Australian Mortality Rates&amp;quot;, subtitle = &amp;quot;1990 to 2016&amp;quot;) +theme_ft_rc() +theme(axis.</description>
+    </item>
+    
+    <item>
+      <title>Oceanographic Wave Measuring </title>
+      <link>/post/oceanographic-wave-measuring/</link>
+      <pubDate>Sun, 18 Aug 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/post/oceanographic-wave-measuring/</guid>
+      <description>This is a simple graphical display of a dataset with wave data from Queensland Australia.
+library(tidyverse)library(lubridate)library(hrbrthemes)This dataset contains Measured/Calculated wave parameters. Measured and derived wave data from data collected by oceanographic wave measuring buoys anchored at Mooloolaba. Coverage period: 30 months.
+AcknowledgementsThis data comes from Queensland Government Data - https://data.qld.gov.au/dataset
+Date/TimeDate
+Hs Significant wave height, an average of the highest third of the waves in a recordHmax The maximum wave height in the recordTz The zero upcrossing wave periodTp The peak energy wave periodPeak Direction Direction (related to true north) from which the peak period waves are coming fromSST Approximation of sea surface temperaturewaves_df &amp;lt;- read_csv(&amp;quot;data/Coastal Data System - Waves (Mooloolaba) 01-2017 to 06 - 2019.</description>
+    </item>
     
     <item>
       <title>Emotional Impact on Memory Part 2</title>
@@ -17,8 +40,9 @@
       <pubDate>Fri, 16 Aug 2019 00:00:00 +0000</pubDate>
       
       <guid>/post/emotional-impact-on-memory-part-2/</guid>
-      <description>LibraryImportRaw CSV files with all IAPS database and images to be used in each task imported into an object.
-raw_df &amp;lt;- read_csv(&amp;quot;data/ret_task.csv&amp;quot;, col_types = cols(CR = col_factor(levels = c(&amp;quot;same&amp;quot;, &amp;quot;different&amp;quot;)), Emotion = col_factor(levels = c(&amp;quot;negative&amp;quot;, &amp;quot;neutral&amp;quot;)), Sex = col_factor(levels = c(&amp;quot;male&amp;quot;, &amp;quot;female&amp;quot;))))raw_df$CorrectAnswer &amp;lt;- recode(raw_df$CorrectAnswer, a = &amp;quot;l&amp;quot;, l = &amp;quot;a&amp;quot;)raw_df$Stimulus1.RESP &amp;lt;- recode(raw_df$Stimulus1.RESP, a = &amp;quot;l&amp;quot;, l = &amp;quot;a&amp;quot;)# import tables RET_SEEN &amp;lt;- read_csv(&amp;quot;data/RET_SEEN.</description>
+      <description>This is the second part of the expriment on Pattern Separation. This processes the participants hits and misses into the induced negative or neutral group and displays some results.
+ImportRaw CSV files with all IAPS database and images to be used in each task imported into an object.
+raw_df &amp;lt;- read_csv(&amp;quot;data/ret_task.csv&amp;quot;, col_types = cols(CR = col_factor(levels = c(&amp;quot;same&amp;quot;, &amp;quot;different&amp;quot;)), Emotion = col_factor(levels = c(&amp;quot;negative&amp;quot;, &amp;quot;neutral&amp;quot;)), Sex = col_factor(levels = c(&amp;quot;male&amp;quot;, &amp;quot;female&amp;quot;))))raw_df$CorrectAnswer &amp;lt;- recode(raw_df$CorrectAnswer, a = &amp;quot;l&amp;quot;, l = &amp;quot;a&amp;quot;)raw_df$Stimulus1.</description>
     </item>
     
     <item>
@@ -27,9 +51,9 @@ raw_df &amp;lt;- read_csv(&amp;quot;data/ret_task.csv&amp;quot;, col_types = co
       <pubDate>Fri, 09 Aug 2019 00:00:00 +0000</pubDate>
       
       <guid>/post/pca-on-us-nutrition/</guid>
-      <description>library(tidyverse)library(corrplot)library(cowplot)DataThe following dataset froms from the Nutrient database in the United States
-This is from the now outdated SR27. It is also created from the full database. The “abbreviated file” in SR28 is more up to date than this data and contains more nutrients than we provide here. See https://data.world/awram/food-nutritional-values
-The columns in US RDA are created using data from Dietary Reference Intakes: The Essential Guide to Nutrient Requirements available from the National Academies Press at http://www.</description>
+      <description>A quick walk through of running a PCA on US nutrition and the use of a couple of different packages in R, to displayinformation graphically.
+library(tidyverse)library(corrplot)library(cowplot)library(hrbrthemes)InformationThe following dataset froms from the Nutrient database in the United States
+This is from the now outdated SR27. It is also created from the full database. The “abbreviated file” in SR28 is more up to date than this data and contains more nutrients than we provide here.</description>
     </item>
     
     <item>

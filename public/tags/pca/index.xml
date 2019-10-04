@@ -17,9 +17,9 @@
       <pubDate>Fri, 09 Aug 2019 00:00:00 +0000</pubDate>
       
       <guid>/post/pca-on-us-nutrition/</guid>
-      <description>library(tidyverse)library(corrplot)library(cowplot)DataThe following dataset froms from the Nutrient database in the United States
-This is from the now outdated SR27. It is also created from the full database. The “abbreviated file” in SR28 is more up to date than this data and contains more nutrients than we provide here. See https://data.world/awram/food-nutritional-values
-The columns in US RDA are created using data from Dietary Reference Intakes: The Essential Guide to Nutrient Requirements available from the National Academies Press at http://www.</description>
+      <description>A quick walk through of running a PCA on US nutrition and the use of a couple of different packages in R, to displayinformation graphically.
+library(tidyverse)library(corrplot)library(cowplot)library(hrbrthemes)InformationThe following dataset froms from the Nutrient database in the United States
+This is from the now outdated SR27. It is also created from the full database. The “abbreviated file” in SR28 is more up to date than this data and contains more nutrients than we provide here.</description>
     </item>
     
   </channel>

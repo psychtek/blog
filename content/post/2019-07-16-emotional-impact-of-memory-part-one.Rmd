@@ -19,6 +19,7 @@ image:
 projects: []
 ---
 
+Processing an image database for use in a experiment to induce an emotional state in particpants. 
 
 ### Research Protocol
 
