@@ -9,11 +9,11 @@ tags:
   - Emotion
   - R Markdown
   - research
-subtitle: ''
+subtitle: 'Data Prep and Analysis'
 summary: ''
 authors: []
 lastmod: '2019-08-16T10:30:23+10:00'
-featured: no
+featured: yes
 image:
   caption: ''
   focal_point: ''
@@ -31,7 +31,8 @@ library(ggplot2)
 #library(broom)
 library(cowplot)
 library(kableExtra)
-library(DT)
+
+library(flextable)
 library(readr)
 ```
 
@@ -265,7 +266,12 @@ pattern_sep_scores <- pattern_sep_scores  %>%
 Ret_task_df_join <-  full_join(Ret_task_df_temp, pattern_sep_scores)
 
 
-datatable(Ret_task_df_join)
+Ret_display <- flextable(Ret_task_df_join)
+Ret_display <- bold(Ret_display, part = "header")
+Ret_display %>% 
+  autofit() %>% 
+  empty_blanks() %>% 
+  theme_zebra()
 ```
 
 
@@ -305,7 +311,14 @@ Ret_task_df_join$Subject <- as.factor(Ret_task_df_join$Subject)
 
 group_39_wide <- full_join(Ret_task_df_join, val_df) # Final data table with all computed results
 
-datatable(group_39_wide)
+# Display complete dataframe of the variables of interest for analysis 
+group_39_wide %>% 
+  select(Subject, Sex, Neg_Sim_Hit, Neut_Sim_Hit, Arousal, Valence, Dominance) %>% 
+flextable() %>% 
+  bold(part = "header")%>% 
+  autofit() %>% 
+  empty_blanks() %>% 
+  theme_zebra()
 
 ```
 
@@ -330,8 +343,17 @@ neg_similar_hits <- group_39_wide %>%
   na.omit() %>% 
   my_fun(Neg_Sim_Hit)
 
-kable(mean_response_time) %>% kable_styling()
-kable(neg_similar_hits) %>% kable_styling()
+flextable(mean_response_time)%>% 
+  add_header_lines(values = c("Mean Response Times to Stimuli")) %>% 
+  autofit() %>% 
+  empty_blanks() %>% 
+  theme_zebra()
+
+flextable(neg_similar_hits) %>% 
+  add_header_lines(values = c("Mean Hits of Pattern Separation Scores")) %>% 
+  autofit() %>% 
+  empty_blanks() %>% 
+  theme_zebra()
 
 ```
 
@@ -339,7 +361,7 @@ kable(neg_similar_hits) %>% kable_styling()
 #### Emotion Scores 
 
 ```{r emotion, message=FALSE, warning=FALSE, fig.height=4, fig.width=9}
-
+library(hrbrthemes)
 # Gather variables and change to wide format
 ret_long <- group_39_wide %>% 
   gather(key, value, Valence, Arousal, Dominance) %>%
@@ -354,7 +376,7 @@ ggplot(data = ret_long) +
     x = "Mean Scores",
     y = "Ratings",
     subtitle = "IAPS Scores") +
-  theme_cowplot() +
+  theme_ft_rc() +
   facet_wrap(vars(Emotion))
 ```
 
@@ -376,7 +398,7 @@ val_task %>%
   labs(title = "Emotion Scores from Negative Stimuli",
        y = "Response",
     subtitle = "Arousal, Dominance and Valence") +
-  theme_cowplot() +
+  theme_ft_rc() +
   facet_wrap(vars(Emotion))
 ```
 
@@ -400,7 +422,7 @@ val_task %>%
   geom_histogram(bins = 20, fill = "#1f78b4") +
   labs(title = "Emotion Scores from the Neutral Condition",
     subtitle = "Arousal, Dominance and Valence") +
-  theme_cowplot() +
+  theme_ft_rc() +
   facet_wrap(vars(Emotion))
 
 ```
@@ -416,7 +438,7 @@ group_39_wide %>%
   na.omit() %>% 
   ggplot(aes(x = value)) +
   geom_histogram(bins = 22, fill = "#1f78b4") +
-  theme_cowplot() +
+  theme_ft_rc() +
   facet_wrap(vars(key)) +
   geom_vline(aes(xintercept = mean(value)), linetype = "dashed") 
 
@@ -436,7 +458,7 @@ group_39_wide %>%
   geom_histogram(bins = 22, fill = "#1f78b4") +
   labs(title = "Negative Similar Hits",
     subtitle = "Male and Females") +
-  theme_cowplot() +
+  theme_ft_rc() +
   facet_wrap(vars(Sex)) +
   geom_vline(data = na.omit(group_39_wide), aes(xintercept = mean(Neg_Sim_Hit)), linetype = "dashed")
 ```
@@ -451,8 +473,8 @@ group_39_wide %>%
   ggplot(aes(x = Neut_Sim_Hit)) +
   geom_histogram(bins = 22, fill = "#1f78b4") +
   labs(title = "Neutral Similar Hits",
-    subtitle = "Male and Females") +
-  theme_cowplot() +
+       subtitle = "Male and Females") +
+  theme_ft_rc() +
   facet_wrap(vars(Sex)) +
   geom_vline(data = na.omit(group_39_wide), aes(xintercept = mean(Neut_Sim_Hit)), linetype = "dashed")
 ```
@@ -481,19 +503,21 @@ IAPS_Fake_df <- IAPS_Fake_df %>%
 IAPS_Fake_df$Emotion <- as.factor(IAPS_Fake_df$Emotion)
 IAPS_Fake_df$Group <- as.factor(IAPS_Fake_df$Group)
 
-library(cowplot)
 
 IAPS_Fake_df %>% 
   na.omit() %>% 
-ggplot() +
- aes(x = Emotion, y = value, fill = Group, colour = Group) +
- geom_boxplot() +
- scale_fill_hue() +
- scale_color_hue() +
- labs(x = "Emotion", y = "Mean Arousal Score", title = "Validated vs Fake Comparison", subtitle = "Original IAPS Images with Altered Images") +
- theme_cowplot() +
- theme(legend.position = "none") +
- facet_wrap(vars(Group))
+  ggplot() +
+  aes(x = Emotion, y = value, fill = Group, colour = Group) +
+  geom_boxplot() +
+  scale_fill_hue() +
+  scale_color_hue() +
+  labs(x = "Emotion"
+       , y = "Mean Arousal Score"
+       , title = "Validated vs Fake Comparison"
+       , subtitle = "Original IAPS Images with Altered Images") +
+  theme_ft_rc() +
+  theme(legend.position = "none") +
+  facet_wrap(vars(Group))
 
 ```
 
@@ -509,12 +533,82 @@ comparison
 
 ```
 
+***
 
 #### Data Analysis
 
 
-1. Participants will show increased pattern separation scores on high arousal trials versus low-arousal trials.
+  1. Participants will show increased pattern separation scores on high arousal trials versus low-arousal trials.
 
-2. We expect an interaction effect between sex and emotion, females will have a higher pattern separation score than males for negative stimuli only. 
+  2. We expect an interaction effect between sex and emotion, females will have a higher pattern separation score than males for negative stimuli only.
+ 
 
-Next post will go through how to conduct a split-plot anova and analyse the results. 
++ Will need to pivot the dataframe from wide into long format 
++ Change the Subject and Condition variables to factors
++ Run a mixed model
+ 
+
+```{r message=FALSE, warning=FALSE, fig.align='centre'}
+z <- group_39_wide %>% 
+  select(Subject, Sex, Neg_Sim_Hit, Neut_Sim_Hit) %>% 
+  gather(key = "Condition", value = "Score", Neg_Sim_Hit, Neut_Sim_Hit) 
+
+# Change to factors 
+z$Subject <- as.factor(z$Subject)
+z$Condition <- as.factor(z$Condition)
+
+# Run the mixed model and store in object
+model <- aov(Score ~ Condition*Sex + Error(Subject/Condition), data = z)
+
+# Summary statistics
+summary(model)
+
+
+# summary function does not immediately display the means for each condition, it does create a data structure that represents 
+# this information. And, the means can be found using model.tables
+
+print(model.tables(model,"means"),digits=6)
+
+model_means <- aggregate(Score ~ Condition*Sex, data = z, mean) #Subset the means from the model 
+
+# Plot the means from the aggregated object
+model_means %>% 
+  ggplot(aes(x = Condition, y = Score, group = Sex, color = Sex, shape = Sex)) +
+  geom_line(size=1) +
+  geom_point(size=3) +
+  labs(x = "Emotion Condition"
+       , y = "Pattern Separation Score (Sim)"
+       , title = "Pattern Separation Scores"
+       , subtitle = "Males vs Females") +
+  theme_ft_rc()
+
+
+
+flextable(model_means)
+
+```
+
+Comparison with AFEX package
+
+As there are only 2 within conditions for each factor sphericity is assumed
+
+```{r message=FALSE, warning=FALSE}
+library(afex)
+
+aov_car(formula = Score ~ Condition * Sex + Error(Subject/Condition)
+        , check_contrasts = afex_options("check_contrasts")
+        , anova_table = list("ges")
+        ,data = z) %>% 
+  summary()
+
+```
+
+```{r message=FALSE, warning=FALSE}
+group_39_wide %>% 
+  gather(value = Score, key = Emotion, Arousal, Valence, Dominance) %>% 
+  select(Subject, Sex, Emotion, Score) %>% 
+  aov_car(formula = Score ~ Emotion * Sex + Error(Subject/Emotion)) %>% 
+  summary()
+
+```
+

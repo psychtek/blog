@@ -1,23 +1,669 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Academic on PsychTek - Aaron Willcox</title>
+    <title>Academic | PsychTek - Aaron Willcox</title>
     <link>/tags/academic/</link>
-    <description>Recent content in Academic on PsychTek - Aaron Willcox</description>
-    <generator>Hugo -- gohugo.io</generator>
-    <language>en-us</language>
-    <lastBuildDate>Sat, 01 Jun 2019 00:00:00 +0000</lastBuildDate>
-    
-	<atom:link href="/tags/academic/index.xml" rel="self" type="application/rss+xml" />
-    
+      <atom:link href="/tags/academic/index.xml" rel="self" type="application/rss+xml" />
+    <description>Academic</description>
+    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><lastBuildDate>Sat, 01 Jun 2019 00:00:00 +0000</lastBuildDate>
+    <image>
+      <url>/img/icon-192.png</url>
+      <title>Academic</title>
+      <link>/tags/academic/</link>
+    </image>
     
     <item>
       <title>OSL Workshop Solomons Paradox</title>
       <link>/post/osl-workshop-solomons-paradox/</link>
       <pubDate>Sat, 01 Jun 2019 00:00:00 +0000</pubDate>
-      
       <guid>/post/osl-workshop-solomons-paradox/</guid>
-      <description>Does reasoning about personal problems improve with psychological distance?STUDY DESCRIPTIONSolomon’s paradox describes the tendency for people to reason more wisely about other people’sproblems compared to their own. One potential explanation for this paradox is that people tend to viewother people’s problems from a more psychologically distant perspective, whereas they view their ownproblems from a psychologically immersed perspective . For example, imagine two friends, Beth and Zoe,are discussing Zoe’s relationship problems.</description>
+      <description>
+
+
+&lt;div id=&#34;does-reasoning-about-personal-problems-improve-with-psychological-distance&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Does reasoning about personal problems improve with psychological distance?&lt;/h2&gt;
+&lt;div id=&#34;study-description&#34; class=&#34;section level4&#34;&gt;
+&lt;h4&gt;STUDY DESCRIPTION&lt;/h4&gt;
+&lt;p&gt;Solomon’s paradox describes the tendency for people to reason more wisely about other people’s
+problems compared to their own. One potential explanation for this paradox is that people tend to view
+other people’s problems from a more psychologically distant perspective, whereas they view their own
+problems from a psychologically &lt;em&gt;immersed perspective&lt;/em&gt; . For example, imagine two friends, Beth and Zoe,
+are discussing Zoe’s relationship problems. Beth’s distance allows her to see that Zoe’s relationship is
+doomed, so she can offer her friend sage advice for how to proceed with her relationship. Zoe’s
+immersion in her own relationship may lead her to have a hard time reasoning wisely, because she may be
+worried that she will need to find a new apartment if she breaks up with her boyfriend.&lt;/p&gt;
+&lt;p&gt;What if, however, Zoe was able to take a more psychologically &lt;em&gt;distanced perspective&lt;/em&gt; when contemplating
+her relationship problems? Would she exhibit a &lt;em&gt;higher level of wisdom&lt;/em&gt;, similar to what Beth was able to
+show? To test this possibility, Grossmann and Kross (2014) asked romantically-involved participants to
+&lt;em&gt;think about a situation&lt;/em&gt; in which their partner cheated on them ( &lt;strong&gt;self condition&lt;/strong&gt; ) or a friend’s partner
+cheated on their friend ( &lt;strong&gt;other condition&lt;/strong&gt; ). Participants were also instructed to take a first-person
+perspective ( &lt;strong&gt;immersed condition&lt;/strong&gt; ) by using pronouns such as I and me, or a third-person perspective
+( &lt;strong&gt;&lt;em&gt;distanced condition&lt;/em&gt;&lt;/strong&gt; ) by using pronouns such as he and her.&lt;/p&gt;
+&lt;p&gt;Participants were &lt;strong&gt;120&lt;/strong&gt; university students who were involved in monogamous, heterosexual romantic
+relationships, and participants were randomly assigned to condition. After contemplating the infidelity
+scenario described above with the assigned perspective, participants responded to various questions
+designed to assess &lt;strong&gt;wise reasoning&lt;/strong&gt;.&lt;/p&gt;
+&lt;p&gt;Grossmann, I., &amp;amp; Kross, E. (2014). Exploring Solomon’s paradox: Self-distancing eliminates self-other asymmetry in wise reasoning about close relationships in younger and older adults. Psychological Science, 25, 1571-1580.&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Given the context of this study, a dimension that could have been explored more was that of how wisdom differs
+to that of intelligence. In that inteliigence is more applied and wisdom is the ability to learn from an experience.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;/div&gt;
+&lt;div id=&#34;anaysis&#34; class=&#34;section level4&#34;&gt;
+&lt;h4&gt;ANAYSIS&lt;/h4&gt;
+&lt;ol style=&#34;list-style-type: decimal&#34;&gt;
+&lt;li&gt;Open the data file (called Grossmann and Kross 2014 Study 2). Explore the data file. Note, you
+will not analyze all of these variables. Try to find the variables that are relevant to the study
+description above.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(car)
+library(dplyr)
+library(psych)
+library(ggplot2)
+library(knitr)
+library(pander)
+
+Psych_dist_df &amp;lt;- read.csv(&amp;quot;data/Grossman and Kross 2014 Study 2.csv&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;ol start=&#34;2&#34; style=&#34;list-style-type: decimal&#34;&gt;
+&lt;li&gt;Conduct a one-way ANOVA to determine if there is a significant difference between the
+conditions on wisdom.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;Conditions:
+DV: Wise Reasoning&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;# Use the names() function to print out the list of variable names
+#names(Psych_dist_df)
+# We are interested in the conditions and wisdom variables
+# so we can use dplyr to select these and print a table to look at
+# Can see some NA cases
+#complete.cases(Psych_dist_df)
+
+df &amp;lt;- Psych_dist_df[complete.cases(Psych_dist_df), ] # remove cases with NA and subset to new dataframe
+df &amp;lt;- select(df, CONDITION, WISDOM) # filter out other variables and only use ones of interest&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;descriptives&#34; class=&#34;section level4&#34;&gt;
+&lt;h4&gt;Descriptives&lt;/h4&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;Descriptives &amp;lt;- select(df, CONDITION, WISDOM) %&amp;gt;% 
+  group_by(CONDITION) %&amp;gt;% 
+  summarise(count = n()
+            ,mean = mean(WISDOM)
+            ,sd = sd(WISDOM))
+
+# viewing the dataframe shows that the CONDITION is currently treated as an INT so we will 
+# convert this to a factor with label names for clarity
+df$CONDITION &amp;lt;- factor(df$CONDITION, labels = c(&amp;quot;Self_immersed&amp;quot;, &amp;quot;Self_dist&amp;quot;, &amp;quot;other_immersed&amp;quot;, &amp;quot;other_dist&amp;quot;) ) # convert the CONDITION int to a factor
+
+
+ggplot(data = df) +
+  aes(x = CONDITION, y = WISDOM) +
+  geom_boxplot(fill = &amp;quot;#26828e&amp;quot;) +
+  labs(title = &amp;quot;Solomon’s paradox&amp;quot;,
+    x = &amp;quot;Condition&amp;quot;,
+    y = &amp;quot;Wisdom&amp;quot;,
+    subtitle = &amp;quot;Subtitle&amp;quot;) +
+  theme_bw()&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2019-06-01-osl-workshop-solomons-paradox_files/figure-html/unnamed-chunk-3-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;kable(Descriptives) %&amp;gt;% kableExtra::kable_styling()&lt;/code&gt;&lt;/pre&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr class=&#34;header&#34;&gt;
+&lt;th align=&#34;right&#34;&gt;CONDITION&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;count&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;mean&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;sd&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;31&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;-0.5593042&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1.1660305&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;right&#34;&gt;2&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;26&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.1220847&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.9418065&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;right&#34;&gt;3&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;33&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.1948435&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.7711439&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;right&#34;&gt;4&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;25&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.3344884&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.8129734&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;/div&gt;
+&lt;div id=&#34;visual-analysis&#34; class=&#34;section level4&#34;&gt;
+&lt;h4&gt;Visual Analysis&lt;/h4&gt;
+&lt;/div&gt;
+&lt;div id=&#34;run-anova&#34; class=&#34;section level4&#34;&gt;
+&lt;h4&gt;Run ANOVA&lt;/h4&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;anova_model &amp;lt;- lm(WISDOM ~ CONDITION, data = df) #run an anova or lm&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;run-the-model-through-a-anova-function&#34; class=&#34;section level4&#34;&gt;
+&lt;h4&gt;Run the model through a Anova function&lt;/h4&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;pander(Anova(anova_model, type=&amp;quot;III&amp;quot;)) # Ue the car package to run the anova&lt;/code&gt;&lt;/pre&gt;
+&lt;table style=&#34;width:75%;&#34;&gt;
+&lt;caption&gt;Anova Table (Type III tests)&lt;/caption&gt;
+&lt;colgroup&gt;
+&lt;col width=&#34;25%&#34; /&gt;
+&lt;col width=&#34;12%&#34; /&gt;
+&lt;col width=&#34;8%&#34; /&gt;
+&lt;col width=&#34;13%&#34; /&gt;
+&lt;col width=&#34;15%&#34; /&gt;
+&lt;/colgroup&gt;
+&lt;thead&gt;
+&lt;tr class=&#34;header&#34;&gt;
+&lt;th align=&#34;center&#34;&gt; &lt;/th&gt;
+&lt;th align=&#34;center&#34;&gt;Sum Sq&lt;/th&gt;
+&lt;th align=&#34;center&#34;&gt;Df&lt;/th&gt;
+&lt;th align=&#34;center&#34;&gt;F value&lt;/th&gt;
+&lt;th align=&#34;center&#34;&gt;Pr(&amp;gt;F)&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;center&#34;&gt;&lt;strong&gt;(Intercept)&lt;/strong&gt;&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;9.697&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;11&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;0.001232&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;center&#34;&gt;&lt;strong&gt;CONDITION&lt;/strong&gt;&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;14.13&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;3&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;5.343&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;0.001783&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;center&#34;&gt;&lt;strong&gt;Residuals&lt;/strong&gt;&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;97.86&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;111&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;NA&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;NA&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;/div&gt;
+&lt;div id=&#34;levenes-test&#34; class=&#34;section level4&#34;&gt;
+&lt;h4&gt;Levene’s Test&lt;/h4&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;pander(leveneTest(anova_model)) # tests of homogeniety&lt;/code&gt;&lt;/pre&gt;
+&lt;table style=&#34;width:53%;&#34;&gt;
+&lt;caption&gt;Levene’s Test for Homogeneity of Variance (center = median)&lt;/caption&gt;
+&lt;colgroup&gt;
+&lt;col width=&#34;16%&#34; /&gt;
+&lt;col width=&#34;8%&#34; /&gt;
+&lt;col width=&#34;13%&#34; /&gt;
+&lt;col width=&#34;13%&#34; /&gt;
+&lt;/colgroup&gt;
+&lt;thead&gt;
+&lt;tr class=&#34;header&#34;&gt;
+&lt;th align=&#34;center&#34;&gt; &lt;/th&gt;
+&lt;th align=&#34;center&#34;&gt;Df&lt;/th&gt;
+&lt;th align=&#34;center&#34;&gt;F value&lt;/th&gt;
+&lt;th align=&#34;center&#34;&gt;Pr(&amp;gt;F)&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;center&#34;&gt;&lt;strong&gt;group&lt;/strong&gt;&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;3&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;3.581&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;0.01619&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;center&#34;&gt;&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;111&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;NA&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;NA&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;/div&gt;
+&lt;div id=&#34;using-the-lm-function-from-earlier-printing-the-summary-results-in-contrasts.&#34; class=&#34;section level4&#34;&gt;
+&lt;h4&gt;Using the lm() function from earlier, printing the summary results in contrasts.&lt;/h4&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;pander(summary(anova_model)) # summary.lm gives us each level of the condition&lt;/code&gt;&lt;/pre&gt;
+&lt;table&gt;
+&lt;colgroup&gt;
+&lt;col width=&#34;39%&#34; /&gt;
+&lt;col width=&#34;14%&#34; /&gt;
+&lt;col width=&#34;17%&#34; /&gt;
+&lt;col width=&#34;13%&#34; /&gt;
+&lt;col width=&#34;15%&#34; /&gt;
+&lt;/colgroup&gt;
+&lt;thead&gt;
+&lt;tr class=&#34;header&#34;&gt;
+&lt;th align=&#34;center&#34;&gt; &lt;/th&gt;
+&lt;th align=&#34;center&#34;&gt;Estimate&lt;/th&gt;
+&lt;th align=&#34;center&#34;&gt;Std. Error&lt;/th&gt;
+&lt;th align=&#34;center&#34;&gt;t value&lt;/th&gt;
+&lt;th align=&#34;center&#34;&gt;Pr(&amp;gt;|t|)&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;center&#34;&gt;&lt;strong&gt;(Intercept)&lt;/strong&gt;&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;-0.5593&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;0.1686&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;-3.317&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;0.001232&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;center&#34;&gt;&lt;strong&gt;CONDITIONSelf_dist&lt;/strong&gt;&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;0.6814&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;0.2497&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;2.729&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;0.00739&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;center&#34;&gt;&lt;strong&gt;CONDITIONother_immersed&lt;/strong&gt;&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;0.7541&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;0.2348&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;3.211&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;0.001729&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;center&#34;&gt;&lt;strong&gt;CONDITIONother_dist&lt;/strong&gt;&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;0.8938&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;0.2524&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;3.541&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;0.0005833&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;table style=&#34;width:88%;&#34;&gt;
+&lt;caption&gt;Fitting linear model: WISDOM ~ CONDITION&lt;/caption&gt;
+&lt;colgroup&gt;
+&lt;col width=&#34;20%&#34; /&gt;
+&lt;col width=&#34;30%&#34; /&gt;
+&lt;col width=&#34;12%&#34; /&gt;
+&lt;col width=&#34;23%&#34; /&gt;
+&lt;/colgroup&gt;
+&lt;thead&gt;
+&lt;tr class=&#34;header&#34;&gt;
+&lt;th align=&#34;center&#34;&gt;Observations&lt;/th&gt;
+&lt;th align=&#34;center&#34;&gt;Residual Std. Error&lt;/th&gt;
+&lt;th align=&#34;center&#34;&gt;&lt;span class=&#34;math inline&#34;&gt;\(R^2\)&lt;/span&gt;&lt;/th&gt;
+&lt;th align=&#34;center&#34;&gt;Adjusted &lt;span class=&#34;math inline&#34;&gt;\(R^2\)&lt;/span&gt;&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;center&#34;&gt;115&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;0.9389&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;0.1262&lt;/td&gt;
+&lt;td align=&#34;center&#34;&gt;0.1026&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;/div&gt;
+&lt;div id=&#34;box-plot&#34; class=&#34;section level4&#34;&gt;
+&lt;h4&gt;Box plot&lt;/h4&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;ggplot(data = df 
+       , aes(x = CONDITION, y = WISDOM, colour = CONDITION)) + 
+  geom_boxplot(outlier.colour=&amp;quot;red&amp;quot; # the geom_ must be on the same line
+               , outlier.shape=16
+               , outlier.size=2
+               , notch=TRUE)  &lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2019-06-01-osl-workshop-solomons-paradox_files/figure-html/unnamed-chunk-8-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;ol start=&#34;3&#34; style=&#34;list-style-type: decimal&#34;&gt;
+&lt;li&gt;Next, you want to determine whether the &lt;em&gt;self-immersed&lt;/em&gt; condition was significantly lower in
+wisdom, relative to the &lt;em&gt;other-immersed&lt;/em&gt; and &lt;em&gt;other-distanced&lt;/em&gt; condition. Conduct a planned
+contrast to test the typical Solomon’s paradox effect.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;# planned contrasts
+c1 &amp;lt;- c(2, 0, -1, -1)
+planned_contrasts &amp;lt;-c1
+contrasts(df$CONDITION) &amp;lt;- planned_contrasts
+model1 &amp;lt;- aov(WISDOM ~ CONDITION, data = df)
+Anova(model1, type = &amp;quot;III&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## Anova Table (Type III tests)
+## 
+## Response: WISDOM
+##             Sum Sq  Df F value   Pr(&amp;gt;F)   
+## (Intercept)  0.060   1  0.0682 0.794390   
+## CONDITION   14.131   3  5.3432 0.001783 **
+## Residuals   97.855 111                    
+## ---
+## Signif. codes:  0 &amp;#39;***&amp;#39; 0.001 &amp;#39;**&amp;#39; 0.01 &amp;#39;*&amp;#39; 0.05 &amp;#39;.&amp;#39; 0.1 &amp;#39; &amp;#39; 1&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;summary.aov(model1, split = list(CONDITION = list(&amp;quot;Self_immersed&amp;quot; = 1, &amp;quot;Self_dist&amp;quot; = 2, &amp;quot;other_immersed&amp;quot; = 3, &amp;quot;other_dist&amp;quot; = 4)))&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;##                              Df Sum Sq Mean Sq F value  Pr(&amp;gt;F)    
+## CONDITION                     3  14.13   4.710   5.343 0.00178 ** 
+##   CONDITION: Self_immersed    1  13.47  13.468  15.277 0.00016 ***
+##   CONDITION: Self_dist        1   0.66   0.660   0.749 0.38875    
+##   CONDITION: other_immersed   1   0.00   0.003   0.004 0.95210    
+##   CONDITION: other_dist       1                                   
+## Residuals                   111  97.86   0.882                    
+## ---
+## Signif. codes:  0 &amp;#39;***&amp;#39; 0.001 &amp;#39;**&amp;#39; 0.01 &amp;#39;*&amp;#39; 0.05 &amp;#39;.&amp;#39; 0.1 &amp;#39; &amp;#39; 1&lt;/code&gt;&lt;/pre&gt;
+&lt;ol start=&#34;4&#34; style=&#34;list-style-type: decimal&#34;&gt;
+&lt;li&gt;Now, you want to show that taking a distant perspective increases wisdom relative to taking an
+immersed perspective when dealing with one’s own problems. Conduct a planned contrast to
+determine whether &lt;em&gt;self-distancing&lt;/em&gt; results in significantly higher levels of wisdom, relative to
+&lt;em&gt;self-immersion&lt;/em&gt;.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;c2 &amp;lt;- c(1, -1, 0, 0) # self distance vs self immursion
+planned_contrasts &amp;lt;-c2
+contrasts(df$CONDITION) &amp;lt;- planned_contrasts
+model2 &amp;lt;- aov(WISDOM ~ CONDITION, data = df)
+Anova(model2, type = &amp;quot;III&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## Anova Table (Type III tests)
+## 
+## Response: WISDOM
+##             Sum Sq  Df F value   Pr(&amp;gt;F)   
+## (Intercept)  0.060   1  0.0682 0.794390   
+## CONDITION   14.131   3  5.3432 0.001783 **
+## Residuals   97.855 111                    
+## ---
+## Signif. codes:  0 &amp;#39;***&amp;#39; 0.001 &amp;#39;**&amp;#39; 0.01 &amp;#39;*&amp;#39; 0.05 &amp;#39;.&amp;#39; 0.1 &amp;#39; &amp;#39; 1&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;summary.aov(model2, split = list(CONDITION = list(&amp;quot;Self_immersed&amp;quot; = 1, &amp;quot;Self_dist&amp;quot; = 2, &amp;quot;other_immersed&amp;quot; = 3, &amp;quot;other_dist&amp;quot; = 4)))&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;##                              Df Sum Sq Mean Sq F value  Pr(&amp;gt;F)   
+## CONDITION                     3  14.13   4.710   5.343 0.00178 **
+##   CONDITION: Self_immersed    1   7.43   7.430   8.428 0.00446 **
+##   CONDITION: Self_dist        1   2.32   2.317   2.629 0.10780   
+##   CONDITION: other_immersed   1   4.38   4.384   4.973 0.02775 * 
+##   CONDITION: other_dist       1                                  
+## Residuals                   111  97.86   0.882                   
+## ---
+## Signif. codes:  0 &amp;#39;***&amp;#39; 0.001 &amp;#39;**&amp;#39; 0.01 &amp;#39;*&amp;#39; 0.05 &amp;#39;.&amp;#39; 0.1 &amp;#39; &amp;#39; 1&lt;/code&gt;&lt;/pre&gt;
+&lt;ol start=&#34;5&#34; style=&#34;list-style-type: decimal&#34;&gt;
+&lt;li&gt;You also want to determine whether distancing vs. immersion increases wisdom when
+contemplating other people’s problems. Conduct a planned contrast to compare the
+&lt;em&gt;other-distance&lt;/em&gt; vs. &lt;em&gt;other-immersed&lt;/em&gt; conditions.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;c3 &amp;lt;- c(0, 0, 1, -1) # other immersed vs other distance
+planned_contrasts &amp;lt;-c3
+contrasts(df$CONDITION) &amp;lt;- planned_contrasts
+model3 &amp;lt;- aov(WISDOM ~ CONDITION, data = df)
+Anova(model3, type = &amp;quot;III&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## Anova Table (Type III tests)
+## 
+## Response: WISDOM
+##             Sum Sq  Df F value   Pr(&amp;gt;F)   
+## (Intercept)  0.060   1  0.0682 0.794390   
+## CONDITION   14.131   3  5.3432 0.001783 **
+## Residuals   97.855 111                    
+## ---
+## Signif. codes:  0 &amp;#39;***&amp;#39; 0.001 &amp;#39;**&amp;#39; 0.01 &amp;#39;*&amp;#39; 0.05 &amp;#39;.&amp;#39; 0.1 &amp;#39; &amp;#39; 1&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;summary.aov(model3, split = list(CONDITION = list(&amp;quot;Self_immersed&amp;quot; = 1, &amp;quot;Self_dist&amp;quot; = 2, &amp;quot;other_immersed&amp;quot; = 3, &amp;quot;other_dist&amp;quot; = 4)))&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;##                              Df Sum Sq Mean Sq F value   Pr(&amp;gt;F)    
+## CONDITION                     3  14.13   4.710   5.343 0.001783 ** 
+##   CONDITION: Self_immersed    1   0.07   0.068   0.077 0.781773    
+##   CONDITION: Self_dist        1   1.77   1.769   2.007 0.159391    
+##   CONDITION: other_immersed   1  12.29  12.294  13.946 0.000299 ***
+##   CONDITION: other_dist       1                                    
+## Residuals                   111  97.86   0.882                     
+## ---
+## Signif. codes:  0 &amp;#39;***&amp;#39; 0.001 &amp;#39;**&amp;#39; 0.01 &amp;#39;*&amp;#39; 0.05 &amp;#39;.&amp;#39; 0.1 &amp;#39; &amp;#39; 1&lt;/code&gt;&lt;/pre&gt;
+&lt;ol start=&#34;6&#34; style=&#34;list-style-type: decimal&#34;&gt;
+&lt;li&gt;Finally, you want to test whether self-distancing eliminates the increased wisdom typically found
+in reasoning about others. Conduct a planned comparison to determine whether the
+&lt;em&gt;self-distanced&lt;/em&gt; condition is significantly different from the &lt;em&gt;other-immersed&lt;/em&gt; and &lt;em&gt;other-distanced&lt;/em&gt;
+conditions.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;c4 &amp;lt;- c(0, 2, -1, -1) # self dist vs other immersed &amp;amp; other dist
+planned_contrasts &amp;lt;-c4
+contrasts(df$CONDITION) &amp;lt;- planned_contrasts
+model4 &amp;lt;- aov(WISDOM ~ CONDITION, data = df)
+Anova(model4, type = &amp;quot;III&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## Anova Table (Type III tests)
+## 
+## Response: WISDOM
+##             Sum Sq  Df F value   Pr(&amp;gt;F)   
+## (Intercept)  0.060   1  0.0682 0.794390   
+## CONDITION   14.131   3  5.3432 0.001783 **
+## Residuals   97.855 111                    
+## ---
+## Signif. codes:  0 &amp;#39;***&amp;#39; 0.001 &amp;#39;**&amp;#39; 0.01 &amp;#39;*&amp;#39; 0.05 &amp;#39;.&amp;#39; 0.1 &amp;#39; &amp;#39; 1&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;summary.aov(model4, split = list(CONDITION = list(&amp;quot;Self_immersed&amp;quot; = 1, &amp;quot;Self_dist&amp;quot; = 2, &amp;quot;other_immersed&amp;quot; = 3, &amp;quot;other_dist&amp;quot; = 4)))&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;##                              Df Sum Sq Mean Sq F value  Pr(&amp;gt;F)   
+## CONDITION                     3  14.13   4.710   5.343 0.00178 **
+##   CONDITION: Self_immersed    1   0.44   0.438   0.496 0.48260   
+##   CONDITION: Self_dist        1   5.48   5.476   6.212 0.01417 * 
+##   CONDITION: other_immersed   1   8.22   8.218   9.322 0.00283 **
+##   CONDITION: other_dist       1                                  
+## Residuals                   111  97.86   0.882                   
+## ---
+## Signif. codes:  0 &amp;#39;***&amp;#39; 0.001 &amp;#39;**&amp;#39; 0.01 &amp;#39;*&amp;#39; 0.05 &amp;#39;.&amp;#39; 0.1 &amp;#39; &amp;#39; 1&lt;/code&gt;&lt;/pre&gt;
+&lt;ol start=&#34;7&#34; style=&#34;list-style-type: decimal&#34;&gt;
+&lt;li&gt;&lt;p&gt;Prepare an APA-style results section to describe each of the analyses conducted above.&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Generate a bar graph to depict the results for the one-way ANOVA. Don’t forget to include error
+bars that reflect the +/- 1 standard error of the mean.&lt;/p&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;ggplot(df, aes(CONDITION, WISDOM))+
+  stat_boxplot( aes(CONDITION, WISDOM), 
+    geom=&amp;#39;errorbar&amp;#39;, linetype=1, width=0.5)+  #whiskers
+  geom_boxplot( aes(CONDITION, WISDOM),outlier.shape=1) +    
+  stat_summary(fun.y=mean, geom=&amp;quot;point&amp;quot;, size=2) + 
+  stat_summary(fun.data = mean_se, geom = &amp;quot;errorbar&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2019-06-01-osl-workshop-solomons-paradox_files/figure-html/unnamed-chunk-12-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Academic: the website builder for Hugo</title>
+      <link>/post/getting-started/</link>
+      <pubDate>Wed, 20 Apr 2016 00:00:00 +0000</pubDate>
+      <guid>/post/getting-started/</guid>
+      <description>
+
+&lt;p&gt;&lt;strong&gt;Create a free website with Academic using Markdown, Jupyter, or RStudio. Choose a beautiful color theme and build anything with the Page Builder - over 40 &lt;em&gt;widgets&lt;/em&gt;, &lt;em&gt;themes&lt;/em&gt;, and &lt;em&gt;language packs&lt;/em&gt; included!&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&#34;https://academic-demo.netlify.com/&#34; target=&#34;_blank&#34;&gt;Check out the latest &lt;strong&gt;demo&lt;/strong&gt;&lt;/a&gt; of what you&amp;rsquo;ll get in less than 10 minutes, or &lt;a href=&#34;https://sourcethemes.com/academic/#expo&#34; target=&#34;_blank&#34;&gt;view the &lt;strong&gt;showcase&lt;/strong&gt;&lt;/a&gt; of personal, project, and business sites.&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;#install&#34;&gt;&lt;strong&gt;Setup Academic&lt;/strong&gt;&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://sourcethemes.com/academic/docs/get-started/&#34; target=&#34;_blank&#34;&gt;&lt;strong&gt;Get Started&lt;/strong&gt;&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://sourcethemes.com/academic/docs/&#34; target=&#34;_blank&#34;&gt;View the documentation&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://discuss.gohugo.io/&#34; target=&#34;_blank&#34;&gt;Ask a question&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/gcushen/hugo-academic/issues&#34; target=&#34;_blank&#34;&gt;Request a feature or report a bug&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;Updating? View the &lt;a href=&#34;https://sourcethemes.com/academic/docs/update/&#34; target=&#34;_blank&#34;&gt;Update Guide&lt;/a&gt; and &lt;a href=&#34;https://sourcethemes.com/academic/updates/&#34; target=&#34;_blank&#34;&gt;Release Notes&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;Support development of Academic:
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://paypal.me/cushen&#34; target=&#34;_blank&#34;&gt;Donate a coffee&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://www.patreon.com/cushen&#34; target=&#34;_blank&#34;&gt;Become a backer on Patreon&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://www.redbubble.com/people/neutreno/works/34387919-academic&#34; target=&#34;_blank&#34;&gt;Decorate your laptop or journal with an Academic sticker&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://academic.threadless.com/&#34; target=&#34;_blank&#34;&gt;Wear the T-shirt&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;a href=&#34;https://github.com/gcushen/hugo-academic/&#34; target=&#34;_blank&#34;&gt;&lt;img src=&#34;https://raw.githubusercontent.com/gcushen/hugo-academic/master/academic.png&#34; alt=&#34;Screenshot&#34; /&gt;&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Key features:&lt;/strong&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Page builder&lt;/strong&gt; - Create &lt;em&gt;anything&lt;/em&gt; with &lt;a href=&#34;https://sourcethemes.com/academic/docs/page-builder/&#34; target=&#34;_blank&#34;&gt;&lt;strong&gt;widgets&lt;/strong&gt;&lt;/a&gt; and &lt;a href=&#34;https://sourcethemes.com/academic/docs/writing-markdown-latex/&#34; target=&#34;_blank&#34;&gt;&lt;strong&gt;elements&lt;/strong&gt;&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Edit any type of content&lt;/strong&gt; - Blog posts, publications, talks, slides, projects, and more!&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Create content&lt;/strong&gt; in &lt;a href=&#34;https://sourcethemes.com/academic/docs/writing-markdown-latex/&#34; target=&#34;_blank&#34;&gt;&lt;strong&gt;Markdown&lt;/strong&gt;&lt;/a&gt;, &lt;a href=&#34;https://sourcethemes.com/academic/docs/jupyter/&#34; target=&#34;_blank&#34;&gt;&lt;strong&gt;Jupyter&lt;/strong&gt;&lt;/a&gt;, or &lt;a href=&#34;https://sourcethemes.com/academic/docs/install/#install-with-rstudio&#34; target=&#34;_blank&#34;&gt;&lt;strong&gt;RStudio&lt;/strong&gt;&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Plugin System&lt;/strong&gt; - Fully customizable &lt;a href=&#34;https://sourcethemes.com/academic/themes/&#34; target=&#34;_blank&#34;&gt;&lt;strong&gt;color&lt;/strong&gt; and &lt;strong&gt;font themes&lt;/strong&gt;&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Display Code and Math&lt;/strong&gt; - Code highlighting and &lt;a href=&#34;https://en.wikibooks.org/wiki/LaTeX/Mathematics&#34; target=&#34;_blank&#34;&gt;LaTeX math&lt;/a&gt; supported&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Integrations&lt;/strong&gt; - &lt;a href=&#34;https://analytics.google.com&#34; target=&#34;_blank&#34;&gt;Google Analytics&lt;/a&gt;, &lt;a href=&#34;https://disqus.com&#34; target=&#34;_blank&#34;&gt;Disqus commenting&lt;/a&gt;, Maps, Contact Forms, and more!&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Beautiful Site&lt;/strong&gt; - Simple and refreshing one page design&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Industry-Leading SEO&lt;/strong&gt; - Help get your website found on search engines and social media&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Media Galleries&lt;/strong&gt; - Display your images and videos with captions in a customizable gallery&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Mobile Friendly&lt;/strong&gt; - Look amazing on every screen with a mobile friendly version of your site&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Multi-language&lt;/strong&gt; - 15+ language packs including English, 中文, and Português&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Multi-user&lt;/strong&gt; - Each author gets their own profile page&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Privacy Pack&lt;/strong&gt; - Assists with GDPR&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Stand Out&lt;/strong&gt; - Bring your site to life with animation, parallax backgrounds, and scroll effects&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;One-Click Deployment&lt;/strong&gt; - No servers. No databases. Only files.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&#34;color-themes&#34;&gt;Color Themes&lt;/h2&gt;
+
+&lt;p&gt;Academic comes with &lt;strong&gt;day (light) and night (dark) mode&lt;/strong&gt; built-in. Click the sun/moon icon in the top right of the &lt;a href=&#34;https://academic-demo.netlify.com/&#34; target=&#34;_blank&#34;&gt;Demo&lt;/a&gt; to see it in action!&lt;/p&gt;
+
+&lt;p&gt;Choose a stunning color and font theme for your site. Themes are fully customizable and include:&lt;/p&gt;
+
+
+
+
+
+
+
+
+
+  
+  
+
+
+&lt;div class=&#34;gallery&#34;&gt;
+
+  
+  
+  
+  
+    
+    
+    
+    
+    
+      
+        
+      
+    
+  &lt;a data-fancybox=&#34;gallery-gallery&#34; href=&#34;/post/getting-started/gallery/theme-1950s.png&#34; data-caption=&#34;1950s&#34;&gt;
+  &lt;img src=&#34;/post/getting-started/gallery/theme-1950s_huaf5482f8cea0c5a703a328640e3b7509_21614_0x190_resize_lanczos_2.png&#34; alt=&#34;&#34;&gt;
+  &lt;/a&gt;
+  
+    
+    
+    
+    
+    
+      
+        
+      
+    
+  &lt;a data-fancybox=&#34;gallery-gallery&#34; href=&#34;/post/getting-started/gallery/theme-apogee.png&#34; data-caption=&#34;Apogee&#34;&gt;
+  &lt;img src=&#34;/post/getting-started/gallery/theme-apogee_hu4b45d99db97150df01464c393bfd17d4_24119_0x190_resize_lanczos_2.png&#34; alt=&#34;&#34;&gt;
+  &lt;/a&gt;
+  
+    
+    
+    
+    
+    
+      
+        
+      
+    
+  &lt;a data-fancybox=&#34;gallery-gallery&#34; href=&#34;/post/getting-started/gallery/theme-coffee-playfair.png&#34; data-caption=&#34;Coffee theme with Playfair font&#34;&gt;
+  &lt;img src=&#34;/post/getting-started/gallery/theme-coffee-playfair_hu446a8f670cc5622adcc77b97ba95f6c5_22462_0x190_resize_lanczos_2.png&#34; alt=&#34;&#34;&gt;
+  &lt;/a&gt;
+  
+    
+    
+    
+    
+    
+      
+        
+      
+    
+  &lt;a data-fancybox=&#34;gallery-gallery&#34; href=&#34;/post/getting-started/gallery/theme-cupcake.png&#34; data-caption=&#34;Cupcake&#34;&gt;
+  &lt;img src=&#34;/post/getting-started/gallery/theme-cupcake_hueba8cfa8cfbc7543924fcbf387a99e92_23986_0x190_resize_lanczos_2.png&#34; alt=&#34;&#34;&gt;
+  &lt;/a&gt;
+  
+    
+    
+    
+    
+    
+      
+        
+      
+    
+  &lt;a data-fancybox=&#34;gallery-gallery&#34; href=&#34;/post/getting-started/gallery/theme-dark.png&#34; data-caption=&#34;Dark&#34;&gt;
+  &lt;img src=&#34;/post/getting-started/gallery/theme-dark_hu1e8601ecc47f58eada7743fdcd709d3d_21456_0x190_resize_lanczos_2.png&#34; alt=&#34;&#34;&gt;
+  &lt;/a&gt;
+  
+    
+    
+    
+    
+    
+      
+        
+      
+    
+  &lt;a data-fancybox=&#34;gallery-gallery&#34; href=&#34;/post/getting-started/gallery/theme-default.png&#34; data-caption=&#34;Default&#34;&gt;
+  &lt;img src=&#34;/post/getting-started/gallery/theme-default_huba6228b7bdf30e2f03f12ea91b2cba0d_21751_0x190_resize_lanczos_2.png&#34; alt=&#34;&#34;&gt;
+  &lt;/a&gt;
+  
+    
+    
+    
+    
+    
+      
+        
+      
+    
+  &lt;a data-fancybox=&#34;gallery-gallery&#34; href=&#34;/post/getting-started/gallery/theme-forest.png&#34; data-caption=&#34;Forest&#34;&gt;
+  &lt;img src=&#34;/post/getting-started/gallery/theme-forest_hu4f093a1c683134431456584193ea41ee_21797_0x190_resize_lanczos_2.png&#34; alt=&#34;&#34;&gt;
+  &lt;/a&gt;
+  
+    
+    
+    
+    
+    
+      
+        
+      
+    
+  &lt;a data-fancybox=&#34;gallery-gallery&#34; href=&#34;/post/getting-started/gallery/theme-ocean.png&#34; data-caption=&#34;Ocean&#34;&gt;
+  &lt;img src=&#34;/post/getting-started/gallery/theme-ocean_hu14831ccafc2219f30a7a096fa7617e01_21760_0x190_resize_lanczos_2.png&#34; alt=&#34;&#34;&gt;
+  &lt;/a&gt;
+  
+
+  
+&lt;/div&gt;
+
+&lt;h2 id=&#34;ecosystem&#34;&gt;Ecosystem&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;&lt;a href=&#34;https://github.com/sourcethemes/academic-admin&#34; target=&#34;_blank&#34;&gt;Academic Admin&lt;/a&gt;:&lt;/strong&gt; An admin tool to import publications from BibTeX or import assets for an offline site&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;&lt;a href=&#34;https://github.com/sourcethemes/academic-scripts&#34; target=&#34;_blank&#34;&gt;Academic Scripts&lt;/a&gt;:&lt;/strong&gt; Scripts to help migrate content to new versions of Academic&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&#34;install&#34;&gt;Install&lt;/h2&gt;
+
+&lt;p&gt;You can choose from one of the following four methods to install:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://sourcethemes.com/academic/docs/install/#install-with-web-browser&#34; target=&#34;_blank&#34;&gt;&lt;strong&gt;one-click install using your web browser (recommended)&lt;/strong&gt;&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://sourcethemes.com/academic/docs/install/#install-with-git&#34; target=&#34;_blank&#34;&gt;install on your computer using &lt;strong&gt;Git&lt;/strong&gt; with the Command Prompt/Terminal app&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://sourcethemes.com/academic/docs/install/#install-with-zip&#34; target=&#34;_blank&#34;&gt;install on your computer by downloading the &lt;strong&gt;ZIP files&lt;/strong&gt;&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://sourcethemes.com/academic/docs/install/#install-with-rstudio&#34; target=&#34;_blank&#34;&gt;install on your computer with &lt;strong&gt;RStudio&lt;/strong&gt;&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Then &lt;a href=&#34;https://sourcethemes.com/academic/docs/get-started/&#34; target=&#34;_blank&#34;&gt;personalize and deploy your new site&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h2 id=&#34;updating&#34;&gt;Updating&lt;/h2&gt;
+
+&lt;p&gt;&lt;a href=&#34;https://sourcethemes.com/academic/docs/update/&#34; target=&#34;_blank&#34;&gt;View the Update Guide&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;Feel free to &lt;em&gt;star&lt;/em&gt; the project on &lt;a href=&#34;https://github.com/gcushen/hugo-academic/&#34; target=&#34;_blank&#34;&gt;Github&lt;/a&gt; to help keep track of &lt;a href=&#34;https://sourcethemes.com/academic/updates&#34; target=&#34;_blank&#34;&gt;updates&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h2 id=&#34;license&#34;&gt;License&lt;/h2&gt;
+
+&lt;p&gt;Copyright 2016-present &lt;a href=&#34;https://georgecushen.com&#34; target=&#34;_blank&#34;&gt;George Cushen&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;Released under the &lt;a href=&#34;https://github.com/gcushen/hugo-academic/blob/master/LICENSE.md&#34; target=&#34;_blank&#34;&gt;MIT&lt;/a&gt; license.&lt;/p&gt;
+</description>
     </item>
     
   </channel>

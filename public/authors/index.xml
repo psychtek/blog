@@ -1,30 +1,30 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Authors on PsychTek - Aaron Willcox</title>
+    <title>Authors | PsychTek - Aaron Willcox</title>
     <link>/authors/</link>
-    <description>Recent content in Authors on PsychTek - Aaron Willcox</description>
-    <generator>Hugo -- gohugo.io</generator>
-    <language>en-us</language>
-    <lastBuildDate>Sun, 07 Apr 2019 00:00:00 +0000</lastBuildDate>
-    
-	<atom:link href="/authors/index.xml" rel="self" type="application/rss+xml" />
-    
+      <atom:link href="/authors/index.xml" rel="self" type="application/rss+xml" />
+    <description>Authors</description>
+    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><lastBuildDate>Sun, 07 Apr 2019 00:00:00 +0000</lastBuildDate>
+    <image>
+      <url>/img/icon-192.png</url>
+      <title>Authors</title>
+      <link>/authors/</link>
+    </image>
     
     <item>
       <title></title>
       <link>/authors/admin/</link>
       <pubDate>Sun, 07 Apr 2019 00:00:00 +0000</pubDate>
-      
       <guid>/authors/admin/</guid>
-      <description>Recently returning from studying abroad at Maastricht University in the Netherlands. Currently finishing 3rd year Bachelor of Psychological Science with the view to do honors 2020. Competent critical thinking, problem solving, data and statistical analysis skills. Interests include data wrangling with R and research into neurodevelopmental disorders particularly adult ADHD.</description>
+      <description>&lt;p&gt;Recently returning from studying abroad at Maastricht University in the Netherlands. Currently finishing 3rd year Bachelor of Psychological Science with the view to do honors 2020. Competent critical thinking, problem solving, data and statistical analysis skills. Interests include data wrangling with R, open science and research into neurodevelopmental disorders particularly adult ADHD.&lt;/p&gt;
+</description>
     </item>
     
     <item>
       <title>Robert Ford</title>
       <link>/authors/robert-ford/</link>
       <pubDate>Tue, 01 Sep 2015 00:00:00 +0000</pubDate>
-      
       <guid>/authors/robert-ford/</guid>
       <description></description>
     </item>

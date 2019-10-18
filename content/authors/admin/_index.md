@@ -52,4 +52,4 @@ user_groups:
 - Visitors
 ---
 
-Recently returning from studying abroad at Maastricht University in the Netherlands. Currently finishing 3rd year Bachelor of Psychological Science with the view to do honors 2020. Competent critical thinking, problem solving, data and statistical analysis skills. Interests include data wrangling with R and research into neurodevelopmental disorders particularly adult ADHD. 
+Recently returning from studying abroad at Maastricht University in the Netherlands. Currently finishing 3rd year Bachelor of Psychological Science with the view to do honors 2020. Competent critical thinking, problem solving, data and statistical analysis skills. Interests include data wrangling with R, open science and research into neurodevelopmental disorders particularly adult ADHD. 

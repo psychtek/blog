@@ -1,11 +1,12 @@
 <!DOCTYPE html>
 <html lang="en-us">
+
 <head>
 
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="generator" content="Source Themes Academic 4.3.1">
+  <meta name="generator" content="Source Themes Academic 4.5.0">
 
   
 
@@ -35,8 +36,6 @@ Research Protocollibrary(tidyverse)library(stringr)library(knitr)library(plo
 
   
 
-
-  
 
   
   
@@ -76,24 +75,29 @@ Research Protocollibrary(tidyverse)library(stringr)library(knitr)library(plo
 
   
   
-  <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Playfair+Display:400,700|Fauna+One">
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Cutive+Mono%7CLora:400,700%7CRoboto:400,700&display=swap">
   
 
   
   
   
-  <link rel="stylesheet" href="/css/academic.min.e73da1813179989adb8fd0fa6ab7c050.css">
+  <link rel="stylesheet" href="/css/academic.min.56b1fc211db34f9ca19c5a68ab746722.css">
 
   
 
   
-  
-  
+
+
+
 
   
 
-  <link rel="manifest" href="/site.webmanifest">
-  <link rel="icon" type="image/png" href="/img/icon.png">
+
+  
+
+  <link rel="manifest" href="/index.webmanifest">
+  <link rel="icon" type="image/png" href="/img/icon-32.png">
   <link rel="apple-touch-icon" type="image/png" href="/img/icon-192.png">
 
   <link rel="canonical" href="/post/emotional-impact-of-memory-part-one/">
@@ -105,6 +109,7 @@ Research Protocollibrary(tidyverse)library(stringr)library(knitr)library(plo
     
     
   
+  
   <meta property="twitter:card" content="summary">
   
   <meta property="twitter:site" content="@aaron_willcox">
@@ -115,21 +120,81 @@ Research Protocollibrary(tidyverse)library(stringr)library(knitr)library(plo
   <meta property="og:title" content="Emotional Impact of Memory Part One  | PsychTek - Aaron Willcox">
   <meta property="og:description" content="Processing an image database for use in a experiment to induce an emotional state in particpants.
 Research Protocollibrary(tidyverse)library(stringr)library(knitr)library(plotly)library(gridExtra)library(inspectdf)library(DT)The following was the code used to prepare images from the IAPS database for a experiment on pattern separation. The participants were seated in front of a PC and went through three tasks: Encoding, retreival and validation."><meta property="og:image" content="/img/icon-192.png">
-  <meta property="og:locale" content="en-us">
+  <meta property="twitter:image" content="/img/icon-192.png"><meta property="og:locale" content="en-us">
   
-  <meta property="article:published_time" content="2019-07-16T00:00:00&#43;00:00">
-  
-  <meta property="article:modified_time" content="2019-07-16T15:18:35&#43;10:00">
+    
+      <meta property="article:published_time" content="2019-07-16T00:00:00&#43;00:00">
+    
+    <meta property="article:modified_time" content="2019-07-16T15:18:35&#43;10:00">
   
 
   
 
+
+    
+
+
+
+
+
+
   
+
+
+
+
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "/post/emotional-impact-of-memory-part-one/"
+  },
+  "headline": "Emotional Impact of Memory Part One ",
+  
+  "datePublished": "2019-07-16T00:00:00Z",
+  "dateModified": "2019-07-16T15:18:35+10:00",
+  
+  "author": {
+    "@type": "Person",
+    "name": "Aaron Willcox"
+  },
+  
+  "publisher": {
+    "@type": "Organization",
+    "name": "PsychTek - Aaron Willcox",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "/img/icon-512.png"
+    }
+  },
+  "description": "Processing an image database for use in a experiment to induce an emotional state in particpants.\nResearch Protocol\rlibrary(tidyverse)\rlibrary(stringr)\rlibrary(knitr)\rlibrary(plotly)\rlibrary(gridExtra)\rlibrary(inspectdf)\rlibrary(DT)\rThe following was the code used to prepare images from the IAPS database for a experiment on pattern separation. The participants were seated in front of a PC and went through three tasks: Encoding, retreival and validation."
+}
+</script>
+
+  
+
+  
+
+
+  
+
+
+  
+
+
+
+
 
   <title>Emotional Impact of Memory Part One  | PsychTek - Aaron Willcox</title>
 
 </head>
-<body id="top" data-spy="scroll" data-target="#TableOfContents" data-offset="71" >
+
+<body id="top" data-spy="scroll" data-offset="70" data-target="#TableOfContents" >
+
   <aside class="search-results" id="search">
   <div class="container">
     <section class="search-header">
@@ -146,7 +211,7 @@ Research Protocollibrary(tidyverse)library(stringr)library(knitr)library(plo
       <div id="search-box">
         
         <input name="q" id="search-query" placeholder="Search..." autocapitalize="off"
-        autocomplete="off" autocorrect="off" role="textbox" spellcheck="false" type="search">
+        autocomplete="off" autocorrect="off" spellcheck="false" type="search">
         
       </div>
 
@@ -162,8 +227,8 @@ Research Protocollibrary(tidyverse)library(stringr)library(knitr)library(plo
 </aside>
 
 
-
-<nav class="navbar navbar-light fixed-top navbar-expand-lg py-0" id="navbar-main">
+  
+<nav class="navbar navbar-light fixed-top navbar-expand-lg py-0 compensate-for-scrollbar" id="navbar-main">
   <div class="container">
 
     
@@ -206,11 +271,7 @@ Research Protocollibrary(tidyverse)library(stringr)library(knitr)library(plo
         
 
         <li class="nav-item">
-          <a class="nav-link " href="/#about">
-            
-            <span>Home</span>
-            
-          </a>
+          <a class="nav-link " href="/#about"><span>Home</span></a>
         </li>
 
         
@@ -239,11 +300,7 @@ Research Protocollibrary(tidyverse)library(stringr)library(knitr)library(plo
         
 
         <li class="nav-item">
-          <a class="nav-link " href="/#posts">
-            
-            <span>Posts</span>
-            
-          </a>
+          <a class="nav-link " href="/#posts"><span>Posts</span></a>
         </li>
 
         
@@ -272,11 +329,7 @@ Research Protocollibrary(tidyverse)library(stringr)library(knitr)library(plo
         
 
         <li class="nav-item">
-          <a class="nav-link " href="/#contact">
-            
-            <span>Contact</span>
-            
-          </a>
+          <a class="nav-link " href="/#contact"><span>Contact</span></a>
         </li>
 
         
@@ -298,11 +351,7 @@ Research Protocollibrary(tidyverse)library(stringr)library(knitr)library(plo
         
 
         <li class="nav-item">
-          <a class="nav-link " href="/files/cv.pdf">
-            
-            <span>CV</span>
-            
-          </a>
+          <a class="nav-link " href="/files/cv.pdf"><span>CV</span></a>
         </li>
 
         
@@ -336,7 +385,7 @@ Research Protocollibrary(tidyverse)library(stringr)library(knitr)library(plo
 </nav>
 
 
-<article class="article" itemscope itemtype="http://schema.org/Article">
+  <article class="article">
 
   
 
@@ -357,17 +406,13 @@ Research Protocollibrary(tidyverse)library(stringr)library(knitr)library(plo
   
   
 <div class="article-container pt-3">
-  <h1 itemprop="name">Emotional Impact of Memory Part One </h1>
+  <h1>Emotional Impact of Memory Part One </h1>
 
   
 
   
     
 
-
-
-<meta content="2019-07-16 00:00:00 &#43;0000 UTC" itemprop="datePublished">
-<meta content="2019-07-16 15:18:35 &#43;1000 AEST" itemprop="dateModified">
 
 <div class="article-metadata">
 
@@ -382,7 +427,7 @@ Research Protocollibrary(tidyverse)library(stringr)library(knitr)library(plo
           Last updated on
       
     
-    <time>Jul 16, 2019</time>
+    Jul 16, 2019
   </span>
   
 
@@ -397,57 +442,13 @@ Research Protocollibrary(tidyverse)library(stringr)library(knitr)library(plo
 
   
   
+  
 
   
   
   <span class="middot-divider"></span>
   <span class="article-categories">
-    <i class="fas fa-folder"></i>
-    <a href="/categories/r/">R</a></span>
-  
-
-  
-    
-<div class="share-box" aria-hidden="true">
-  <ul class="share">
-    <li>
-      <a class="twitter"
-         href="https://twitter.com/intent/tweet?text=&amp;url="
-         target="_blank" rel="noopener">
-        <i class="fab fa-twitter"></i>
-      </a>
-    </li>
-    <li>
-      <a class="facebook"
-         href="https://www.facebook.com/sharer.php?u="
-         target="_blank" rel="noopener">
-        <i class="fab fa-facebook-f"></i>
-      </a>
-    </li>
-    <li>
-      <a class="linkedin"
-         href="https://www.linkedin.com/shareArticle?mini=true&amp;url=&amp;title="
-         target="_blank" rel="noopener">
-        <i class="fab fa-linkedin-in"></i>
-      </a>
-    </li>
-    <li>
-      <a class="weibo"
-         href="http://service.weibo.com/share/share.php?url=&amp;title="
-         target="_blank" rel="noopener">
-        <i class="fab fa-weibo"></i>
-      </a>
-    </li>
-    <li>
-      <a class="email"
-         href="mailto:?subject=&amp;body=">
-        <i class="fas fa-envelope"></i>
-      </a>
-    </li>
-  </ul>
-</div>
-
-
+    <i class="fas fa-folder mr-1"></i><a href="/categories/r/">R</a></span>
   
 
 </div>
@@ -474,7 +475,7 @@ Research Protocollibrary(tidyverse)library(stringr)library(knitr)library(plo
 
   <div class="article-container">
 
-    <div class="article-style" itemprop="articleBody">
+    <div class="article-style">
       
 <script src="/rmarkdown-libs/htmlwidgets/htmlwidgets.js"></script>
 <script src="/rmarkdown-libs/jquery/jquery.min.js"></script>
@@ -757,7 +758,7 @@ kable(core_images_df %&gt;%
 
 p</code></pre>
 <div id="htmlwidget-2" style="width:672px;height:480px;" class="plotly html-widget"></div>
-<script type="application/json" data-for="htmlwidget-2">{"x":{"data":[{"x":["Parrots","Gannet","Grouper","NeuWoman","Fingerprint","Girl","Kiss","Factoryworker","Chess","War","NativeBoy","DeerHead","Mutilation","Gold","Mutilation","Accident","Mutilation","Mutilation","Mutilation","Mutilation","Mutilation","Injury","DeadBody","Mutilation","Mutilation","Mutilation","Stitches","Surgery","Surgery","Tumor","Attack","Attack","Rocks","Satellite","Field","Farmland","Field","Nature","Leaves","Soldier","Attack","DeadTiger","Attack","Attack","Gang","Guns","Police","Police","Buttons","Disk","GasCan","Rubberbands","Scissors","Razor","Video","Fan","Iron","Shoes","Mug","Train","Baskets","Zipper","HairDryer","Clothespins","Lightbulb","Tool","TrashCan","FireHydrant","Bus","Umbrella","Fabric","Pole","Rug","AbstractArt","AbstractArt","Scarves","ClothesRack","Building","Building","Bridge","Office","Boxer","PlaneCrash","HurtDog","InjuredDog","Rain","WarVictim","DeadBody","Vomit","EmptyPool","DeadMan","Hanging","Assault","DeadMan","Porpoises","Skinhead","KKKrally","CarAccident","CarAccident","Fire","AttackDog","Woman","Tourist","Shadow","HeadlessBody","Mutilation","Organs","BurnVictim","Mutilation","Mutilation","Mutilation","Mutilation","BurnVictim","BurnVictim","Mutilation","BabyTumor","SeveredHand","Boat","Mushroom","Plant","Clouds","Assault","AimedGun","BeatenFem","Attack","Suicide","RollingPin","Towel","Spoon","Bowl","Mug","Basket","PicnicTable","Hammer","Shoes","DustPan","Barbells","Fork","Book","Lamp","Man","Office","Cabinet","Tissue","Fire","Soldiers","Dirty","Soldier","Execution","Dog"],"y":[3.17,2.83,3.29,2.94,3.71,2.9,4.99,2.93,2.79,6.21,6.8,5.97,7.26,4.84,7.16,5.9,6.76,6.41,6.77,7.03,7.22,6.06,6.84,6.97,6.61,6,6.36,6.57,6.82,5.75,6.99,6.82,2.51,3.26,3.03,2.79,3.55,3.14,2.51,6.01,6.44,6.2,6.96,6.59,6.29,6.21,6.28,5.8,3.2,3.07,3.81,3,3.25,3.4,3.12,2.17,2.99,2.03,2.66,3.29,2.6,3.32,2.75,3.01,3.02,3.07,2.55,2.89,2.92,2.61,3.07,2.98,2.88,2.3,4.28,2.93,2.43,2.39,3.26,3.18,2.95,5.91,6.36,6.58,6.45,3.08,6.6,6.64,6.24,2.63,6.72,6.81,5.92,5.89,5.82,6.05,6.62,6.08,6.63,6.52,6.51,3.24,3,2.96,6.64,5.82,6.3,6.91,6.48,5.78,6.35,6.86,6.49,6.7,6.55,7.21,6.91,2.88,3,2.59,3.1,6.06,7.35,6.38,7.09,6.24,2.42,3.16,2,2.33,3.01,1.76,2.63,3.06,3.01,2.69,4.02,2.32,2.61,1.72,3.39,3.95,2.65,2.28,6.46,6.53,6,7.07,6.49,6.14],"type":"scatter","mode":"markers","marker":{"color":"rgba(31,119,180,1)","line":{"color":"rgba(31,119,180,1)"}},"error_y":{"color":"rgba(31,119,180,1)"},"error_x":{"color":"rgba(31,119,180,1)"},"line":{"color":"rgba(31,119,180,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["Parrots","Gannet","Grouper","NeuWoman","Fingerprint","Girl","Kiss","Factoryworker","Chess","War","NativeBoy","DeerHead","Mutilation","Gold","Mutilation","Accident","Mutilation","Mutilation","Mutilation","Mutilation","Mutilation","Injury","DeadBody","Mutilation","Mutilation","Mutilation","Stitches","Surgery","Surgery","Tumor","Attack","Attack","Rocks","Satellite","Field","Farmland","Field","Nature","Leaves","Soldier","Attack","DeadTiger","Attack","Attack","Gang","Guns","Police","Police","Buttons","Disk","GasCan","Rubberbands","Scissors","Razor","Video","Fan","Iron","Shoes","Mug","Train","Baskets","Zipper","HairDryer","Clothespins","Lightbulb","Tool","TrashCan","FireHydrant","Bus","Umbrella","Fabric","Pole","Rug","AbstractArt","AbstractArt","Scarves","ClothesRack","Building","Building","Bridge","Office","Boxer","PlaneCrash","HurtDog","InjuredDog","Rain","WarVictim","DeadBody","Vomit","EmptyPool","DeadMan","Hanging","Assault","DeadMan","Porpoises","Skinhead","KKKrally","CarAccident","CarAccident","Fire","AttackDog","Woman","Tourist","Shadow","HeadlessBody","Mutilation","Organs","BurnVictim","Mutilation","Mutilation","Mutilation","Mutilation","BurnVictim","BurnVictim","Mutilation","BabyTumor","SeveredHand","Boat","Mushroom","Plant","Clouds","Assault","AimedGun","BeatenFem","Attack","Suicide","RollingPin","Towel","Spoon","Bowl","Mug","Basket","PicnicTable","Hammer","Shoes","DustPan","Barbells","Fork","Book","Lamp","Man","Office","Cabinet","Tissue","Fire","Soldiers","Dirty","Soldier","Execution","Dog"],"y":[3.17,2.83,3.29,2.94,3.71,2.9,4.99,2.93,2.79,6.21,6.8,5.97,7.26,4.84,7.16,5.9,6.76,6.41,6.77,7.03,7.22,6.06,6.84,6.97,6.61,6,6.36,6.57,6.82,5.75,6.99,6.82,2.51,3.26,3.03,2.79,3.55,3.14,2.51,6.01,6.44,6.2,6.96,6.59,6.29,6.21,6.28,5.8,3.2,3.07,3.81,3,3.25,3.4,3.12,2.17,2.99,2.03,2.66,3.29,2.6,3.32,2.75,3.01,3.02,3.07,2.55,2.89,2.92,2.61,3.07,2.98,2.88,2.3,4.28,2.93,2.43,2.39,3.26,3.18,2.95,5.91,6.36,6.58,6.45,3.08,6.6,6.64,6.24,2.63,6.72,6.81,5.92,5.89,5.82,6.05,6.62,6.08,6.63,6.52,6.51,3.24,3,2.96,6.64,5.82,6.3,6.91,6.48,5.78,6.35,6.86,6.49,6.7,6.55,7.21,6.91,2.88,3,2.59,3.1,6.06,7.35,6.38,7.09,6.24,2.42,3.16,2,2.33,3.01,1.76,2.63,3.06,3.01,2.69,4.02,2.32,2.61,1.72,3.39,3.95,2.65,2.28,6.46,6.53,6,7.07,6.49,6.14],"type":"scatter","mode":"markers","marker":{"color":"rgba(255,127,14,1)","line":{"color":"rgba(255,127,14,1)"}},"error_y":{"color":"rgba(255,127,14,1)"},"error_x":{"color":"rgba(255,127,14,1)"},"line":{"color":"rgba(255,127,14,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["Parrots","Gannet","Grouper","NeuWoman","Fingerprint","Girl","Kiss","Factoryworker","Chess","War","NativeBoy","DeerHead","Mutilation","Gold","Mutilation","Accident","Mutilation","Mutilation","Mutilation","Mutilation","Mutilation","Injury","DeadBody","Mutilation","Mutilation","Mutilation","Stitches","Surgery","Surgery","Tumor","Attack","Attack","Rocks","Satellite","Field","Farmland","Field","Nature","Leaves","Soldier","Attack","DeadTiger","Attack","Attack","Gang","Guns","Police","Police","Buttons","Disk","GasCan","Rubberbands","Scissors","Razor","Video","Fan","Iron","Shoes","Mug","Train","Baskets","Zipper","HairDryer","Clothespins","Lightbulb","Tool","TrashCan","FireHydrant","Bus","Umbrella","Fabric","Pole","Rug","AbstractArt","AbstractArt","Scarves","ClothesRack","Building","Building","Bridge","Office","Boxer","PlaneCrash","HurtDog","InjuredDog","Rain","WarVictim","DeadBody","Vomit","EmptyPool","DeadMan","Hanging","Assault","DeadMan","Porpoises","Skinhead","KKKrally","CarAccident","CarAccident","Fire","AttackDog","Woman","Tourist","Shadow","HeadlessBody","Mutilation","Organs","BurnVictim","Mutilation","Mutilation","Mutilation","Mutilation","BurnVictim","BurnVictim","Mutilation","BabyTumor","SeveredHand","Boat","Mushroom","Plant","Clouds","Assault","AimedGun","BeatenFem","Attack","Suicide","RollingPin","Towel","Spoon","Bowl","Mug","Basket","PicnicTable","Hammer","Shoes","DustPan","Barbells","Fork","Book","Lamp","Man","Office","Cabinet","Tissue","Fire","Soldiers","Dirty","Soldier","Execution","Dog"],"y":[6.11,6.37,6.71,5.09,4.06,6.17,6.94,4.87,5.71,2.62,2.45,2.76,1.45,5.98,1.71,1.52,1.91,1.45,1.8,1.7,1.48,2.07,1.56,1.58,1.51,1.56,2.06,2.79,2.96,1.82,2.21,1.8,4.45,5.21,6.62,6.31,7.09,6.6,6.36,2.19,2.7,2.21,2.46,1.94,2.38,2.82,2.91,2.45,5.32,5,4.52,4.98,5.15,4.76,5.18,4.97,4.69,4.52,4.98,5.93,4.99,4.97,4.93,5.33,4.9,5.07,4.43,5.24,5.5,4.72,5.02,4.98,5.06,5.07,5.5,5.56,4.82,4.82,5.33,5.21,4.25,2.95,2.43,1.69,1.81,4.53,2.57,1.98,2.81,4.03,1.83,1.76,2.67,1.84,2.42,2.04,2.09,2.39,2.34,2.04,3.09,5.8,5.22,5.18,1.62,1.9,2.99,1.31,1.81,1.87,1.49,1.88,1.6,1.79,2.26,1.46,2.35,5.59,5.42,5.21,6.78,2.21,2.37,2.31,2.73,2.19,5,4.97,5.04,4.88,4.93,4.94,5.38,4.95,4.82,4.69,5.55,5.27,5.19,4.87,5.35,5.27,4.77,4.94,2.73,2.1,2.26,1.51,2.06,1.68],"type":"scatter","mode":"markers","marker":{"color":"rgba(44,160,44,1)","line":{"color":"rgba(44,160,44,1)"}},"error_y":{"color":"rgba(44,160,44,1)"},"error_x":{"color":"rgba(44,160,44,1)"},"line":{"color":"rgba(44,160,44,1)"},"xaxis":"x","yaxis":"y2","frame":null},{"x":["Parrots","Gannet","Grouper","NeuWoman","Fingerprint","Girl","Kiss","Factoryworker","Chess","War","NativeBoy","DeerHead","Mutilation","Gold","Mutilation","Accident","Mutilation","Mutilation","Mutilation","Mutilation","Mutilation","Injury","DeadBody","Mutilation","Mutilation","Mutilation","Stitches","Surgery","Surgery","Tumor","Attack","Attack","Rocks","Satellite","Field","Farmland","Field","Nature","Leaves","Soldier","Attack","DeadTiger","Attack","Attack","Gang","Guns","Police","Police","Buttons","Disk","GasCan","Rubberbands","Scissors","Razor","Video","Fan","Iron","Shoes","Mug","Train","Baskets","Zipper","HairDryer","Clothespins","Lightbulb","Tool","TrashCan","FireHydrant","Bus","Umbrella","Fabric","Pole","Rug","AbstractArt","AbstractArt","Scarves","ClothesRack","Building","Building","Bridge","Office","Boxer","PlaneCrash","HurtDog","InjuredDog","Rain","WarVictim","DeadBody","Vomit","EmptyPool","DeadMan","Hanging","Assault","DeadMan","Porpoises","Skinhead","KKKrally","CarAccident","CarAccident","Fire","AttackDog","Woman","Tourist","Shadow","HeadlessBody","Mutilation","Organs","BurnVictim","Mutilation","Mutilation","Mutilation","Mutilation","BurnVictim","BurnVictim","Mutilation","BabyTumor","SeveredHand","Boat","Mushroom","Plant","Clouds","Assault","AimedGun","BeatenFem","Attack","Suicide","RollingPin","Towel","Spoon","Bowl","Mug","Basket","PicnicTable","Hammer","Shoes","DustPan","Barbells","Fork","Book","Lamp","Man","Office","Cabinet","Tissue","Fire","Soldiers","Dirty","Soldier","Execution","Dog"],"y":[6.11,6.37,6.71,5.09,4.06,6.17,6.94,4.87,5.71,2.62,2.45,2.76,1.45,5.98,1.71,1.52,1.91,1.45,1.8,1.7,1.48,2.07,1.56,1.58,1.51,1.56,2.06,2.79,2.96,1.82,2.21,1.8,4.45,5.21,6.62,6.31,7.09,6.6,6.36,2.19,2.7,2.21,2.46,1.94,2.38,2.82,2.91,2.45,5.32,5,4.52,4.98,5.15,4.76,5.18,4.97,4.69,4.52,4.98,5.93,4.99,4.97,4.93,5.33,4.9,5.07,4.43,5.24,5.5,4.72,5.02,4.98,5.06,5.07,5.5,5.56,4.82,4.82,5.33,5.21,4.25,2.95,2.43,1.69,1.81,4.53,2.57,1.98,2.81,4.03,1.83,1.76,2.67,1.84,2.42,2.04,2.09,2.39,2.34,2.04,3.09,5.8,5.22,5.18,1.62,1.9,2.99,1.31,1.81,1.87,1.49,1.88,1.6,1.79,2.26,1.46,2.35,5.59,5.42,5.21,6.78,2.21,2.37,2.31,2.73,2.19,5,4.97,5.04,4.88,4.93,4.94,5.38,4.95,4.82,4.69,5.55,5.27,5.19,4.87,5.35,5.27,4.77,4.94,2.73,2.1,2.26,1.51,2.06,1.68],"type":"scatter","mode":"markers","marker":{"color":"rgba(214,39,40,1)","line":{"color":"rgba(214,39,40,1)"}},"error_y":{"color":"rgba(214,39,40,1)"},"error_x":{"color":"rgba(214,39,40,1)"},"line":{"color":"rgba(214,39,40,1)"},"xaxis":"x","yaxis":"y2","frame":null},{"x":["Gannet","Grouper","Fingerprint","Girl","Kiss","Chess","NativeBoy","Mutilation","Mutilation","Accident","Mutilation","Mutilation","Mutilation","Injury","DeadBody","Mutilation","Mutilation","Mutilation","Stitches","Surgery","Surgery","Tumor","Attack","Attack","Rocks","Farmland","Field","Nature","Leaves","Soldier","Attack","Attack","Attack","Gang","Guns","Police","Police","Buttons","Disk","GasCan","Rubberbands","Scissors","Razor","Video","Fan","Iron","Shoes","Mug","Zipper","HairDryer","TrashCan","FireHydrant","Bus","Umbrella","Fabric","AbstractArt","Scarves","ClothesRack","Building","Building","Office","Boxer","PlaneCrash","HurtDog","InjuredDog","Rain","WarVictim","DeadBody","Vomit","EmptyPool","DeadMan","Hanging","DeadMan","Porpoises","Skinhead","KKKrally","CarAccident","CarAccident","Fire","Woman","Tourist","Shadow","HeadlessBody","Organs","BurnVictim","Mutilation","Mutilation","Mutilation","Mutilation","BurnVictim","BurnVictim","Mutilation","BabyTumor","SeveredHand","Boat","Mushroom","Plant","Clouds","AimedGun","Attack","Suicide","RollingPin","Towel","Spoon","Bowl","Mug","Basket","PicnicTable","Hammer","DustPan","Fork","Book","Lamp","Office","Cabinet","Tissue","Soldiers","Dirty","Soldier","Execution","Dog"],"y":[6.75,6.44,4.46,6.66,6.32,5.88,3.94,2.99,2.88,2.84,3.69,2.63,2.85,3.37,3.32,3.46,2.73,3.24,3.55,4.07,3.92,3.57,2.4,2.81,5.84,5.58,6.23,6.82,5.72,3.45,3,2.81,2.88,3.29,3.67,3.9,3.79,5.82,6.02,4.99,6.06,6.21,5.74,5.93,6.16,5.73,6.14,6.39,6.28,5.82,5.85,5.92,5.45,5.55,5.8,6.1,6.39,6.25,5.93,5.17,5.13,4.05,3.27,2.96,3.17,4.55,3.73,2.92,3.9,5.34,3,2.75,3.37,3.42,4.92,3.95,3.4,2.79,3.57,6.1,5.87,6.01,2.66,4.25,2.33,2.88,3.73,2.7,3.28,3,3.04,3.39,2.7,3.65,6.33,6.45,6.27,5.2,2.15,3.01,4.03,6.14,6.25,6.74,6.18,6.33,6.7,6.19,6.48,5.46,7.04,6.65,6.47,5.22,6.39,6.3,3.04,4.12,2.81,3.11,3.37],"type":"scatter","mode":"markers","marker":{"color":"rgba(148,103,189,1)","line":{"color":"rgba(148,103,189,1)"}},"error_y":{"color":"rgba(148,103,189,1)"},"error_x":{"color":"rgba(148,103,189,1)"},"line":{"color":"rgba(148,103,189,1)"},"xaxis":"x","yaxis":"y3","frame":null},{"x":["Gannet","Grouper","Fingerprint","Girl","Kiss","Chess","NativeBoy","Mutilation","Mutilation","Accident","Mutilation","Mutilation","Mutilation","Injury","DeadBody","Mutilation","Mutilation","Mutilation","Stitches","Surgery","Surgery","Tumor","Attack","Attack","Rocks","Farmland","Field","Nature","Leaves","Soldier","Attack","Attack","Attack","Gang","Guns","Police","Police","Buttons","Disk","GasCan","Rubberbands","Scissors","Razor","Video","Fan","Iron","Shoes","Mug","Zipper","HairDryer","TrashCan","FireHydrant","Bus","Umbrella","Fabric","AbstractArt","Scarves","ClothesRack","Building","Building","Office","Boxer","PlaneCrash","HurtDog","InjuredDog","Rain","WarVictim","DeadBody","Vomit","EmptyPool","DeadMan","Hanging","DeadMan","Porpoises","Skinhead","KKKrally","CarAccident","CarAccident","Fire","Woman","Tourist","Shadow","HeadlessBody","Organs","BurnVictim","Mutilation","Mutilation","Mutilation","Mutilation","BurnVictim","BurnVictim","Mutilation","BabyTumor","SeveredHand","Boat","Mushroom","Plant","Clouds","AimedGun","Attack","Suicide","RollingPin","Towel","Spoon","Bowl","Mug","Basket","PicnicTable","Hammer","DustPan","Fork","Book","Lamp","Office","Cabinet","Tissue","Soldiers","Dirty","Soldier","Execution","Dog"],"y":[6.75,6.44,4.46,6.66,6.32,5.88,3.94,2.99,2.88,2.84,3.69,2.63,2.85,3.37,3.32,3.46,2.73,3.24,3.55,4.07,3.92,3.57,2.4,2.81,5.84,5.58,6.23,6.82,5.72,3.45,3,2.81,2.88,3.29,3.67,3.9,3.79,5.82,6.02,4.99,6.06,6.21,5.74,5.93,6.16,5.73,6.14,6.39,6.28,5.82,5.85,5.92,5.45,5.55,5.8,6.1,6.39,6.25,5.93,5.17,5.13,4.05,3.27,2.96,3.17,4.55,3.73,2.92,3.9,5.34,3,2.75,3.37,3.42,4.92,3.95,3.4,2.79,3.57,6.1,5.87,6.01,2.66,4.25,2.33,2.88,3.73,2.7,3.28,3,3.04,3.39,2.7,3.65,6.33,6.45,6.27,5.2,2.15,3.01,4.03,6.14,6.25,6.74,6.18,6.33,6.7,6.19,6.48,5.46,7.04,6.65,6.47,5.22,6.39,6.3,3.04,4.12,2.81,3.11,3.37],"type":"scatter","mode":"markers","marker":{"color":"rgba(140,86,75,1)","line":{"color":"rgba(140,86,75,1)"}},"error_y":{"color":"rgba(140,86,75,1)"},"error_x":{"color":"rgba(140,86,75,1)"},"line":{"color":"rgba(140,86,75,1)"},"xaxis":"x","yaxis":"y3","frame":null}],"layout":{"xaxis":{"domain":[0,1],"automargin":true,"title":"Content","type":"category","categoryorder":"array","categoryarray":["AbstractArt","Accident","AimedGun","Attack","BabyTumor","Basket","Boat","Book","Bowl","Boxer","Building","BurnVictim","Bus","Buttons","Cabinet","CarAccident","Chess","ClothesRack","Clouds","DeadBody","DeadMan","Dirty","Disk","Dog","DustPan","EmptyPool","Execution","Fabric","Fan","Farmland","Field","Fingerprint","Fire","FireHydrant","Fork","Gang","Gannet","GasCan","Girl","Grouper","Guns","HairDryer","Hammer","Hanging","HeadlessBody","HurtDog","InjuredDog","Injury","Iron","Kiss","KKKrally","Lamp","Leaves","Mug","Mushroom","Mutilation","NativeBoy","Nature","Office","Organs","PicnicTable","PlaneCrash","Plant","Police","Porpoises","Rain","Razor","Rocks","RollingPin","Rubberbands","Scarves","Scissors","SeveredHand","Shadow","Shoes","Skinhead","Soldier","Soldiers","Spoon","Stitches","Suicide","Surgery","Tissue","Tourist","Towel","TrashCan","Tumor","Umbrella","Video","Vomit","WarVictim","Woman","Zipper"],"anchor":"y3"},"yaxis3":{"domain":[0,0.313333333333333],"automargin":true,"title":"Dominance","anchor":"x"},"yaxis2":{"domain":[0.353333333333333,0.646666666666667],"automargin":true,"title":"Valence","anchor":"x"},"yaxis":{"domain":[0.686666666666667,1],"automargin":true,"title":"Arousal","anchor":"x"},"annotations":[],"shapes":[],"images":[],"margin":{"b":40,"l":60,"t":25,"r":10},"hovermode":"closest","showlegend":false},"attrs":{"4cec6431346f":{"x":{},"y":{},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"scatter"},"4cec6431346f.1":{"x":{},"y":{},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"scatter","inherit":true},"4cec3b02659a":{"x":{},"y":{},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"scatter"},"4cec3b02659a.1":{"x":{},"y":{},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"scatter","inherit":true},"4cec547a4ad1":{"x":{},"y":{},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"scatter"},"4cec547a4ad1.1":{"x":{},"y":{},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"scatter","inherit":true}},"source":"A","config":{"showSendToCloud":false},"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"subplot":true,".hideLegend":true,"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+<script type="application/json" data-for="htmlwidget-2">{"x":{"data":[{"x":["Parrots","Gannet","Grouper","NeuWoman","Fingerprint","Girl","Kiss","Factoryworker","Chess","War","NativeBoy","DeerHead","Mutilation","Gold","Mutilation","Accident","Mutilation","Mutilation","Mutilation","Mutilation","Mutilation","Injury","DeadBody","Mutilation","Mutilation","Mutilation","Stitches","Surgery","Surgery","Tumor","Attack","Attack","Rocks","Satellite","Field","Farmland","Field","Nature","Leaves","Soldier","Attack","DeadTiger","Attack","Attack","Gang","Guns","Police","Police","Buttons","Disk","GasCan","Rubberbands","Scissors","Razor","Video","Fan","Iron","Shoes","Mug","Train","Baskets","Zipper","HairDryer","Clothespins","Lightbulb","Tool","TrashCan","FireHydrant","Bus","Umbrella","Fabric","Pole","Rug","AbstractArt","AbstractArt","Scarves","ClothesRack","Building","Building","Bridge","Office","Boxer","PlaneCrash","HurtDog","InjuredDog","Rain","WarVictim","DeadBody","Vomit","EmptyPool","DeadMan","Hanging","Assault","DeadMan","Porpoises","Skinhead","KKKrally","CarAccident","CarAccident","Fire","AttackDog","Woman","Tourist","Shadow","HeadlessBody","Mutilation","Organs","BurnVictim","Mutilation","Mutilation","Mutilation","Mutilation","BurnVictim","BurnVictim","Mutilation","BabyTumor","SeveredHand","Boat","Mushroom","Plant","Clouds","Assault","AimedGun","BeatenFem","Attack","Suicide","RollingPin","Towel","Spoon","Bowl","Mug","Basket","PicnicTable","Hammer","Shoes","DustPan","Barbells","Fork","Book","Lamp","Man","Office","Cabinet","Tissue","Fire","Soldiers","Dirty","Soldier","Execution","Dog"],"y":[3.17,2.83,3.29,2.94,3.71,2.9,4.99,2.93,2.79,6.21,6.8,5.97,7.26,4.84,7.16,5.9,6.76,6.41,6.77,7.03,7.22,6.06,6.84,6.97,6.61,6,6.36,6.57,6.82,5.75,6.99,6.82,2.51,3.26,3.03,2.79,3.55,3.14,2.51,6.01,6.44,6.2,6.96,6.59,6.29,6.21,6.28,5.8,3.2,3.07,3.81,3,3.25,3.4,3.12,2.17,2.99,2.03,2.66,3.29,2.6,3.32,2.75,3.01,3.02,3.07,2.55,2.89,2.92,2.61,3.07,2.98,2.88,2.3,4.28,2.93,2.43,2.39,3.26,3.18,2.95,5.91,6.36,6.58,6.45,3.08,6.6,6.64,6.24,2.63,6.72,6.81,5.92,5.89,5.82,6.05,6.62,6.08,6.63,6.52,6.51,3.24,3,2.96,6.64,5.82,6.3,6.91,6.48,5.78,6.35,6.86,6.49,6.7,6.55,7.21,6.91,2.88,3,2.59,3.1,6.06,7.35,6.38,7.09,6.24,2.42,3.16,2,2.33,3.01,1.76,2.63,3.06,3.01,2.69,4.02,2.32,2.61,1.72,3.39,3.95,2.65,2.28,6.46,6.53,6,7.07,6.49,6.14],"type":"scatter","mode":"markers","marker":{"color":"rgba(31,119,180,1)","line":{"color":"rgba(31,119,180,1)"}},"error_y":{"color":"rgba(31,119,180,1)"},"error_x":{"color":"rgba(31,119,180,1)"},"line":{"color":"rgba(31,119,180,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["Parrots","Gannet","Grouper","NeuWoman","Fingerprint","Girl","Kiss","Factoryworker","Chess","War","NativeBoy","DeerHead","Mutilation","Gold","Mutilation","Accident","Mutilation","Mutilation","Mutilation","Mutilation","Mutilation","Injury","DeadBody","Mutilation","Mutilation","Mutilation","Stitches","Surgery","Surgery","Tumor","Attack","Attack","Rocks","Satellite","Field","Farmland","Field","Nature","Leaves","Soldier","Attack","DeadTiger","Attack","Attack","Gang","Guns","Police","Police","Buttons","Disk","GasCan","Rubberbands","Scissors","Razor","Video","Fan","Iron","Shoes","Mug","Train","Baskets","Zipper","HairDryer","Clothespins","Lightbulb","Tool","TrashCan","FireHydrant","Bus","Umbrella","Fabric","Pole","Rug","AbstractArt","AbstractArt","Scarves","ClothesRack","Building","Building","Bridge","Office","Boxer","PlaneCrash","HurtDog","InjuredDog","Rain","WarVictim","DeadBody","Vomit","EmptyPool","DeadMan","Hanging","Assault","DeadMan","Porpoises","Skinhead","KKKrally","CarAccident","CarAccident","Fire","AttackDog","Woman","Tourist","Shadow","HeadlessBody","Mutilation","Organs","BurnVictim","Mutilation","Mutilation","Mutilation","Mutilation","BurnVictim","BurnVictim","Mutilation","BabyTumor","SeveredHand","Boat","Mushroom","Plant","Clouds","Assault","AimedGun","BeatenFem","Attack","Suicide","RollingPin","Towel","Spoon","Bowl","Mug","Basket","PicnicTable","Hammer","Shoes","DustPan","Barbells","Fork","Book","Lamp","Man","Office","Cabinet","Tissue","Fire","Soldiers","Dirty","Soldier","Execution","Dog"],"y":[3.17,2.83,3.29,2.94,3.71,2.9,4.99,2.93,2.79,6.21,6.8,5.97,7.26,4.84,7.16,5.9,6.76,6.41,6.77,7.03,7.22,6.06,6.84,6.97,6.61,6,6.36,6.57,6.82,5.75,6.99,6.82,2.51,3.26,3.03,2.79,3.55,3.14,2.51,6.01,6.44,6.2,6.96,6.59,6.29,6.21,6.28,5.8,3.2,3.07,3.81,3,3.25,3.4,3.12,2.17,2.99,2.03,2.66,3.29,2.6,3.32,2.75,3.01,3.02,3.07,2.55,2.89,2.92,2.61,3.07,2.98,2.88,2.3,4.28,2.93,2.43,2.39,3.26,3.18,2.95,5.91,6.36,6.58,6.45,3.08,6.6,6.64,6.24,2.63,6.72,6.81,5.92,5.89,5.82,6.05,6.62,6.08,6.63,6.52,6.51,3.24,3,2.96,6.64,5.82,6.3,6.91,6.48,5.78,6.35,6.86,6.49,6.7,6.55,7.21,6.91,2.88,3,2.59,3.1,6.06,7.35,6.38,7.09,6.24,2.42,3.16,2,2.33,3.01,1.76,2.63,3.06,3.01,2.69,4.02,2.32,2.61,1.72,3.39,3.95,2.65,2.28,6.46,6.53,6,7.07,6.49,6.14],"type":"scatter","mode":"markers","marker":{"color":"rgba(255,127,14,1)","line":{"color":"rgba(255,127,14,1)"}},"error_y":{"color":"rgba(255,127,14,1)"},"error_x":{"color":"rgba(255,127,14,1)"},"line":{"color":"rgba(255,127,14,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["Parrots","Gannet","Grouper","NeuWoman","Fingerprint","Girl","Kiss","Factoryworker","Chess","War","NativeBoy","DeerHead","Mutilation","Gold","Mutilation","Accident","Mutilation","Mutilation","Mutilation","Mutilation","Mutilation","Injury","DeadBody","Mutilation","Mutilation","Mutilation","Stitches","Surgery","Surgery","Tumor","Attack","Attack","Rocks","Satellite","Field","Farmland","Field","Nature","Leaves","Soldier","Attack","DeadTiger","Attack","Attack","Gang","Guns","Police","Police","Buttons","Disk","GasCan","Rubberbands","Scissors","Razor","Video","Fan","Iron","Shoes","Mug","Train","Baskets","Zipper","HairDryer","Clothespins","Lightbulb","Tool","TrashCan","FireHydrant","Bus","Umbrella","Fabric","Pole","Rug","AbstractArt","AbstractArt","Scarves","ClothesRack","Building","Building","Bridge","Office","Boxer","PlaneCrash","HurtDog","InjuredDog","Rain","WarVictim","DeadBody","Vomit","EmptyPool","DeadMan","Hanging","Assault","DeadMan","Porpoises","Skinhead","KKKrally","CarAccident","CarAccident","Fire","AttackDog","Woman","Tourist","Shadow","HeadlessBody","Mutilation","Organs","BurnVictim","Mutilation","Mutilation","Mutilation","Mutilation","BurnVictim","BurnVictim","Mutilation","BabyTumor","SeveredHand","Boat","Mushroom","Plant","Clouds","Assault","AimedGun","BeatenFem","Attack","Suicide","RollingPin","Towel","Spoon","Bowl","Mug","Basket","PicnicTable","Hammer","Shoes","DustPan","Barbells","Fork","Book","Lamp","Man","Office","Cabinet","Tissue","Fire","Soldiers","Dirty","Soldier","Execution","Dog"],"y":[6.11,6.37,6.71,5.09,4.06,6.17,6.94,4.87,5.71,2.62,2.45,2.76,1.45,5.98,1.71,1.52,1.91,1.45,1.8,1.7,1.48,2.07,1.56,1.58,1.51,1.56,2.06,2.79,2.96,1.82,2.21,1.8,4.45,5.21,6.62,6.31,7.09,6.6,6.36,2.19,2.7,2.21,2.46,1.94,2.38,2.82,2.91,2.45,5.32,5,4.52,4.98,5.15,4.76,5.18,4.97,4.69,4.52,4.98,5.93,4.99,4.97,4.93,5.33,4.9,5.07,4.43,5.24,5.5,4.72,5.02,4.98,5.06,5.07,5.5,5.56,4.82,4.82,5.33,5.21,4.25,2.95,2.43,1.69,1.81,4.53,2.57,1.98,2.81,4.03,1.83,1.76,2.67,1.84,2.42,2.04,2.09,2.39,2.34,2.04,3.09,5.8,5.22,5.18,1.62,1.9,2.99,1.31,1.81,1.87,1.49,1.88,1.6,1.79,2.26,1.46,2.35,5.59,5.42,5.21,6.78,2.21,2.37,2.31,2.73,2.19,5,4.97,5.04,4.88,4.93,4.94,5.38,4.95,4.82,4.69,5.55,5.27,5.19,4.87,5.35,5.27,4.77,4.94,2.73,2.1,2.26,1.51,2.06,1.68],"type":"scatter","mode":"markers","marker":{"color":"rgba(44,160,44,1)","line":{"color":"rgba(44,160,44,1)"}},"error_y":{"color":"rgba(44,160,44,1)"},"error_x":{"color":"rgba(44,160,44,1)"},"line":{"color":"rgba(44,160,44,1)"},"xaxis":"x","yaxis":"y2","frame":null},{"x":["Parrots","Gannet","Grouper","NeuWoman","Fingerprint","Girl","Kiss","Factoryworker","Chess","War","NativeBoy","DeerHead","Mutilation","Gold","Mutilation","Accident","Mutilation","Mutilation","Mutilation","Mutilation","Mutilation","Injury","DeadBody","Mutilation","Mutilation","Mutilation","Stitches","Surgery","Surgery","Tumor","Attack","Attack","Rocks","Satellite","Field","Farmland","Field","Nature","Leaves","Soldier","Attack","DeadTiger","Attack","Attack","Gang","Guns","Police","Police","Buttons","Disk","GasCan","Rubberbands","Scissors","Razor","Video","Fan","Iron","Shoes","Mug","Train","Baskets","Zipper","HairDryer","Clothespins","Lightbulb","Tool","TrashCan","FireHydrant","Bus","Umbrella","Fabric","Pole","Rug","AbstractArt","AbstractArt","Scarves","ClothesRack","Building","Building","Bridge","Office","Boxer","PlaneCrash","HurtDog","InjuredDog","Rain","WarVictim","DeadBody","Vomit","EmptyPool","DeadMan","Hanging","Assault","DeadMan","Porpoises","Skinhead","KKKrally","CarAccident","CarAccident","Fire","AttackDog","Woman","Tourist","Shadow","HeadlessBody","Mutilation","Organs","BurnVictim","Mutilation","Mutilation","Mutilation","Mutilation","BurnVictim","BurnVictim","Mutilation","BabyTumor","SeveredHand","Boat","Mushroom","Plant","Clouds","Assault","AimedGun","BeatenFem","Attack","Suicide","RollingPin","Towel","Spoon","Bowl","Mug","Basket","PicnicTable","Hammer","Shoes","DustPan","Barbells","Fork","Book","Lamp","Man","Office","Cabinet","Tissue","Fire","Soldiers","Dirty","Soldier","Execution","Dog"],"y":[6.11,6.37,6.71,5.09,4.06,6.17,6.94,4.87,5.71,2.62,2.45,2.76,1.45,5.98,1.71,1.52,1.91,1.45,1.8,1.7,1.48,2.07,1.56,1.58,1.51,1.56,2.06,2.79,2.96,1.82,2.21,1.8,4.45,5.21,6.62,6.31,7.09,6.6,6.36,2.19,2.7,2.21,2.46,1.94,2.38,2.82,2.91,2.45,5.32,5,4.52,4.98,5.15,4.76,5.18,4.97,4.69,4.52,4.98,5.93,4.99,4.97,4.93,5.33,4.9,5.07,4.43,5.24,5.5,4.72,5.02,4.98,5.06,5.07,5.5,5.56,4.82,4.82,5.33,5.21,4.25,2.95,2.43,1.69,1.81,4.53,2.57,1.98,2.81,4.03,1.83,1.76,2.67,1.84,2.42,2.04,2.09,2.39,2.34,2.04,3.09,5.8,5.22,5.18,1.62,1.9,2.99,1.31,1.81,1.87,1.49,1.88,1.6,1.79,2.26,1.46,2.35,5.59,5.42,5.21,6.78,2.21,2.37,2.31,2.73,2.19,5,4.97,5.04,4.88,4.93,4.94,5.38,4.95,4.82,4.69,5.55,5.27,5.19,4.87,5.35,5.27,4.77,4.94,2.73,2.1,2.26,1.51,2.06,1.68],"type":"scatter","mode":"markers","marker":{"color":"rgba(214,39,40,1)","line":{"color":"rgba(214,39,40,1)"}},"error_y":{"color":"rgba(214,39,40,1)"},"error_x":{"color":"rgba(214,39,40,1)"},"line":{"color":"rgba(214,39,40,1)"},"xaxis":"x","yaxis":"y2","frame":null},{"x":["Gannet","Grouper","Fingerprint","Girl","Kiss","Chess","NativeBoy","Mutilation","Mutilation","Accident","Mutilation","Mutilation","Mutilation","Injury","DeadBody","Mutilation","Mutilation","Mutilation","Stitches","Surgery","Surgery","Tumor","Attack","Attack","Rocks","Farmland","Field","Nature","Leaves","Soldier","Attack","Attack","Attack","Gang","Guns","Police","Police","Buttons","Disk","GasCan","Rubberbands","Scissors","Razor","Video","Fan","Iron","Shoes","Mug","Zipper","HairDryer","TrashCan","FireHydrant","Bus","Umbrella","Fabric","AbstractArt","Scarves","ClothesRack","Building","Building","Office","Boxer","PlaneCrash","HurtDog","InjuredDog","Rain","WarVictim","DeadBody","Vomit","EmptyPool","DeadMan","Hanging","DeadMan","Porpoises","Skinhead","KKKrally","CarAccident","CarAccident","Fire","Woman","Tourist","Shadow","HeadlessBody","Organs","BurnVictim","Mutilation","Mutilation","Mutilation","Mutilation","BurnVictim","BurnVictim","Mutilation","BabyTumor","SeveredHand","Boat","Mushroom","Plant","Clouds","AimedGun","Attack","Suicide","RollingPin","Towel","Spoon","Bowl","Mug","Basket","PicnicTable","Hammer","DustPan","Fork","Book","Lamp","Office","Cabinet","Tissue","Soldiers","Dirty","Soldier","Execution","Dog"],"y":[6.75,6.44,4.46,6.66,6.32,5.88,3.94,2.99,2.88,2.84,3.69,2.63,2.85,3.37,3.32,3.46,2.73,3.24,3.55,4.07,3.92,3.57,2.4,2.81,5.84,5.58,6.23,6.82,5.72,3.45,3,2.81,2.88,3.29,3.67,3.9,3.79,5.82,6.02,4.99,6.06,6.21,5.74,5.93,6.16,5.73,6.14,6.39,6.28,5.82,5.85,5.92,5.45,5.55,5.8,6.1,6.39,6.25,5.93,5.17,5.13,4.05,3.27,2.96,3.17,4.55,3.73,2.92,3.9,5.34,3,2.75,3.37,3.42,4.92,3.95,3.4,2.79,3.57,6.1,5.87,6.01,2.66,4.25,2.33,2.88,3.73,2.7,3.28,3,3.04,3.39,2.7,3.65,6.33,6.45,6.27,5.2,2.15,3.01,4.03,6.14,6.25,6.74,6.18,6.33,6.7,6.19,6.48,5.46,7.04,6.65,6.47,5.22,6.39,6.3,3.04,4.12,2.81,3.11,3.37],"type":"scatter","mode":"markers","marker":{"color":"rgba(148,103,189,1)","line":{"color":"rgba(148,103,189,1)"}},"error_y":{"color":"rgba(148,103,189,1)"},"error_x":{"color":"rgba(148,103,189,1)"},"line":{"color":"rgba(148,103,189,1)"},"xaxis":"x","yaxis":"y3","frame":null},{"x":["Gannet","Grouper","Fingerprint","Girl","Kiss","Chess","NativeBoy","Mutilation","Mutilation","Accident","Mutilation","Mutilation","Mutilation","Injury","DeadBody","Mutilation","Mutilation","Mutilation","Stitches","Surgery","Surgery","Tumor","Attack","Attack","Rocks","Farmland","Field","Nature","Leaves","Soldier","Attack","Attack","Attack","Gang","Guns","Police","Police","Buttons","Disk","GasCan","Rubberbands","Scissors","Razor","Video","Fan","Iron","Shoes","Mug","Zipper","HairDryer","TrashCan","FireHydrant","Bus","Umbrella","Fabric","AbstractArt","Scarves","ClothesRack","Building","Building","Office","Boxer","PlaneCrash","HurtDog","InjuredDog","Rain","WarVictim","DeadBody","Vomit","EmptyPool","DeadMan","Hanging","DeadMan","Porpoises","Skinhead","KKKrally","CarAccident","CarAccident","Fire","Woman","Tourist","Shadow","HeadlessBody","Organs","BurnVictim","Mutilation","Mutilation","Mutilation","Mutilation","BurnVictim","BurnVictim","Mutilation","BabyTumor","SeveredHand","Boat","Mushroom","Plant","Clouds","AimedGun","Attack","Suicide","RollingPin","Towel","Spoon","Bowl","Mug","Basket","PicnicTable","Hammer","DustPan","Fork","Book","Lamp","Office","Cabinet","Tissue","Soldiers","Dirty","Soldier","Execution","Dog"],"y":[6.75,6.44,4.46,6.66,6.32,5.88,3.94,2.99,2.88,2.84,3.69,2.63,2.85,3.37,3.32,3.46,2.73,3.24,3.55,4.07,3.92,3.57,2.4,2.81,5.84,5.58,6.23,6.82,5.72,3.45,3,2.81,2.88,3.29,3.67,3.9,3.79,5.82,6.02,4.99,6.06,6.21,5.74,5.93,6.16,5.73,6.14,6.39,6.28,5.82,5.85,5.92,5.45,5.55,5.8,6.1,6.39,6.25,5.93,5.17,5.13,4.05,3.27,2.96,3.17,4.55,3.73,2.92,3.9,5.34,3,2.75,3.37,3.42,4.92,3.95,3.4,2.79,3.57,6.1,5.87,6.01,2.66,4.25,2.33,2.88,3.73,2.7,3.28,3,3.04,3.39,2.7,3.65,6.33,6.45,6.27,5.2,2.15,3.01,4.03,6.14,6.25,6.74,6.18,6.33,6.7,6.19,6.48,5.46,7.04,6.65,6.47,5.22,6.39,6.3,3.04,4.12,2.81,3.11,3.37],"type":"scatter","mode":"markers","marker":{"color":"rgba(140,86,75,1)","line":{"color":"rgba(140,86,75,1)"}},"error_y":{"color":"rgba(140,86,75,1)"},"error_x":{"color":"rgba(140,86,75,1)"},"line":{"color":"rgba(140,86,75,1)"},"xaxis":"x","yaxis":"y3","frame":null}],"layout":{"xaxis":{"domain":[0,1],"automargin":true,"title":"Content","type":"category","categoryorder":"array","categoryarray":["AbstractArt","Accident","AimedGun","Attack","BabyTumor","Basket","Boat","Book","Bowl","Boxer","Building","BurnVictim","Bus","Buttons","Cabinet","CarAccident","Chess","ClothesRack","Clouds","DeadBody","DeadMan","Dirty","Disk","Dog","DustPan","EmptyPool","Execution","Fabric","Fan","Farmland","Field","Fingerprint","Fire","FireHydrant","Fork","Gang","Gannet","GasCan","Girl","Grouper","Guns","HairDryer","Hammer","Hanging","HeadlessBody","HurtDog","InjuredDog","Injury","Iron","Kiss","KKKrally","Lamp","Leaves","Mug","Mushroom","Mutilation","NativeBoy","Nature","Office","Organs","PicnicTable","PlaneCrash","Plant","Police","Porpoises","Rain","Razor","Rocks","RollingPin","Rubberbands","Scarves","Scissors","SeveredHand","Shadow","Shoes","Skinhead","Soldier","Soldiers","Spoon","Stitches","Suicide","Surgery","Tissue","Tourist","Towel","TrashCan","Tumor","Umbrella","Video","Vomit","WarVictim","Woman","Zipper"],"anchor":"y3"},"yaxis3":{"domain":[0,0.313333333333333],"automargin":true,"title":"Dominance","anchor":"x"},"yaxis2":{"domain":[0.353333333333333,0.646666666666667],"automargin":true,"title":"Valence","anchor":"x"},"yaxis":{"domain":[0.686666666666667,1],"automargin":true,"title":"Arousal","anchor":"x"},"annotations":[],"shapes":[],"images":[],"margin":{"b":40,"l":60,"t":25,"r":10},"hovermode":"closest","showlegend":false},"attrs":{"47bc44aa22cd":{"x":{},"y":{},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"scatter"},"47bc44aa22cd.1":{"x":{},"y":{},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"scatter","inherit":true},"47bc4f65c27":{"x":{},"y":{},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"scatter"},"47bc4f65c27.1":{"x":{},"y":{},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"scatter","inherit":true},"47bc3b0115b9":{"x":{},"y":{},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"scatter"},"47bc3b0115b9.1":{"x":{},"y":{},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"scatter","inherit":true}},"source":"A","config":{"showSendToCloud":false},"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"subplot":true,".hideLegend":true,"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
 <ul>
 <li>Currently not rendering in Hugo</li>
 </ul>
@@ -808,6 +809,10 @@ datatable(non_validated_iaps, class = &#39;cell-border stripe&#39;, caption = &#
 
     
 
+
+
+
+
 <div class="article-tags">
   
   <a class="badge badge-light" href="/tags/research/">research</a>
@@ -816,199 +821,233 @@ datatable(non_validated_iaps, class = &#39;cell-border stripe&#39;, caption = &#
 
 
 
+<div class="share-box" aria-hidden="true">
+  <ul class="share">
     
       
-
-
-
-
-
-
-
-
-  
-
-
-
-
-
-  
-  
-  
-    
-  
-  
-  <div class="media author-card" itemscope itemtype="http://schema.org/Person">
+      
+      
+        
+      
+      
+      
+      <li>
+        <a href="https://twitter.com/intent/tweet?url=/post/emotional-impact-of-memory-part-one/&amp;text=Emotional%20Impact%20of%20Memory%20Part%20One%20" target="_blank" rel="noopener" class="share-btn-twitter">
+          <i class="fab fa-twitter"></i>
+        </a>
+      </li>
     
       
-      <img class="portrait mr-3" src="/authors/admin/avatar_hu917116601447c3f7215e8d18143d41f1_585093_250x250_fill_q90_lanczos_center.jpg" itemprop="image" alt="Avatar">
+      
+      
+        
+      
+      
+      
+      <li>
+        <a href="https://www.facebook.com/sharer.php?u=/post/emotional-impact-of-memory-part-one/&amp;t=Emotional%20Impact%20of%20Memory%20Part%20One%20" target="_blank" rel="noopener" class="share-btn-facebook">
+          <i class="fab fa-facebook"></i>
+        </a>
+      </li>
+    
+      
+      
+      
+        
+      
+      
+      
+      <li>
+        <a href="mailto:?subject=Emotional%20Impact%20of%20Memory%20Part%20One%20&amp;body=/post/emotional-impact-of-memory-part-one/" target="_blank" rel="noopener" class="share-btn-email">
+          <i class="fas fa-envelope"></i>
+        </a>
+      </li>
+    
+      
+      
+      
+        
+      
+      
+      
+      <li>
+        <a href="https://www.linkedin.com/shareArticle?url=/post/emotional-impact-of-memory-part-one/&amp;title=Emotional%20Impact%20of%20Memory%20Part%20One%20" target="_blank" rel="noopener" class="share-btn-linkedin">
+          <i class="fab fa-linkedin-in"></i>
+        </a>
+      </li>
+    
+      
+      
+      
+        
+      
+      
+      
+      <li>
+        <a href="https://web.whatsapp.com/send?text=Emotional%20Impact%20of%20Memory%20Part%20One%20%20/post/emotional-impact-of-memory-part-one/" target="_blank" rel="noopener" class="share-btn-whatsapp">
+          <i class="fab fa-whatsapp"></i>
+        </a>
+      </li>
+    
+      
+      
+      
+        
+      
+      
+      
+      <li>
+        <a href="https://service.weibo.com/share/share.php?url=/post/emotional-impact-of-memory-part-one/&amp;title=Emotional%20Impact%20of%20Memory%20Part%20One%20" target="_blank" rel="noopener" class="share-btn-weibo">
+          <i class="fab fa-weibo"></i>
+        </a>
+      </li>
+    
+  </ul>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+  
+  
+    
+  
+  
+  <div class="media author-card content-widget-hr">
+    
+      
+      <img class="portrait mr-3" src="/authors/admin/avatar_hu917116601447c3f7215e8d18143d41f1_585093_250x250_fill_q90_lanczos_center.jpg" alt="Avatar">
     
 
     <div class="media-body">
-      <h5 class="card-title" itemprop="name"><a href="/">Aaron Willcox</a></h5>
+      <h5 class="card-title"><a href="/">Aaron Willcox</a></h5>
       <h6 class="card-subtitle">Student</h6>
-      <p class="card-text" itemprop="description">Interests include data wrangling with R and research into neurodevelopmental disorders particularly adult ADHD.</p>
+      <p class="card-text">Interests include data wrangling with R and research into neurodevelopmental disorders particularly adult ADHD.</p>
       <ul class="network-icon" aria-hidden="true">
-        
-          
-          
-          
-            
-          
-          
-          
-          
-          
-            
-          
-          <li>
-            <a itemprop="sameAs" href="/#contact" >
-              <i class="fas fa-envelope"></i>
-            </a>
-          </li>
-        
-          
-          
-          
-            
-          
-          
-          
-          
-          
-            
-          
-          <li>
-            <a itemprop="sameAs" href="https://twitter.com/aaron_willcox" target="_blank" rel="noopener">
-              <i class="fab fa-twitter"></i>
-            </a>
-          </li>
-        
-          
-          
-          
-            
-          
-          
-          
-          
-          
-            
-          
-          <li>
-            <a itemprop="sameAs" href="https://www.instagram.com/audiozen/" target="_blank" rel="noopener">
-              <i class="fab fa-instagram"></i>
-            </a>
-          </li>
-        
-          
-          
-          
-            
-          
-          
-          
-          
-          
-            
-          
-          <li>
-            <a itemprop="sameAs" href="https://github.com/psychtek" target="_blank" rel="noopener">
-              <i class="fab fa-github"></i>
-            </a>
-          </li>
-        
-          
-          
-          
-            
-          
-          
-          
-          
-          
-            
-          
-          <li>
-            <a itemprop="sameAs" href="/files/cv.pdf" >
-              <i class="fas fa-file-pdf"></i>
-            </a>
-          </li>
-        
-      </ul>
+  
+    
+    
+    
+      
+    
+    
+    
+    
+    
+      
+    
+    <li>
+      <a href="/#contact" >
+        <i class="fas fa-envelope"></i>
+      </a>
+    </li>
+  
+    
+    
+    
+      
+    
+    
+    
+    
+    
+      
+    
+    <li>
+      <a href="https://twitter.com/aaron_willcox" target="_blank" rel="noopener">
+        <i class="fab fa-twitter"></i>
+      </a>
+    </li>
+  
+    
+    
+    
+      
+    
+    
+    
+    
+    
+      
+    
+    <li>
+      <a href="https://www.instagram.com/audiozen/" target="_blank" rel="noopener">
+        <i class="fab fa-instagram"></i>
+      </a>
+    </li>
+  
+    
+    
+    
+      
+    
+    
+    
+    
+    
+      
+    
+    <li>
+      <a href="https://github.com/psychtek" target="_blank" rel="noopener">
+        <i class="fab fa-github"></i>
+      </a>
+    </li>
+  
+    
+    
+    
+      
+    
+    
+    
+    
+    
+      
+    
+    <li>
+      <a href="/files/cv.pdf" >
+        <i class="fas fa-file-pdf"></i>
+      </a>
+    </li>
+  
+</ul>
+
     </div>
   </div>
 
 
 
-      
-      
-    
 
-    
 
-    
+
+
+
+
+  
+  
+
 
 
   </div>
 </article>
 
-<div class="container">
-  <footer class="site-footer">
-  
-  <p class="powered-by">
-    <a href="/privacy/">Privacy Policy</a>
-  </p>
-  
-
-  <p class="powered-by">
-    
-
-    Powered by the
-    <a href="https://sourcethemes.com/academic/" target="_blank" rel="noopener">Academic theme</a> for
-    <a href="https://gohugo.io" target="_blank" rel="noopener">Hugo</a>.
-
-    
-    <span class="float-right" aria-hidden="true">
-      <a href="#" id="back_to_top">
-        <span class="button_icon">
-          <i class="fas fa-chevron-up fa-2x"></i>
-        </span>
-      </a>
-    </span>
-    
-  </p>
-</footer>
-
-</div>
-
-
-<div id="modal" class="modal fade" role="dialog">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">Cite</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <pre><code class="tex hljs"></code></pre>
-      </div>
-      <div class="modal-footer">
-        <a class="btn btn-outline-primary my-1 js-copy-cite" href="#" target="_blank">
-          <i class="fas fa-copy"></i> Copy
-        </a>
-        <a class="btn btn-outline-primary my-1 js-download-cite" href="#" target="_blank">
-          <i class="fas fa-download"></i> Download
-        </a>
-        <div id="modal-error"></div>
-      </div>
-    </div>
-  </div>
-</div>
-
-    
+      
 
     
     
@@ -1025,10 +1064,14 @@ datatable(non_validated_iaps, class = &#39;cell-border stripe&#39;, caption = &#
       <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.2.5/jquery.fancybox.min.js" integrity="sha256-X5PoE3KU5l+JcX+w09p/wHl9AzK333C4hJ2I9S5mD4M=" crossorigin="anonymous"></script>
 
       
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/8.0.0/mermaid.min.js" integrity="sha256-0w92bcB21IY5+rGI84MGj52jNfHNbXVeQLrZ0CGdjNY=" crossorigin="anonymous" title="mermaid"></script>
+      
 
       
         
         <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/highlight.min.js" integrity="sha256-aYTdUrn6Ow1DDgh5JTc3aDGnnju48y/1c8s1dgkYPQ8=" crossorigin="anonymous"></script>
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/languages/r.min.js"></script>
         
       
 
@@ -1043,22 +1086,18 @@ datatable(non_validated_iaps, class = &#39;cell-border stripe&#39;, caption = &#
 
     
     
-    
-
-    
-    
     <script>hljs.initHighlightingOnLoad();</script>
     
 
     
     
+    
+    
+    
+    
     <script>
-      const search_index_filename = "/index.json";
-      const i18n = {
-        'placeholder': "Search...",
-        'results': "results found",
-        'no_results': "No results found"
-      };
+      const search_config = {"indexURI":"/index.json","minLength":1,"threshold":0.3};
+      const i18n = {"no_results":"No results found","placeholder":"Search...","results":"results found"};
       const content_type = {
         'post': "Posts",
         'project': "Projects",
@@ -1097,6 +1136,9 @@ datatable(non_validated_iaps, class = &#39;cell-border stripe&#39;, caption = &#
 
     
     
+
+    
+    
     
     
     
@@ -1109,8 +1151,75 @@ datatable(non_validated_iaps, class = &#39;cell-border stripe&#39;, caption = &#
     
     
     
-    <script src="/js/academic.min.a634eb963f72ae9bd331e70f2b1bc2d8.js"></script>
+    <script src="/js/academic.min.d6bd04fdad2ad213aa8111c5a3b72fc5.js"></script>
 
-  </body>
+    
+
+
+
+
+
+
+  
+  
+  <div class="container">
+    <footer class="site-footer">
+  
+  <p class="powered-by">
+    
+      <a href="/privacy/">Privacy Policy</a>
+    
+    
+  </p>
+  
+
+  <p class="powered-by">
+    
+
+    Powered by the
+    <a href="https://sourcethemes.com/academic/" target="_blank" rel="noopener">Academic theme</a> for
+    <a href="https://gohugo.io" target="_blank" rel="noopener">Hugo</a>.
+
+    
+    <span class="float-right" aria-hidden="true">
+      <a href="#" class="back-to-top">
+        <span class="button_icon">
+          <i class="fas fa-chevron-up fa-2x"></i>
+        </span>
+      </a>
+    </span>
+    
+  </p>
+</footer>
+
+  </div>
+  
+
+  
+<div id="modal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Cite</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <pre><code class="tex hljs"></code></pre>
+      </div>
+      <div class="modal-footer">
+        <a class="btn btn-outline-primary my-1 js-copy-cite" href="#" target="_blank">
+          <i class="fas fa-copy"></i> Copy
+        </a>
+        <a class="btn btn-outline-primary my-1 js-download-cite" href="#" target="_blank">
+          <i class="fas fa-download"></i> Download
+        </a>
+        <div id="modal-error"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
 </html>
-
